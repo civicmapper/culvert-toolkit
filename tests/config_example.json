@@ -1,0 +1,20 @@
+{
+    "raster_watershed_filepath": "raster_watershed_filepath",
+    "culverts": [],
+    "precip_noaa_csv_filepath": "precip_noaa_csv_filepath",
+    "raster_curvenumber_filepath": "raster_curvenumber_filepath",
+    "is_naacc": true,
+    "points_id_fieldname": "points_id_fieldname",
+    "work_dir": "work_dir",
+    "output_basins_filepath": "output_basins_filepath",
+    "raster_flowdir_filepath": "raster_flowdir_filepath",
+    "precip_src_config_filepath": "precip_src_config_filepath",
+    "output_points_filepath": "output_points_filepath",
+    "points_filepath": "points_filepath",
+    "basins": [],
+    "area_conv_factor": 9.290304e-08,
+    "leng_conv_factor": 100.0,
+    "basins_simplify": true,
+    "raster_dem_filepath": "raster_dem_filepath",
+    "raster_slope_filepath": "raster_slope_filepath"
+}

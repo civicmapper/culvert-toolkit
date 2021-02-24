@@ -1,0 +1,155 @@
+{
+    "root": "D:\\Dropbox (CivicMapper)\\Projects\\202004-02 Cornell Modeling\\3 - Production\\tool outputs\\c19 tests\\noaa_rainfall_2",
+    "rasters": [
+        {
+            "path": "orb1yr24ha.asc",
+            "freq": 1,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb1yr24ha.prj",
+            "freq": 1,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb1yr24ha.xml",
+            "freq": 1,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb2yr24ha.asc",
+            "freq": 2,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb2yr24ha.prj",
+            "freq": 2,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb2yr24ha.xml",
+            "freq": 2,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb5yr24ha.asc",
+            "freq": 5,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb5yr24ha.prj",
+            "freq": 5,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb5yr24ha.xml",
+            "freq": 5,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb10yr24ha.asc",
+            "freq": 10,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb10yr24ha.prj",
+            "freq": 10,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb10yr24ha.xml",
+            "freq": 10,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb25yr24ha.asc",
+            "freq": 25,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb25yr24ha.prj",
+            "freq": 25,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb25yr24ha.xml",
+            "freq": 25,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb50yr24ha.asc",
+            "freq": 50,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb50yr24ha.prj",
+            "freq": 50,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb50yr24ha.xml",
+            "freq": 50,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb100yr24ha.asc",
+            "freq": 100,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb100yr24ha.prj",
+            "freq": 100,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb100yr24ha.xml",
+            "freq": 100,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb200yr24ha.asc",
+            "freq": 200,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb200yr24ha.prj",
+            "freq": 200,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb200yr24ha.xml",
+            "freq": 200,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb500yr24ha.asc",
+            "freq": 500,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb500yr24ha.prj",
+            "freq": 500,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb500yr24ha.xml",
+            "freq": 500,
+            "ext": ".xml"
+        },
+        {
+            "path": "orb1000yr24ha.asc",
+            "freq": 1000,
+            "ext": ".asc"
+        },
+        {
+            "path": "orb1000yr24ha.prj",
+            "freq": 1000,
+            "ext": ".prj"
+        },
+        {
+            "path": "orb1000yr24ha.xml",
+            "freq": 1000,
+            "ext": ".xml"
+        }
+    ]
+}

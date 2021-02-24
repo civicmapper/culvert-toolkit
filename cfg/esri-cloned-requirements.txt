@@ -1,0 +1,8 @@
+click
+marshmallow
+marshmallow-dataclass  
+petl
+pint
+pytest
+requests  
+tqdm

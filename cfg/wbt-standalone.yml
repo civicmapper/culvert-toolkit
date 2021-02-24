@@ -1,0 +1,16 @@
+name: drainit-for-foss4g
+channels:
+  - esri
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7.*
+  - click
+  - marshmallow
+  - marshmallow-dataclass  
+  - petl
+  - pint
+  - pytest
+  - requests  
+  - tqdm
+  - whitebox

@@ -1,0 +1,15 @@
+*.pyc
+*/**/__pycache__/
+/ENV
+
+*.vscode/
+
+*.egg-info/
+build/
+dist/
+*.gdb/
+*.mxd
+
+.ipynb_checkpoints/
+
+.scripts/
