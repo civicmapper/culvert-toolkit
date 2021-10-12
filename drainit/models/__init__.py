@@ -6,7 +6,7 @@ from marshmallow_dataclass import class_schema
 
 units = pint.UnitRegistry()
 
-from ..calculators.runoff import Runoff
+from ..calculators.runoff import Runoff, _calculate_tc
 from ..calculators.capacity import Capacity
 from ..calculators.overflow import Overflow
 from ..config import (
@@ -37,7 +37,7 @@ def cast_to_numeric_fields(data, dataclass_model, **kwargs):
                 except ValueError as e:
                     #print(e, fld, data[fld])
                     pass
-    return data    
+    return data
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -73,27 +73,31 @@ RainfallRasterConfigSchema = class_schema(RainfallRasterConfig)
 # ANALYSIS RESULTS
 
 @dataclass
-class Analytics:
-    """analysis results from the calculators
+class Rainfall:
+    """rainfall amounts stored by storm frequency and duration interval
     """
 
-    runoff: Runoff = None
-
-    # requires naacc_capacity:
-    overflow: Overflow = None 
+    freq: str = None
+    dur: str = None
+    value: float = None
+    valtyp: str = "avg"
 
 
 @dataclass
-class Frequency:
-    """storm frequency interval with rainfall values and rainfall-dependent 
-    analytical results from the calculators
-    """    
+class RainfallBasedAnalytics:
+    """analytics--runoff and overflow--for a given rainfall storm frequency and duration interval
+    """
 
-    year: int = None
-    rainfall: float = None
-    analytics: Analytics = None
+    # rainfall 
+    rain_frq: str = None
+    rain_dur: str = None
+    rain_val: float = None
+    rain_valtyp: str = "avg"
+    # analytics
+    runoff: Runoff = None
+    overflow: Overflow = None
 
-FrequencySchema = class_schema(Frequency)
+RainfallBasedAnalyticsSchema = class_schema(RainfallBasedAnalytics)
 
 # -------------------------------------
 # LOCATION TYPES
@@ -104,7 +108,8 @@ class NaaccCulvert:
     """NAACC model for a single culvert. Use primarily for validating and 
     type-casting incoming NAACC CSVs.
     
-    NOTE: this is only a subset of available NAACC fields
+    NOTE: this is the subset of available NAACC fields required for capacity 
+    modeling
     """
 
     Naacc_Culvert_Id: str = req_field() # 'field_short': 'NAACC_ID'
@@ -174,15 +179,23 @@ class Shed:
     avg_slope_pct: float = None # <average slope of DEM in catchment>
     avg_cn: float = None # <average curve number in the catchment>
     max_fl: float = None # <maximum flow length in the catchment>
-    rainfall: float = None # average rainfall in the catchment
+    avg_rainfall: List[Rainfall] = field(default_factory=list) # <average rainfall in the catchment>
+
+    # derived attributes
+    tc_hr: float = None # time of concentration for runoff in the shed
 
     # geometries
     inlet_geom: str = None
     shed_geom: str = None
     
     # for recording the location of intermediate geospatial output files
-    shed_polygon_filepath: str = None
-    shed_raster_filepath: str = None
+    filepath_raster: str = None
+    filepath_vector: str = None
+
+    def calculate_tc(self):
+        if self.avg_slope_pct and self.max_fl:
+            self.tc_hr = _calculate_tc(self.max_fl, self.avg_slope_pct)
+            return self.tc_hr
 
 ShedSchema = class_schema(Shed)
 
@@ -198,31 +211,55 @@ class Point:
     # NAACC Naacc_Culvert_Id field
     uid: str
 
+    # geometry
     lat: float = None
     lng: float = None
+    spatial_ref_code: int = None
 
     # a group id field. non-unique ID field that indicates groups of related
     # outlets. Used primarily for NAACC-based culvert modeling, this is the
     # NAACC Survey_Id field
     group_id: str = None
 
-    # optionally extend with NAACC & capacity attributes
+    # optionally extend with NAACC attributes
     naacc: NaaccCulvert = None
+
+    # ---------------------------------
+    ## analytics
+
+    # the flow capacity of the culvert feature. auto-derived for NAACC data.
     capacity: Capacity = None
 
-    # optionally extend with the Shed and its characteristics
+    # Attributes of the area delineated upstream of the point.
+    # Includes average rainfall per storm event.
     shed: Shed = None
 
-    # storm frequency-based analytical results for the point
-    analytics: List[Frequency] = field(default_factory=list)
+    # Rainfall frequency-based analytical results for the point:
+    # runoff (peak-flow) and overflow (peak-flow vs capacity)
+    analytics: List[RainfallBasedAnalytics] = field(default_factory=list)
 
     # flags, errors, and notes
     include: bool = True
     validation_errors: dict = field(default_factory=dict)
     notes: list = field(default_factory=list)
 
-    # place to store the raw input
+    # place to optionally store the raw input
     raw: dict = None
+
+    def rainfall_from_shed_to_point(self):
+        """moves the rainfall interval data from the shed (where it was derived)
+        into analytics (since analysis is done per rainfall interval) associated
+        with the point.
+        """
+        if not self.shed:
+            return
+        for r in self.shed.avg_rainfall:
+            self.analytics.append(RainfallBasedAnalytics(
+                rain_dur=r.dur,
+                rain_frq=r.freq,
+                rain_val=r.value,
+                rain_valtyp=r.valtyp
+            ))
 
 
 PointSchema = class_schema(Point)
@@ -246,6 +283,7 @@ class WorkflowConfig:
     # in-memory representation of that source data; format depends on GP service
     points_features: dict = None
     points_id_fieldname: str = None
+    points_spatial_ref_code: int = None
     
     # -----------------------------
     # input landscape rasters
@@ -273,22 +311,24 @@ class WorkflowConfig:
     area_conv_factor: float = 0.00000009290304
     leng_conv_factor: float = 1
 
-    basins_simplify: bool = False
-    basins_in_series: bool = True
+    sheds_simplify: bool = False
 
     # --------------------------
     # file output parameters
     output_points_filepath: str = None
-    output_basins_filepath: str = None
+    output_sheds_filepath: str = None
 
     # --------------------------
     # intermediate and internal data
+    all_sheds_raster: str = None
+    all_sheds_vector: str = None
 
-    all_basins_raster: str = None
-    all_basins_vector: str = None
-
+    # List of Points for this workflow.
+    # A Point optionally has its associated "Shed" object nested internally
     points: List[Point] = field(default_factory=list)
-    basins: List[Shed] = field(default_factory=list)
+    # List of Sheds generated for this workflow. Each shed is associated with 
+    # a point on the `uid` attribute.
+    sheds: List[Shed] = field(default_factory=list)
 
 
 WorkflowConfigSchema = class_schema(WorkflowConfig)

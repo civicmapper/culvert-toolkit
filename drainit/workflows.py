@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from dataclasses import asdict, replace
 from marshmallow import ValidationError
+from typing import Tuple, List
 
 import click
 import pint
@@ -14,7 +15,8 @@ from .models import (
     WorkflowConfigSchema, 
     RainfallRasterConfig, 
     RainfallRasterConfigSchema,
-    PeakFlow01Schema
+    PeakFlow01Schema,
+    Point
 )
 from .calculators import runoff, capacity, overflow
 from .settings import USE_ESRI
@@ -39,7 +41,7 @@ class WorkflowManager():
     ):
 
         # initialize an empty WorkflowConfig object with default values
-        self.config = WorkflowConfig()
+        self.config: WorkflowConfig = WorkflowConfig()
         # click.echo(self.config)
 
         # if any confile files provided, load here. This will replace the
@@ -167,8 +169,22 @@ class CurveNumberMaker(WorkflowManager):
     pass
 
 
+class NaaccDataIngest(WorkflowManager):
+    """read in and validate a NAACC compliant CSV, save to a Geodatabase.
+
+    Inputs are: 
+
+    * The path to the NAACC CSV
+    * the CRS of the coordinates in the NAACC CSV
+    * the output geodatabase
+    * the output feature class name
+
+    """
+    pass
+
+
 # ------------------------------------------------------------------------------
-# Basin Peak Flow 
+# Peak-Flow Calculator
 
 class PeakFlowCore(WorkflowManager):
 
@@ -199,8 +215,10 @@ class PeakFlowCore(WorkflowManager):
     
     def run_core_workflow(self):
 
+        self.load_points()
+
         # delineate watersheds
-        self.gp.catchment_delineation()
+        self.gp.catchment_delineation_in_series()
 
         # derive data from catchments
         self.gp.derive_data_from_catchments()
@@ -234,10 +252,10 @@ class PeakFlow01(PeakFlowCore):
 
         # ETL the input points. We don't need NAACC for peak flow, just 
         # locations and UID
-        self.geoprocessor.load_points()
+        self.gp.load_points()
 
         # derive the rasters from input DEM and save refs
-        derived_rasters = self.geoprocessor.derive_from_dem(self.config.raster_dem_filepath)
+        derived_rasters = self.gp.derive_from_dem(self.config.raster_dem_filepath)
         self.config.raster_flowdir_filepath = derived_rasters['flow_direction_raster']
         self.config.raster_slope_filepath = derived_rasters['slope_raster']
 
@@ -263,19 +281,12 @@ class PeakFlow01(PeakFlowCore):
 
 
 # ------------------------------------------------------------------------------
-# Culvert Capacity
+# Culvert Capacity Calculator
+# Calculates the capacity of culverts during storm events using a combination of
+# peak-flow and a culvert capacity models. Relies on a culvert data that 
+# follows the NAACC-standard.
 
-class Capacity01(WorkflowManager):
-    """Calculates culverta capacity *only*. Relies on NAACC standard 
-    inputs, which are required for capacity calcs to work.
-    """
-    pass
-
-
-# ------------------------------------------------------------------------------
-# Culvert Overflow
-
-class OverFlowEval(WorkflowManager):
+class CulvertCapacityCore(WorkflowManager):
 
     def __init__(
         self, 
@@ -283,9 +294,9 @@ class OverFlowEval(WorkflowManager):
         save_config_json_filepath=None,
         **kwargs
     ):
-        """End-to-end calculation of peak-flow, capacity, and overflow. Uses the
-        PeakFlow01 workflow; relies on NAACC standard inputs (req. for capacity 
-        calcs to work).
+        """End-to-end calculation of culvert capacity, peak-flow, and overflow. 
+        Relies on points that follow the NAACC standard, which are required for 
+        the capacity calculations to work here.
         """
 
         super().__init__(**kwargs)
@@ -295,7 +306,12 @@ class OverFlowEval(WorkflowManager):
         # initialize the appropriate GP object with the config variables
         self.gp = GP(self.config)
     
-    def load_points(self):
+    def load_points(self) -> Tuple(List[Point], dict):
+        """workflow-specific approach to ETL of source point dataset. Handles
+        Either the NAACC csv or a points geodataset that matches the NAACC
+        schema can work here; this handles the ETL appropriately.
+        """
+
         p = Path(self.config.points_filepath)
         
         # for a NAACC CSV input, we ETL the table, create a Python representation
@@ -303,50 +319,85 @@ class OverFlowEval(WorkflowManager):
         # save the geo-formatted version to disk using output_points_filepath
         if p.suffix == ".csv":
             points = etl_naacc_table(
-                naacc_csv_file=self.config.points_filepath
+                naacc_csv_file=self.config.points_filepath,
+                spatial_ref=4326 # TODO: require spatial reference WKID for NAACC coords to be provided as input
             )
-            points_featureset = self.gp.create_geodata_from_points(
+            points_features = self.gp.create_geodata_from_points(
                 points=self.config.points,
                 output_points_filepath=self.config.output_points_filepath
             )
+            points_spatial_ref_code = 4326 # TODO: require spatial reference WKID for NAACC coords to be provided as input
             
-        # for anything else (assuming we've already restricted input to files
+        # for anything else (assuming we've already restricted input types to
         # a geodatabase feature class, geopackage table, geoservices json, or 
         # geojson), load it into a Python representation of that data in a 
         # geo-format (dependent on the GP service used), ETL the table
         else:
-            points, points_featureset = self.gp.extract_points_from_geodata(
+            points, points_features, points_spatial_ref_code = self.gp.extract_points_from_geodata(
                 points_filepath=self.config.points_filepath,
+                uid_field=self.config.points_id_fieldname,
                 is_naacc=True,
                 output_points_filepath=self.config.output_points_filepath
             )
         
         # save those to the config
+        # ...as a list of Drain-It Point objects:
         self.config.points = points
-        self.config.points_features = json.loads(points_featureset.JSON)
+        # ...as the geo/json (GeoJSON or Geoservices JSON depending on the GP module used)
+        self.config.points_features = points_features
+        # the spatial ref of the points
+        self.config.points_spatial_ref_code = points_spatial_ref_code
+
+        return self.config.points, self.config.points_features
     
-    def run_core_workflow(self):
+    def run(self):
 
         # load points
         # with NAACC data, capacity is calculated on load
-        self.load_points()
+        self.load_points() # updates self.config.points and self.config.points_features
 
-        # delineate watersheds
-        self.gp.catchment_delineation(
-            points_featureset=self.config.output_points_filepath,
-            raster_flowdir_filepath,
-            points_id_fieldname,
+        # delineate and analyze catchments for each point
+        self.config.points, self.config.sheds = self.gp.delineation_and_analysis_in_parallel(
+            points=self.config.points,
+            pour_point_field=self.config.points_id_fieldname,
+            flow_direction_raster=self.config.raster_flowdir_filepath,
+            slope_raster=self.config.raster_slope_filepath,
+            curve_number_raster=self.config.raster_curvenumber_filepath,
+            out_shed_polygons=self.config.output_sheds_filepath,
+            rainfall_config=self.config.rainfall_rasters,
+            out_catchment_polygons_simplify=self.config.sheds_simplify
         )
+        
+        for pt in self.config.points:
+            
+            # copy rainfall intervals from point.shed to point.analytics
+            pt.rainfall_from_shed_to_point()
+            # calculate time of concentration for the point's shed
+            pt.shed.calculate_tc()
 
-        # derive data from catchments
-        self.gp.derive_data_from_catchments()
+            # for each rainfall interval, calculate peak flow
+            for rainfall_interval in pt.analytics:
 
-        # calculate peak flow (t of c and flow per return period)
+                # instantiate a Runoff dataclass
+                rainfall_interval.runoff = runoff.Runoff()
+                # add in the tc that has already been calculated for the shed
+                rainfall_interval.runoff.time_of_concentration = pt.shed.tc_hr
+                # calculate peak flow
+                rainfall_interval.runoff.calculate_peak_flow(
+                    mean_slope_pct=pt.shed.avg_slope_pct,
+                    max_flow_length_m=pt.shed.max_fl,
+                    rainfall_cm=rainfall_interval.rain_val,
+                    basin_area_sqkm=pt.shed.area_sqkm,
+                    avg_cn=pt.shed.avg_cn,
+                    tc_hr=pt.shed.tc_hr
+                )
+            
+            # if capacity was calculated, calculate overflow
+            rainfall_interval.overflow = overflow.Overflow()
 
-        # calculate overflow
 
         # save the config
         if self.save_config_json_filepath:
-            self.save(self.save_config_json_filepath)        
+            self.save(self.save_config_json_filepath)
         
         return

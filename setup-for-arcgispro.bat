@@ -8,7 +8,6 @@ call "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\activate.bat" drainit-for-a
 
 @echo Installing additional dependencies...
 
-@REM call conda env update -n drainit-for-arcgispro -f cfg/esri-cloned.yml --verbose
 for /f %%i in (cfg\esri-cloned-requirements.txt) do conda install --yes --verbose %%i
 
 @echo Done!

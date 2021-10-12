@@ -172,6 +172,8 @@ def _derive_capacity_parameters(row):
         slope_rr = 0
         #  head over invert by adding dist from road to top of culvert to D 
         head_over_invert = 0
+
+        comments = []
         
         exclusion_comments = []
 
@@ -393,7 +395,8 @@ def etl_naacc_table(
     naacc_petl_table=None,
     output_path=None,
     lookup_naac_inlet_shape=NAACC_INLET_SHAPE_CROSSWALK,
-    lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK
+    lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK,
+    spatial_ref_code=4326
     ) -> List[Point]:
     """performs ETL of a raw NAACC table to the appropriate Drain-It models.
 
@@ -429,8 +432,10 @@ def etl_naacc_table(
         # use the provided PETL table object
         raw_table = naacc_petl_table
 
-    # ---------------------------------
+    # ----------------------------------------------------------------------------
     # validate all rows against the schema
+    # TODO: move this to a separate validation step
+    #
     # the schema model will attempt to type-cast any numbers stored as strings 
     # for only fields in the NaacCulvert dataclass; remove empty strings and 
     # replace with nulls
@@ -447,8 +452,10 @@ def etl_naacc_table(
     bad = etl.selectnotnone(validated_table, 'validation_errors')
     print("{0} NAACC rows did not pass intial validation".format(etl.nrows(bad)))
 
-    # ---------------------------------
+    
+    # ----------------------------------------------------------------------------
     # Derive params used for capacity & overflow calculations
+    # TODO: move everything below to a separate "extend and hyrdate" function
 
     # Add fields from the Capacity model to the table and crosswalk to generic fields and values.
     # * add capacity fields
@@ -501,13 +508,13 @@ def etl_naacc_table(
     print("{0} input points did not pass secondary validation".format(etl.nrows(bad)))
 
 
-    # TODO: determine if we need to still incorporate the old barrier ID generation 
-    # method:
+    # TODO: determine if we need to still incorporate the old barrier ID 
+    # generation method:
     # Assign the Barrier ID, after all the unmodelable rows are removed
     # UPDATED Jan 2018 - in case watershed name is longer than 3 characters, the ID still needs only 3
     # FieldData = FieldData.assign(BarrierID = [str(i+1) + ws_name[:3].upper() for i in range(len(FieldData))])
 
-    # TODO: determine if the aim of this legacy code is still necessary:
+    # TODO: determine if the aim of this legacy code is needed now:
     # Re-assign the number of culverts for each crossing location based on how many culverts were kept
     # for SI in FieldData.loc[FieldData['Flags']>1]['Survey_ID'].unique():
     #     NC = FieldData.loc[FieldData['Survey_ID'] == SI]['Survey_ID'].count() # Number of culverts we will model at site
@@ -531,15 +538,15 @@ def etl_naacc_table(
             group_id=r["Survey_Id"],
             lat=float(r["GIS_Latitude"]),
             lng=float(r["GIS_Longitude"]),
-            include = r['include'],
+            spatial_ref_code=spatial_ref_code,
+            include=r['include'],
             raw=r
         )
 
         if r['validation_errors']:
-            kwargs['validation_errors'] = {'naacc': r['validation_errors']}        
+            kwargs['validation_errors'] = {'naacc': r['validation_errors']}
         
         try:
-            
             naacc = naacc_culvert_schema.load(data=r)
             capacity = capacity_schema.load(data=r)
             # calculatue capacity here
@@ -554,7 +561,6 @@ def etl_naacc_table(
         
         p = Point(**kwargs)
         points.append(p)
-    
     
     
     # optionally save the table to a CSV file

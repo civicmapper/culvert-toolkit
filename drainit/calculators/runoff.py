@@ -150,7 +150,7 @@ def _peak_flow_core(
     
     Numbers go in, numbers come out.
 
-    TODO: expose hardcoded constants as parameters, and document them. 
+    TODO: expose hardcoded constants for RAIN RATIO as parameters, and document them.
     
     :param mean_slope_pct: average slope in the basin, as percent rise
     :type mean_slope_pct: float

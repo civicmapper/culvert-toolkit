@@ -4,5 +4,5 @@ marshmallow-dataclass
 petl
 pint
 pytest
-requests  
+requests
 tqdm

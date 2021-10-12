@@ -11,19 +11,56 @@ from collections import defaultdict
 from pathlib import Path
 from types import List, Tuple
 import json
+from statistics import mean
+from tqdm import tqdm
 
 # ArcPy imports
-from arcpy import Describe, Raster, CreateUniqueName
-from arcpy import GetCount_management, Clip_management, Dissolve_management, CopyFeatures_management, CreateFeatureclass_management, AddFields_management
-from arcpy import JoinField_management, MakeTableView_management
-from arcpy import BuildRasterAttributeTable_management, ProjectRaster_management
-from arcpy import RasterToPolygon_conversion, TableToTable_conversion, PolygonToRaster_conversion
-from arcpy import FeatureSet
-from arcpy.sa import Watershed, FlowLength, Slope, SetNull, ZonalStatisticsAsTable, FlowDirection, Con, CellStatistics #, ZonalGeometryAsTable
+from arcpy import EnvManager, env
+from arcpy import Describe, Raster, FeatureSet, RecordSet, CreateUniqueName
+from arcpy import SpatialReference
+from arcpy import (
+    RasterToPolygon_conversion, 
+    TableToTable_conversion, 
+    PolygonToRaster_conversion
+)
+from arcpy.conversion import RasterToPolygon
+from arcpy.sa import (
+    Watershed, 
+    FlowLength, 
+    Slope, 
+    SetNull, 
+    IsNull,
+    ZonalStatisticsAsTable, 
+    FlowDirection, 
+    Con, 
+    CellStatistics
+) #, ZonalGeometryAsTable
 from arcpy.da import SearchCursor, InsertCursor
+from arcpy.management import (
+    SelectLayerByAttribute,
+    GetCount,
+    Clip,
+    Dissolve,
+    CopyFeatures,
+    CreateFeatureclass,
+    AddFields,
+    BuildRasterAttributeTable
+)
+from arcpy import (
+    GetCount_management, 
+    Clip_management, 
+    Dissolve_management, 
+    CopyFeatures_management, 
+    CreateFeatureclass_management, 
+    AddFields_management,
+    JoinField_management, 
+    MakeTableView_management,
+    BuildRasterAttributeTable_management, 
+    ProjectRaster_management
+)
 from arcpy import SetProgressor, SetProgressorLabel, SetProgressorPosition, ResetProgressor
 from arcpy import AddMessage, AddWarning, AddError
-from arcpy import env
+
 
 # third party tools
 import petl as etl
@@ -32,19 +69,19 @@ import click
 
 # this package
 from ...config import FREQUENCIES, QP_HEADER
-from ...models import WorkflowConfig, Shed, Point, NaaccCulvert
+from ...models import WorkflowConfig, Point, Shed, Rainfall
 # from ..naacc import etl_naacc_table
 
 class GP:
 
-    def __init__(self):#, workflow_config: WorkflowConfig):
+    def __init__(self, config: WorkflowConfig):#, workflow_config: WorkflowConfig):
 
+        self.config = config
         self.raster_field = "Value"
         self.all_sheds_raster = ""
-        self.sheds = []
 
     # --------------------------------------------------------------------------
-    # HELPERS
+    # Workflow utility functions
 
     def msg(self, text, arc_status=None, set_progressor_label=False):
         """
@@ -127,6 +164,10 @@ class GP:
         else:
             return str(location / "_".join([prefix, suffix]))
 
+
+    # --------------------------------------------------------------------------
+    # Data utility functions
+
     def clean(self, val):
         """post-process empty values ("") from ArcPy geoprocessing tools.
         """
@@ -167,10 +208,10 @@ class GP:
         return out_csv
 
     def fc_to_petl_table(
-        self, 
+        self,
         feature_class, 
         include_geom=False,
-        return_featureset=False
+        return_featureset=True
         ):
         """Convert an Esri Feature Class to a PETL table object. Optionally,
         return the FeatureSet used to create the PETL table.
@@ -181,55 +222,38 @@ class GP:
         :type feature_class: [type]
         :param include_geom: [description], defaults to False
         :param include_geom: bool, optional
-        :return: PETL Table object
-        :rtype: petl.Table
+        :param return_featureset: return Esri FeatureSet, defaults to False
+        :param return_featureset: bool, optional        
+        :return: tuple containing an PETL Table object and FeatureSet
+        :rtype: Tuple(petl.Table, FeatureSet)
         """
-        self.msg("Reading {0} into a PETL table object".format(feature_class))
+        print("Reading {0} into a PETL table object".format(feature_class))
+        
+        feature_set = FeatureSet(feature_class)
+        # convert the FeatureSet object to a python dictionary
+        fs = json.loads(feature_set.JSON)
+
         # describe the feature class
         described_fc = Describe(feature_class)
         # get a list of field objects
         field_objs = described_fc.fields
 
+        # make a list of fields that doesn't include the Object ID field
+        #all_fields = [f for f in field_objs if f.name != described_fc.OIDFieldName]
         # make a list of field names, excluding geometry and the OID field
-        if include_geom:
-            self.msg("Including geometry column.")
-            fields = [field.name for field in field_objs]
-        else:
-            self.msg("Excluding geometry column.")
-            fields = [field.name for field in field_objs if field.type not in ['Geometry', 'Shape']]
-
-        # Remove the object ID field. We don't have any need for it here.
-        if described_fc.hasOID:
-            fields = [f for f in fields if f != described_fc.OIDFieldName]
-
-        # generate a table from the features list of a FeatureSet
-        feature_set = FeatureSet(feature_class)
-        fs = json.loads(feature_set.JSON)
-
+        attr_fields = [f.name for f in field_objs if f.type not in ['Geometry', 'Shape']]
+        # then add 'geometry' to that list, since it will be present in the features in the FeatureSet
+        attr_fields.append('geometry')
+        
         table = etl\
             .fromdicts(fs['features'])\
             .unpackdict('attributes')\
-            .cut(*fields)
-            
-
-        # # use ArcPy's search cursor to generate new rows
-        # with SearchCursor(feature_class, fields) as sc:
-        #     for row in sc:
-        #         # w/ the field list and the row values returned by the search
-        #         # cursor, create a list of tuples: [(field-name, value), ...]
-        #         z = list(zip(fields, list(row)))
-        #         # turn each of those into a dict
-        #         new_row = {k: v for k, v in z}
-        #         # ... and append that to our list
-        #         new_rows.append(new_row)
-
-        # return that list as a PETL table object
-        # return etl.fromdicts(new_rows)
+            .cut(*attr_fields)
 
         if return_featureset:
             return table, feature_set
         else:
-            return table
+            return table, None
 
     def join_to_copy(self, in_data, out_data, join_table, in_field, join_field):
         """given an input feature class, make a copy, then execute a join on that copy.
@@ -256,13 +280,14 @@ class GP:
 
 
     # --------------------------------------------------------------------------
-    # GEOPROCESSING 
+    # Pre-Processing for supporting raster   
+    # DEM, Slope, Curve Number
 
     def prep_cn_raster(self, 
         dem,
         curve_number_raster,
         out_cn_raster=None,
-        out_coor_system="PROJCS['NAD_1983_StatePlane_Pennsylvania_South_FIPS_3702_Feet',GEOGCS['GCS_North_American_1983',DATUM['D_North_American_1983',SPHEROID['GRS_1980',6378137.0,298.257222101]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Lambert_Conformal_Conic'],PARAMETER['False_Easting',1968500.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-77.75],PARAMETER['Standard_Parallel_1',39.93333333333333],PARAMETER['Standard_Parallel_2',40.96666666666667],PARAMETER['Latitude_Of_Origin',39.33333333333334],UNIT['Foot_US',0.3048006096012192]]"
+        out_coor_system=None
         ):
         """
         Clip, reproject, and resample the curve number raster to match the DEM.
@@ -461,16 +486,155 @@ class GP:
 
 
     # --------------------------------------------------------------------------
-    # Analytics
+    # ETL for input point datasets
+    # extract, transform, and load the input points
 
+    def create_geodata_from_points(
+        self, 
+        points: List[Point], 
+        output_points_filepath=None,
+        as_dict=True,
+        default_spatial_ref_code=4326
+        ) -> dict:
+        """from a list of Drain-It Point objects, create an ArcPy FeatureSet,
+        for use in other ArcPy GP tools.
 
-    def _catchment_delineation(
+        :param points: list of drainit.models.Point objects. Only the uid and group_id are used here; extended attributes from naacc aren't used.
+        :type points: List[Point]
+        :param output_points_filepath: optional path to save points to file on disk, defaults to None
+        :type output_points_filepath: str, optional
+        :param as_dict: return the geodata as geoservices JSON as Python dictionary, defaults to True
+        :type as_dict: bool, optional
+        :return: geoservices JSON as Python dictionary; FeatureSet object if as_dict is False
+        :rtype: dict
+        """
+        
+        with EnvManager(overwriteOutput=True):
+
+            #get the spatial ref from the first available point
+            p_srs = [p.spatial_ref_code for p in points if p.spatial_ref_code is not None]
+            if len(p_srs) > 0:
+                try:
+                    spatial_ref = SpatialReference(p_srs[0].spatial_ref_code)
+                except:
+                    spatial_ref = SpatialReference(default_spatial_ref_code)
+            else:
+                spatial_ref = SpatialReference(default_spatial_ref_code)
+
+            # Create an in_memory feature class to initially contain the points
+            feature_class = CreateFeatureclass_management(
+                out_path="in_memory", 
+                out_name="temp_drainit_points", 
+                geometry_type="POINT",
+                spatial_reference=spatial_ref
+            )
+
+            AddFields_management(
+                feature_class,
+                [['uid', 'TEXT', 'uid', 255], ['group_id', 'TEXT', 'group_id', 255]]
+            )
+
+            # Open an insert cursor
+            with InsertCursor(feature_class, ['uid', 'group_id', "SHAPE@XY"]) as cursor:
+                # Iterate through list of coordinates and add to cursor
+                for pt in points:
+                    row = [pt.uid, pt.group_id, (pt.lng, pt.lat)]
+                    cursor.insertRow(row)
+
+            # Create a FeatureSet object and load in_memory feature class JSON as dict
+            feature_set = FeatureSet()
+            feature_set.load(feature_class)
+
+        if output_points_filepath:
+            feature_set.save(output_points_filepath)
+
+        # return the dictionary (geoservices JSON as Python dictionary)
+        if as_dict:
+            return json.loads(feature_set.JSON)
+        else:
+            return feature_set
+
+    def extract_points_from_geodata(
+        self, 
+        points_filepath, 
+        uid_field,
+        is_naacc=False,
+        group_id_field=None,
+        output_points_filepath=None
+        ) -> Tuple(List[Point], dict):
+        """from any geodata input file, create a list of Point objects and a 
+        ArcGIS FeatureSet object
+        """
+
+        # # handle inputs that are from an interactive selection in ArcMap/Pro
+        if isinstance(points_filepath, FeatureSet):
+            self.msg("Reading from interactive selection")
+        else:
+            self.msg('Reading from file')
+        
+        # extract feature class to a PETL table and a FeatureSet
+        raw_table, feature_set = self.fc_to_petl_table(
+            points_filepath,
+            include_geom=True,
+            return_featureset=True
+        )
+
+        # convert the FeatureSet to its JSON representation
+        feature_set_json = json.loads(feature_set.JSON)
+
+        # get the spatial reference code from the FeatureSet JSON
+        spatial_ref_code = feature_set_json.get('spatialReference', {}).get('wkid', None)
+
+        # if this is geodata that follows the NAACC format, we use the NAACC
+        # etl function to transform the table to a list of Point objects
+        # with nested NAACC and capacity calc-ready attributes where possible
+        # (This is workflow for Culvert Capacity when geodata is provided 
+        # instead of a CSV)
+        if is_naacc:
+            self.msg('reading points and capturing NAACC attributes')
+            points = etl_naacc_table(
+                naacc_petl_table=raw_table,
+                spatial_ref_code=spatial_ref_code
+            )
+
+        # Otherwise we transform the raw table to a list of Point objects here
+        # (This is workflow for Peak-Flow)
+        else:
+            self.msg('reading points')
+            points = []
+            for idx, r in enumerate(list(etl.dicts(raw_table))):
+                point_kwargs = dict(
+                    uid=r[uid_field],
+                    lat=float(r["geometry"]['y']),
+                    lng=float(r["geometry"]['x']),
+                    spatial_ref_code=spatial_ref_code,
+                    include=True,
+                    raw=r
+                )
+                if group_id_field:
+                    point_kwargs['group_id'] = r[group_id_field],
+                
+                p = Point(**point_kwargs)
+                points.append(p)
+
+        if output_points_filepath:
+            # finally, save it out
+            self.msg('saving points')
+            # save a copy of the points feature_set to the output location
+            feature_set.save(output_points_filepath)
+
+        # return the list of Point objects and a dict version of the FeatureSet
+        return points, feature_set_json, spatial_ref_code
+
+    # --------------------------------------------------------------------------
+    # Catchment delineation functions
+
+    def _delineate_all_catchments(
         self, 
         inlets, 
         flow_direction_raster, 
-        pour_point_field, 
-        series=True
-    ):
+        pour_point_field,
+        ):
         """Delineate the catchment area(s) for the inlet(s), and provide a count.
 
         :param inlets: path to point shapefile or feature class representing inlet location(s) from which catchment area(s) will be determined. Can be one or many inlets.
@@ -479,8 +643,6 @@ class GP:
         :type flow_direction_raster: [type]
         :param pour_point_field: [description]
         :type pour_point_field: [type]
-        :param series: determines if watersheds be delineated to represent flow in series (i.e., no overlap; the default) or not (downstream catchments include upstream catchments). defaults to True (no overlap)
-        :type series: bool, optional
         :return: a python dictionary structured as follows: 
             {
                 "catchments": <path to the catchments raster created by the Arcpy.sa Watershed function>,
@@ -489,66 +651,31 @@ class GP:
         :rtype: dict
         """
 
-        if series:
+        # delineate the watershed(s) for all the inlets simultaneously. The 
+        # resulting basins will have no overlap. 
+        all_sheds = Watershed(
+            in_flow_direction_raster=flow_direction_raster,
+            in_pour_point_data=inlets,
+            pour_point_field=pour_point_field
+        )
 
-            # ------------------------------------------------------------------
-            # delineation
+        if not all_sheds.hasRAT:
+            BuildRasterAttributeTable_management(all_sheds, "Overwrite")
 
-            # delineate the watershed(s) for all the inlets simultaneously. The 
-            # resulting basins will have no overlap. 
-            all_sheds = Watershed(
-                in_flow_direction_raster=flow_direction_raster,
-                in_pour_point_data=inlets,
-                pour_point_field=pour_point_field
-            )
+        # save the catchment raster
+        self.all_sheds_raster = self.so("catchments","timestamp","fgdb")
+        all_sheds.save(self.all_sheds_raster)
+        self.msg("Catchments raster saved:\n\t{0}".format(self.config.all_sheds_raster))
 
-            if not all_sheds.hasRAT:
-                BuildRasterAttributeTable_management(all_sheds, "Overwrite")
+        self.config.all_sheds_raster = self.all_sheds_raster
 
-            # save the catchment raster
-            self.all_sheds_raster = self.so("catchments","timestamp","fgdb")
-            all_sheds.save(self.all_sheds_raster)
-            self.msg("Catchments raster saved:\n\t{0}".format(self.config.all_sheds_raster))
+        return self.all_sheds_raster
 
-            # ------------------------------------------------------------------
-            # Create individual watershed rasters
 
-            # # make a table view of the catchment raster
-            # catchment_table = 'catchment_table'
-            # MakeTableView_management(all_sheds, catchment_table) #, {where_clause}, {workspace}, {field_info})
-
-            # # for each catchment in the raster
-            # with SearchCursor(catchment_table, [self.raster_field]) as all_sheds:
-            #     for idx, each in enumerate(all_sheds):
-            #         this_id = each[0]
-            #         # self.msg("{0}".format(this_id))
-            #         # calculate flow length for each "zone" in the raster
-
-        # for the non-series (parallel?) approach, approp. for culvert modeling, 
-        # calculate every basin individually. The resulting basins may overlap.
-        else:
-            with SearchCursor(inlets, [pour_point_field]) as sc:
-                for inlet in sc:
-
-                    # ------------------------------------------------------------------
-                    # delineation
-                    
-                    one_shed = Watershed(
-                        in_flow_direction_raster=flow_direction_raster,
-                        in_pour_point_data=inlet,
-                        pour_point_field=pour_point_field
-                    )
-                    # save the catchments layer to the fgdb set by the arcpy.env.scratchgdb setting)
-                    catchment_save = self.so("catchment{0}".format(inlet[0]),"timestamp","fgdb")
-                    one_shed.save(catchment_save)
-                    self.msg("...catchment raster saved:\n\t{0}".format(catchment_save))
-                    self.sheds.append(
-                        Shed()
-                    )
-                    # get count of how many watersheds we should have gotten (# of inlets)
-                    # count = int(GetCount_management(inlets).getOutput(0))
-
-            return
+    # --------------------------------------------------------------------------
+    # Analytics for delineation and data derivation in Series
+    # Used for *catch-basin* analysis; works with a single watershed raster 
+    # that contains multiple watersheds
 
     def _calc_catchment_flowlength_max(self, 
         catchment_area_raster,
@@ -585,6 +712,9 @@ class GP:
         fl_max = fl_max * leng_conv_factor
             
         return fl_max
+
+    def _calc_catchment_average_rainfall(self, catchment_area_raster, zone_value, rainfall_rasters=[]):
+        return
 
     def _derive_data_for_all_catchments(self, 
         catchment_areas,
@@ -842,119 +972,7 @@ class GP:
         else:
             return records, None
 
-    
-    # def calc_average_rainfall(self, catchment_area_raster, zone_value, rainfall_rasters=[]):
-    #     return
-
-    # --------------------------------------------------------------------------
-    # Wrappers
-    # Passes Workflow Config to the Analytics functions with GP environment set
-
-    def create_geodata_from_points(
-        self, 
-        points: List[Point], 
-        output_points_filepath=None
-        ) -> FeatureSet:
-        """from a list of Drain-It Point objects, create an ArcPy FeatureSet,
-        for use in other ArcPy GP tools.
-
-        :param points: list of drainit.models.Point objects. Only the uid and group_id are used here; extended attributes from naacc aren't used.
-        :type points: List[Point]
-        """
-        
-        env.overwriteOutput = True
-        # Create an in_memory feature class to initially contain the points
-        feature_class = CreateFeatureclass_management("in_memory", "temp_drainit_points", "POINT")
-
-        AddFields_management(
-            feature_class, 
-            [
-                #[Field Name, Field Type]
-                ['uid', 'TEXT', 64],
-                ['group_id', 'TEXT', 64],
-            ]
-        )
-
-        # Open an insert cursor
-        with InsertCursor(feature_class, ['uid', 'group_id', "SHAPE@XY"]) as cursor:
-            # Iterate through list of coordinates and add to cursor
-            for pt in points:
-                row = [pt.uid, pt.group_id, (pt.lng, pt.lat)]
-                cursor.insertRow(row)
-
-        # Create a FeatureSet object and load in_memory feature class JSON as dict
-        feature_set = FeatureSet()
-        feature_set.load(feature_class)
-        #fsd = json.loads(feature_set.JSON)
-
-        if output_points_filepath:
-            feature_set.save(output_points_filepath)
-
-        # return the dictionary (A geoservices JSON as Python dictionary)
-        return feature_set
-
-    def extract_points_from_geodata(
-        self, 
-        points_filepath, 
-        uid_field=None,
-        is_naacc=False,
-        group_id_field=None,
-        output_points_filepath=None
-        ) -> Tuple(List[Point], FeatureSet):
-        """from geodata, create a list of Point objects and a FeatureSet
-        """
-
-        # # handle inputs that are from an interactive selection in ArcMap/Pro
-        if isinstance(self.config.points_filepath, FeatureSet):
-            self.msg("Reading from interactive selection")
-        else:
-            self.msg('Reading from file')
-        
-        # extract feature class to a PETL table and a FeatureSet
-        raw_table, feature_set = self.fc_to_petl_table(
-            self, 
-            points_filepath, 
-            include_geom=True,
-            return_featureset=True
-        )
-
-        # if this is geodata that follows the NAACC format, we use the NAACC
-        # etl function to transform the table to a list of Point objects
-        # with nested NAACC and Capacity values if possible
-        if is_naacc:
-            self.msg('reading points and capturing NAACC attributes')
-            points = etl_naacc_table(naacc_petl_table=raw_table)
-
-        # otherwise we transform the raw table to a list of Point objects here
-        else:
-            self.msg('reading points')
-            points = []
-            for idx, r in enumerate(list(etl.dicts(raw_table))):
-                
-                kwargs = dict(
-                    uid=r[uid_field],
-                    lat=float(r["geometry"]['x']),
-                    lng=float(r["geometry"]['y']),
-                    include=True,
-                    raw=r
-                )
-                
-                if group_id_field:
-                    kwargs['group_id'] = r[group_id_field],
-                
-                p = Point(**kwargs)
-                points.append(p)
-
-        # then dump that model to a dict, then table, then shapefile
-
-    
-        self.msg('saving points')
-        # save a copy of the points feature_set to the output location
-        feature_set.save(output_points_filepath)
-
-        return points, feature_set
-
-    def catchment_delineation(
+    def catchment_delineation_in_series(
         self,
         points_featureset,
         raster_flowdir_filepath,
@@ -973,25 +991,23 @@ class GP:
         if isinstance(points_featureset, dict):
             points_featureset = FeatureSet(json.dumps(points_featureset))
 
-        delineations = self._catchment_delineation(
+        delineations = self._delineate_all_catchments(
             inlets=points_featureset,
             flow_direction_raster=raster_flowdir_filepath,
             pour_point_field=points_id_fieldname,
             **kwargs
         )
 
-    def derive_data_from_catchments(self):
+    def derive_data_from_catchments_in_series(self):
 
         # -----------------------------------------------------
         # SET ENVIRONMENT VARIABLES
-
-        from arcpy import env
 
         self.msg('Setting environment parameters...', set_progressor_label=True)
         env_raster = Raster(self.config.raster_flowdir_filepath)
         env.snapRaster = env_raster
         env.cellSize = (env_raster.meanCellHeight + env_raster.meanCellWidth) / 2.0
-        env.extent = env_raster.extent        
+        env.extent = env_raster.extent
 
         # --------------------------------------------------------------------------
         # DETERMINE UNITS OF INPUT DATASETS
@@ -1037,7 +1053,7 @@ class GP:
             self.config.leng_conv_factor = leng_conv_factor
 
         self._derive_data_for_all_catchments(
-            catchment_areas=self.config.basins,
+            catchment_areas=self.config.sheds,
             flow_direction_raster=self.config.raster_flowdir_filepath,
             slope_raster=self.config.raster_slope_filepath,
             curve_number_raster=self.config.raster_curvenumber_filepath,
@@ -1048,3 +1064,279 @@ class GP:
             precip_raster_lookup=None,
             out_catchment_polygons_simplify=False            
         )
+
+
+    # --------------------------------------------------------------------------
+    # Analytics for delineation and data derivation in Parallel
+    # Used for *culvert* analysis; works with multiple overlapping watershed 
+    # rasters, where each raster contains only a single watershed
+
+    def _delineate_and_analyze_one_catchment(
+        self,
+        point_feature, # 
+        pour_point_field,
+        flow_direction_raster,
+        slope_raster,
+        curve_number_raster,
+        out_catchment_polygons,
+        rainfall_rasters=None,
+        out_catchment_polygons_simplify=False
+        ):
+
+        # create a shed (dataclass object)
+        shed = Shed(
+            uid=point_feature[0]
+        )        
+
+        # get the ID from the field.
+        shed.uid = point_feature[0]
+
+        self.msg("--------------------------------")
+        self.msg("analyzing point {0}".format(shed.uid))
+
+
+        # we can get a tabular look at what's in the layer like this:
+        # fs = json.loads(FeatureSet(inlet).JSON)
+        # ft = etl.fromdicts(fs['features']).unpackdict('attributes').unpackdict('geometry')
+        # etl.vis.displayall(ft)
+        
+        with EnvManager(
+            snapRaster=flow_direction_raster,
+            cellSize=flow_direction_raster,
+        ):
+            # delineate one watershed
+            self.msg('Delineating catchment')
+            one_shed = Watershed(
+                in_flow_direction_raster=flow_direction_raster,
+                in_pour_point_data=point_feature,
+            )
+            # one_shed_path = r"in_memory/catchment_{}.tif".format(inlet[0])
+            shed.filepath_raster = self.so("shed_{}_raster".format(shed.uid))
+            one_shed.save(shed.filepath_raster)
+        
+        ## ---------------------------------------------------------------------
+        # ANALYSIS
+        
+        
+        ## ---------------------------------------------------------------------
+        # calculate area of catchment
+
+        self.msg("converting catchment from raster and calculating area")
+        
+        #ZonalGeometryAsTable(catchment_areas,"Value","output_table") # crashes like a mfer
+        #cp = self.so("catchmentpolygons","timestamp","fgdb")
+        cp = self.so("shed_{}_polygon".format(shed.uid))
+        #RasterToPolygon copies our ids from self.raster_field into "gridcode"
+        simplify = "NO_SIMPLIFY"
+        if out_catchment_polygons_simplify:
+            simplify = "SIMPLIFY"
+            
+        RasterToPolygon(one_shed, cp, simplify)
+
+        # Dissolve the converted polygons, since some of the raster zones may have corner-corner links
+        #cpd = self.so("catchmentpolygonsdissolved","timestamp","fgdb")
+        if out_catchment_polygons:
+            shed.filepath_vector = out_catchment_polygons
+        else:
+            shed.filepath_vector = self.so("shed_{}_polygon_dissolved".format(shed.uid))
+        
+        Dissolve(
+            in_features=cp,
+            out_feature_class=shed.filepath_vector,
+            dissolve_field="gridcode",
+            multi_part="MULTI_PART"
+        )
+
+        # get the area for each record, and push into results object
+        total_area = None
+        areas = []
+        with SearchCursor(shed.filepath_vector,["gridcode","SHAPE@AREA"]) as c:
+            for r in c:
+                this_id = r[0]
+                this_area = r[1] # * area_conv_factor
+                areas.append(this_area)
+                    
+        total_area = sum(areas)
+        #print("area:", total_area)
+
+        
+        ## ---------------------------------------------------------------------
+        # calculate flow length
+
+        self.msg("calculating flow length")
+        
+        with EnvManager(
+            snapRaster=flow_direction_raster,
+            cellSize=flow_direction_raster
+        ):
+        
+            # clip the flow direction raster to the catchment area (zone value)
+            clipped_flowdir = SetNull(IsNull(one_shed), Raster(flow_direction_raster))
+            # calculate flow length
+            flow_len_raster = FlowLength(clipped_flowdir, "UPSTREAM")
+            # determine maximum flow length
+            shed.max_fl = flow_len_raster.maximum
+            
+            #TODO: convert length to ? using leng_conv_factor (detected from the flow direction raster)
+            #fl_max = fl_max * leng_conv_factor
+        
+        
+        ## ---------------------------------------------------------------------
+        # calculate average curve number
+
+        self.msg("calculating average curve number")
+        
+        table_cn_avg = self.so("shed_{0}_cn_avg".format(point_feature[0]))
+
+        with EnvManager(
+            cellSizeProjectionMethod="PRESERVE_RESOLUTION",
+            extent="MINOF",
+            cellSize=one_shed
+        ):        
+            ZonalStatisticsAsTable(
+                one_shed,
+                self.raster_field,
+                Raster(curve_number_raster),
+                table_cn_avg, 
+                "DATA",
+                "MEAN"
+            )
+            cn_stats = json.loads(RecordSet(table_cn_avg).JSON)
+
+            if len(cn_stats['features']) > 0:
+                # in the event we get more than one record here, we avg the avg
+                # (but we should only end up with 1 at most)
+                means = [f['attributes']['MEAN'] for f in cn_stats['features']]
+
+                shed.avg_cn = mean(means)
+        
+        ## ---------------------------------------------------------------------
+        # calculate average slope
+        
+        
+        table_slope_avg = self.so("shed_{0}_slope_avg".format(point_feature[0]))
+        
+        with EnvManager(
+            cellSizeProjectionMethod="PRESERVE_RESOLUTION",
+            extent="MINOF",
+            cellSize=one_shed
+        ):
+            ZonalStatisticsAsTable(
+                one_shed, 
+                self.raster_field, 
+                Raster(slope_raster),
+                table_slope_avg, 
+                "DATA",
+                "MEAN"
+            )
+            
+            slope_stats = json.loads(RecordSet(table_slope_avg).JSON)
+            if len(slope_stats['features']) > 0:
+                means = [f['attributes']['MEAN'] for f in slope_stats['features']]
+                shed.avg_slope_pct = mean(means)
+        
+        
+        ## ---------------------------------------------------------------------
+        # calculate average rainfall for each storm frequency
+        
+        rainfalls = []
+        
+        self.msg('calculating average rainfall in the catchment for')
+
+        for rr in rainfall_rasters:
+
+            avg_rainfall = None
+
+            #table_rainfall_avg = self.so("rainfall_avg", p, "fgdb")
+            table_rainfall_avg = self.so(
+                "shed_{0}_rain_avg_{1}".format(point_feature[0], rr['freq'])
+            )
+            
+            with EnvManager(
+                cellSizeProjectionMethod="PRESERVE_RESOLUTION",
+                extent="MINOF",
+                cellSize=one_shed
+            ):
+                ZonalStatisticsAsTable(
+                    one_shed,
+                    self.raster_field,
+                    Raster(rr['path']),
+                    table_rainfall_avg,
+                    "DATA",
+                    "MEAN"
+                )
+
+            rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
+
+            if len(rainfall_stats['features']) > 0:
+                means = [f['attributes']['MEAN'] for f in rainfall_stats['features']]
+                # TODO: confirm this unit conversion from the NOAA raster values
+                avg_rainfall = mean(means) # * 25.4 / 1000
+
+            self.msg(rr['freq'], "year event:", avg_rainfall)
+            rainfalls.append(
+                Rainfall(
+                    freq=rr['freq'], 
+                    dur='24hr', 
+                    value=avg_rainfall
+                )
+            )
+
+        shed.avg_rainfall = rainfalls
+
+        return shed
+
+    def delineation_and_analysis_in_parallel(
+        self,
+        points: List[Point],
+        pour_point_field: str,
+        flow_direction_raster: str,
+        slope_raster: str,
+        curve_number_raster: str,
+        out_shed_polygons: str,
+        rainfall_config: dict,
+        out_catchment_polygons_simplify: bool
+        ) -> Tuple(List[Point], List[Shed]):
+
+        sheds = []
+        
+        # open up the rainfall rasters config and get a list of 
+        # just the rasters, with the full paths assembled
+            
+        rainfall_rasters = [
+            {
+                'path': str(Path(rainfall_config['root']) / r['path']),
+                'freq': r['freq']
+            }
+            # TODO: handle multiple formats with this filter:
+            for r in rainfall_config['rasters'] if r['ext'] == ".asc"
+        ]
+
+        # for each Point in the input points list
+        for point in tqdm(points):
+            
+            # create a FeatureSet for each individual Point object
+            # this lets us keep our Point objects around while feeding
+            # the GP tools a native input format.
+            feature_set_for_point = self.create_geodata_from_points(list(point), as_dict=False)
+
+            # delineate a catchment/basin/watershed ("shed") and derive 
+            # some data from that, storing it in a Shed object.
+            shed = self._delineate_and_analyze_one_catchment(
+                point_feature=feature_set_for_point,
+                pour_point_field=pour_point_field,
+                flow_direction_raster=flow_direction_raster,
+                slope_raster=slope_raster,
+                curve_number_raster=curve_number_raster,
+                out_catchment_polygons=out_shed_polygons,
+                rainfall_rasters=rainfall_rasters,
+                out_catchment_polygons_simplify=out_catchment_polygons_simplify
+            )
+
+            # save that to the Point object
+            point.shed = shed
+            # also append to a list of sheds
+            sheds.append(shed)
+
+        # return all updated Point objects and a separate list of sheds.
+        return points, sheds
