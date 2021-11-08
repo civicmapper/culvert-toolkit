@@ -1,5 +1,5 @@
 
-from types import List
+from typing import List
 from pathlib import Path
 from collections import OrderedDict
 import pint
@@ -396,7 +396,7 @@ def etl_naacc_table(
     output_path=None,
     lookup_naac_inlet_shape=NAACC_INLET_SHAPE_CROSSWALK,
     lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK,
-    spatial_ref_code=4326
+    wkid=4326
     ) -> List[Point]:
     """performs ETL of a raw NAACC table to the appropriate Drain-It models.
 
@@ -538,7 +538,7 @@ def etl_naacc_table(
             group_id=r["Survey_Id"],
             lat=float(r["GIS_Latitude"]),
             lng=float(r["GIS_Longitude"]),
-            spatial_ref_code=spatial_ref_code,
+            spatial_ref_code=wkid,
             include=r['include'],
             raw=r
         )

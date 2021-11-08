@@ -9,7 +9,7 @@ from drainit.services.naacc import etl_naacc_table
 import os, time
 from collections import defaultdict
 from pathlib import Path
-from types import List, Tuple
+from typing import List, Tuple, Dict
 import json
 from statistics import mean
 from tqdm import tqdm
@@ -17,13 +17,14 @@ from tqdm import tqdm
 # ArcPy imports
 from arcpy import EnvManager, env
 from arcpy import Describe, Raster, FeatureSet, RecordSet, CreateUniqueName
-from arcpy import SpatialReference
-from arcpy import (
-    RasterToPolygon_conversion, 
-    TableToTable_conversion, 
-    PolygonToRaster_conversion
+from arcpy import SpatialReference, PointGeometry
+from arcpy import Point as ArcPoint
+
+from arcpy.conversion import (
+    RasterToPolygon,
+    TableToTable,
+    PolygonToRaster
 )
-from arcpy.conversion import RasterToPolygon
 from arcpy.sa import (
     Watershed, 
     FlowLength, 
@@ -37,6 +38,8 @@ from arcpy.sa import (
 ) #, ZonalGeometryAsTable
 from arcpy.da import SearchCursor, InsertCursor
 from arcpy.management import (
+    CreateFileGDB,
+    Delete,
     SelectLayerByAttribute,
     GetCount,
     Clip,
@@ -44,7 +47,8 @@ from arcpy.management import (
     CopyFeatures,
     CreateFeatureclass,
     AddFields,
-    BuildRasterAttributeTable
+    BuildRasterAttributeTable,
+    MinimumBoundingGeometry
 )
 from arcpy import (
     GetCount_management, 
@@ -164,9 +168,27 @@ class GP:
         else:
             return str(location / "_".join([prefix, suffix]))
 
+    def create_workspace(self, out_folder_path: Path, out_name: str) -> Path:
+        """wrapper around arcpy.management.CreateFileGDB that
+        will also create the parent directory/directories if they
+        don't exist
+
+        Args:
+            out_folder_path ([type]): [description]
+            out_name ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        if not out_folder_path.exists():
+            out_folder_path.mkdir(parents=True)
+        CreateFileGDB(str(out_folder_path), out_name)
+        return out_folder_path / out_name
+
 
     # --------------------------------------------------------------------------
     # Data utility functions
+
 
     def clean(self, val):
         """post-process empty values ("") from ArcPy geoprocessing tools.
@@ -181,7 +203,7 @@ class GP:
         Output: path to the imported csv
         """
         t = self.so("csv","random","fgdb")
-        TableToTable_conversion(
+        TableToTable(
             in_rows=csv, 
             out_path=os.path.dirname(t), 
             out_name=os.path.basename(t)
@@ -203,7 +225,7 @@ class GP:
 
         p = Path(out_csv)
         self.msg("Converting feature class @ {0} to CSV table @ {1}".format(feature_class, out_csv))
-        TableToTable_conversion(feature_class, str(p.parent), str(p.name))
+        TableToTable(feature_class, str(p.parent), str(p.name))
 
         return out_csv
 
@@ -277,6 +299,14 @@ class GP:
             join_field=join_field
         )
         return out_data
+
+    def geodata_as_dict(self, path_to_geodata):
+        fs = FeatureSet(path_to_geodata)
+        return json.loads(fs.JSON)
+    def feature_count(self, path_to_geodata):
+        fs = FeatureSet(path_to_geodata)
+        GetCount(fs)
+        d = json.loads(fs.JSON)        
 
 
     # --------------------------------------------------------------------------
@@ -381,7 +411,7 @@ class GP:
         self.msg("Processing Soils...")
         # read the soils polygon into a raster, get list(set()) of all cell values from the landcover raster
         soils_raster_path = self.so("soils_raster")
-        PolygonToRaster_conversion(soils_polygon, soils_hydrogroup_field, soils_raster_path, "CELL_CENTER")
+        PolygonToRaster(soils_polygon, soils_hydrogroup_field, soils_raster_path, "CELL_CENTER")
         soils_raster = Raster(soils_raster_path)
 
         # use the raster attribute table to build a lookup of raster values to soil hydro codes
@@ -491,7 +521,7 @@ class GP:
 
     def create_geodata_from_points(
         self, 
-        points: List[Point], 
+        points: List[Point],
         output_points_filepath=None,
         as_dict=True,
         default_spatial_ref_code=4326
@@ -561,8 +591,8 @@ class GP:
         is_naacc=False,
         group_id_field=None,
         output_points_filepath=None
-        ) -> Tuple(List[Point], dict):
-        """from any geodata input file, create a list of Point objects and a 
+        ) -> Tuple[List[Point], dict]:
+        """from any geodata input file, create a list of Point objects and an 
         ArcGIS FeatureSet object
         """
 
@@ -594,7 +624,7 @@ class GP:
             self.msg('reading points and capturing NAACC attributes')
             points = etl_naacc_table(
                 naacc_petl_table=raw_table,
-                spatial_ref_code=spatial_ref_code
+                wkid=spatial_ref_code
             )
 
         # Otherwise we transform the raw table to a list of Point objects here
@@ -924,7 +954,7 @@ class GP:
             simplify = "SIMPLIFY"
         else:
             simplify = "NO_SIMPLIFY"
-        RasterToPolygon_conversion(catchment_areas, cp, simplify, self.raster_field)
+        RasterToPolygon(catchment_areas, cp, simplify, self.raster_field)
 
         # Dissolve the converted polygons, since some of the raster zones may have corner-corner links
         if not out_catchment_polygons:
@@ -1296,7 +1326,7 @@ class GP:
         out_shed_polygons: str,
         rainfall_config: dict,
         out_catchment_polygons_simplify: bool
-        ) -> Tuple(List[Point], List[Shed]):
+        ) -> Tuple[List[Point], List[Shed]]:
 
         sheds = []
         
@@ -1340,3 +1370,47 @@ class GP:
 
         # return all updated Point objects and a separate list of sheds.
         return points, sheds
+
+
+    def centroid_of_feature_envelope(self, in_features, project_as=4326) -> Dict:
+        """given features, calculate the envelope, and return
+        the centroid of the envelope as a dictionary
+        
+        Args:
+            in_features ([type]): layer, feature class, etc--anything that arcpy can read.
+            project_as (int, optional): WKID of coodinate system to return coordinates as. Defaults to 4326.
+
+        Returns:
+            dict: coordinates of the centroid in a dictionary keyed by lat, lon
+        """
+
+        fs = FeatureSet(in_features)
+        # in-memory
+        mbg="memory\mbg"
+        
+        MinimumBoundingGeometry(
+            fs,
+            mbg,
+            "RECTANGLE_BY_AREA",
+            "ALL"
+        )
+        d = Describe(mbg)
+        sr = d.spatialReference
+
+        pt = None
+
+        with SearchCursor(mbg, ["SHAPE@XY"]) as sc: 
+            for r in sc:
+                x, y = r[0]
+                pt = ArcPoint(X=x, Y=y)
+
+        centroid = PointGeometry(inputs=pt, spatial_reference=sr)
+        # reproject
+        if project_as:
+            centroid = centroid.projectAs(SpatialReference(project_as))
+
+        Delete(mbg)
+        return dict(
+            lon=centroid.centroid.X,
+            lat=centroid.centroid.Y
+        )

@@ -1,5 +1,6 @@
 # standard library
 import csv
+import re
 import json
 from pathlib import Path
 from copy import deepcopy
@@ -83,18 +84,61 @@ def extract_noaa_precip_table(
 
 
 # -------------------------------------------------------------------
-# PRECIPTATION DATA RASTERS
+# PRECIPTATION DATA FROM THE WEB
+
+def retrieve_noaa_rainfall_pf_est(
+    lat, 
+    lon,
+    typ="pf",
+    data="depth",
+    units="english",
+    series="pds",
+    _url="https://hdsc.nws.noaa.gov/cgi-bin/hdsc/new/cgi_readH5.py"
+    ):
+    """Get POINT PRECIPITATION FREQUENCY (PF) ESTIMATES from NOAA
+
+    Args:
+        lat ([type]): [description]
+        lon ([type]): [description]
+        typ (str, optional): [description]. Defaults to "pf".
+        data (str, optional): [description]. Defaults to "depth".
+        units (str, optional): [description]. Defaults to "english".
+        series (str, optional): [description]. Defaults to "pds".
+
+    Return
+        dict: dict_keys(['result', 'quantiles', 'upper', 'lower', 'file', 'lat', 'lon', 'type', 'ser', 'datatype', 'unit', 'region', 'reg', 'volume', 'version', 'authors', 'pyRunTime'])
+    """
+    
+    r = requests.get(
+        _url,
+        params=dict(
+            type=typ,
+            data=data,
+            units=units,
+            series=series,
+            lat=lat,
+            lon=lon
+        )
+    )
+    d = {}
+    x = "{{{0}}}".format(", ".join([i.replace(";", "").replace(" = ", ": ") for i in r.text.split("\n") if i != '']))
+    s = re.sub('(([a-z]\w*):)', '"\g<2>":', x)
+    s = s.replace("\'", '"')
+    print(s)
+    d = json.loads(s)
+    return d
 
 
 def retrieve_noaa_rainfall_rasters(
     out_folder,
-    out_file_name="rainfall_rasters_config",
+    out_file_name="rainfall_rasters_config.json",
     study="orb",
     url="https://hdsc.nws.noaa.gov/hdsc/pfds/newzip.php",
     ulm="a",
     ser="pds",
     dur="24h",
     frequencies=FREQUENCIES,
+    raster_format=".asc"
     ) -> RainfallRasterConfig:
     """Download NOAA rainfall rasters from the Hydrometeorological Design Studies
     Center Precipitation Frequency Data Server (PFDS).
@@ -117,6 +161,8 @@ def retrieve_noaa_rainfall_rasters(
     :type dur: str, optional
     :param frequencies: rainfall event frequencies to download, defaults to [1,2,5,10,25,50,100,200,500,1000]
     :type frequencies: list, optional
+    :param raster_format: format of the raster files returned by the API, defaults to "asc"
+    type raster_format: str, optional
     :raises Exception: [description]
     :return: a dataclass with properties indicating the location of downloaded files + useful descriptors
     :rtype: RainfallRasterConfig
@@ -223,7 +269,7 @@ def retrieve_noaa_rainfall_rasters(
         if r.ok:
             # extract the response to the output folder
             z = zipfile.ZipFile(BytesIO(r.content))
-            z.extractall(c.path)
+            z.extractall(c.root)
 
             # list files in the zip folder
             files_from_zip = z.NameToInfo.keys()
@@ -232,20 +278,21 @@ def retrieve_noaa_rainfall_rasters(
             for f in files_from_zip:
                 p = out_path / f
                 ext = p.suffix
-                c.rasters.append(
-                    RainfallRaster(f, freq, ext)
-                )
+                # freq = re.findall(r'\d+', f)[0]
+                if ext == raster_format:
+                    c.rasters.append(
+                        RainfallRaster(str(p), freq, ext)
+                    )
         else:
             print("Download failed for {0} ({1})".format(data["freq"], data))
             raise Exception
 
-    out_full_path = out_path / "{0}_{1}.json".format(out_file_name, study)
+    # out_full_path = out_path / "{0}_{1}.json".format(out_file_name, study)
 
-    with open(out_full_path, 'w') as fp:
+    with open(out_path / out_file_name, 'w') as fp:
         json.dump(
             RainfallRasterConfigSchema().dump(asdict(c)),
             fp
         )
 
     return c
-

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import pint
 from dataclasses import dataclass, field, asdict
 from marshmallow import Schema, fields, EXCLUDE, pre_load
@@ -65,7 +65,7 @@ class RainfallRasterConfig:
     """
 
     root: str = None
-    rasters: List[RainfallRaster] = field(default_factory=[])
+    rasters: List[RainfallRaster] = field(default_factory=list)
 
 RainfallRasterConfigSchema = class_schema(RainfallRasterConfig)
 
@@ -116,7 +116,7 @@ class NaaccCulvert:
     Survey_Id: str = req_field() # 'field_short': 'Survey_ID'
 
     GIS_Latitude: float = req_field() # 'field_short': 'Lat'
-    GIS_Longitude: float = req_field() # 'field_short': 'Long'        
+    GIS_Longitude: float = req_field() # 'field_short': 'Long'
         
     Number_Of_Culverts: int = req_field() # 'field_short': 'Flags'
 
@@ -134,8 +134,8 @@ class NaaccCulvert:
     Outlet_Height: float = req_field() # 'field_short': 'Out_B'
     Crossing_Type: str = req_field() # 'field_short': 'Crossing_Type'
     
-    Road: str = None # 'field_short': 'Rd_Name'
-    Crossing_Comment: str = None # 'field_short': 'Comments'
+    Road: Optional[str] = None # 'field_short': 'Rd_Name'
+    Crossing_Comment: Optional[str] = None # 'field_short': 'Comments'
 
 
     @pre_load

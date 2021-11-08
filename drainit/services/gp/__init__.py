@@ -1,11 +1,11 @@
 from click import echo
-from ..settings import USE_ESRI
+from ...settings import USE_ESRI
 
 if USE_ESRI:
     try:
         import arcpy
         from ._esri import *
-        msg("ArcPy available.")
+        echo("ArcPy available.")
     except ModuleNotFoundError:
         echo("ArcPy not available. Falling back to WhiteboxTools and GeoPandas")
         # from ._wbt import *

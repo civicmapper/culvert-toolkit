@@ -4,7 +4,7 @@ from marshmallow import EXCLUDE
 from marshmallow_dataclass import class_schema
 import pint
 
-from drainit.models import Capacity
+# from ..models import Capacity
 
 units = pint.UnitRegistry()
 

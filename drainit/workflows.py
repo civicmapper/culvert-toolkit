@@ -21,7 +21,7 @@ from .models import (
 from .calculators import runoff, capacity, overflow
 from .settings import USE_ESRI
 from .services.gp import GP
-from .services.noaa import retrieve_noaa_rainfall_rasters
+from .services.noaa import retrieve_noaa_rainfall_rasters, retrieve_noaa_rainfall_pf_est
 from .services.naacc import etl_naacc_table
 
 # ------------------------------------------------------------------------------
@@ -65,8 +65,7 @@ class WorkflowManager():
         self.using_esri = use_esri
         self.using_wbt = not use_esri
         self.units = pint.UnitRegistry()
-
-        return self
+        self.gp = GP(self.config)
     
     def save(self, config_json_filepath):
         """Save workflow config to JSON. 
@@ -140,18 +139,51 @@ class WorkflowManager():
 
 class RainfallDataGetter(WorkflowManager):
     """Tool for acquiring and persisting rainfall rasters for a study area.
-    Inputs: 
-        * Anything geo that from which an appropriate bounding box can be
-        derived.
-
-    Outputs:
-        * JSON (as Python dictionary) that contains references to a directory where the
-        rainfall rasters have been saved--specifically which raster
-        represents which storm event.
     """
-    def __init__(**kwargs):
+    def __init__(
+        self,
+        aoi_geo,
+        out_folder,
+        out_file_name="rainfall_rasters_config.json",
+        **kwargs
+        ):
+        """Tool for acquiring and persisting rainfall rasters for a study area
+
+        Args:
+            aoi_geo (str): Path to anything geo from which a minimum bounding geometry can be derived
+            out_folder (str): path on disk where outputs will be saved
+            out_file_name (str, optional): name of JSON file that will store reference to outputs and 
+                is used as an input to other tools. Defaults to "rainfall_rasters_config.json".
+
+        Returns:
+            str: the full path to the output JSON file on disk
+        """        
+
         super().__init__(**kwargs)
-        pass
+        
+        self.aoi_geo = aoi_geo
+        self.out_folder = out_folder
+        self.out_file_name = out_file_name
+        self.out_path = Path(out_folder) / out_file_name
+        self.results = None
+
+        self._run()
+        print("saved to {0}".format(self.out_path))
+
+    def _run(self):
+        # from a method in the GP module, get the centroid of the aoi
+        coords = self.gp.centroid_of_feature_envelope(self.aoi_geo)
+        # pass it to retrieve_noaa_rainfall_pf_est, which will give us the region
+        r = retrieve_noaa_rainfall_pf_est(lat=coords['lat'], lon=coords['lon'])
+        # pass the region to this function, which gets the rasters
+        # and saves them to the specified folder
+        rainfall_raster_config = retrieve_noaa_rainfall_rasters(
+            out_folder=self.out_folder, 
+            out_file_name=self.out_file_name, 
+            study=r['reg']
+        )
+        self.results = rainfall_raster_config
+        return self.results
 
 
 class CurveNumberMaker(WorkflowManager):
@@ -171,16 +203,61 @@ class CurveNumberMaker(WorkflowManager):
 
 class NaaccDataIngest(WorkflowManager):
     """read in and validate a NAACC compliant CSV, save to a Geodatabase.
-
-    Inputs are: 
-
-    * The path to the NAACC CSV
-    * the CRS of the coordinates in the NAACC CSV
-    * the output geodatabase
-    * the output feature class name
-
+    Include any fields required for modeling!
     """
-    pass
+    def __init__(
+        self, 
+        naacc_csv,
+        output_workspace,
+        output_fc_name,
+        crs_wkid=4326,
+        **kwargs
+        ):
+        """Read and validate a NAACC compliant CSV, and save to a Geodatabase.
+
+        Args:
+            naac_csv ([type]): The path to the NAACC CSV
+            output_workspace ([type]): the path to the output workspace (geodatabase or folder) 
+            output_fc_name ([type]): the output file name (feature class or shapefile)
+            crs_wkid (int, optional): the WKID of the coordinates in the NAACC CSV. Defaults to 4326.
+        """
+        super().__init__(**kwargs)
+        self.output_workspace = Path(output_workspace)
+        self.output_fc_name = output_fc_name
+        self.naacc_csv = naacc_csv
+        self.crs_wkid = crs_wkid
+        self.points = None
+        self.points_features = None
+
+        self._run()
+
+    def _run(self):
+
+        # initialize the appropriate GP object with the config variables
+        self.gp = GP(self.config)
+
+        if not self.output_workspace.exists():
+            self.gp.create_workspace(self.output_workspace.parent, self.output_workspace.name)
+
+        self.output_points_filepath = Path(self.output_workspace) / self.output_fc_name
+
+        self.points = etl_naacc_table(
+            naacc_csv_file=self.naacc_csv,
+            wkid=4326
+        )
+        self.points_features = self.gp.create_geodata_from_points(
+            points=self.points,
+            output_points_filepath=str(self.output_points_filepath),
+            default_spatial_ref_code=self.crs_wkid
+        )
+
+        return self.output_points_filepath
+
+    def _testing_output_geodata(self):
+        """function used to read the saved geodata into a dictionary 
+        in a geoprocessing-library-agnostic way
+        """
+        return self.gp.geodata_as_dict(self.output_points_filepath)
 
 
 # ------------------------------------------------------------------------------
@@ -306,7 +383,7 @@ class CulvertCapacityCore(WorkflowManager):
         # initialize the appropriate GP object with the config variables
         self.gp = GP(self.config)
     
-    def load_points(self) -> Tuple(List[Point], dict):
+    def load_points(self) -> Tuple[List[Point], dict]:
         """workflow-specific approach to ETL of source point dataset. Handles
         Either the NAACC csv or a points geodataset that matches the NAACC
         schema can work here; this handles the ETL appropriately.

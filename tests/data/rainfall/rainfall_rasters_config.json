@@ -1,0 +1,15 @@
+{
+    "root": ".",
+    "rasters": [
+        {"path": "ne1000yr24ha.asc.tif", "freq": 1000, "ext": ".tif"},
+        {"path": "ne100yr24ha.asc.tif", "freq": 100, "ext": ".tif"},
+        {"path": "ne10yr24ha.asc.tif", "freq": 10, "ext": ".tif"},
+        {"path": "ne1yr24ha.asc.tif", "freq": 1, "ext": ".tif"},
+        {"path": "ne200yr24ha.asc.tif", "freq": 200, "ext": ".tif"},
+        {"path": "ne25yr24ha.asc.tif", "freq": 25, "ext": ".tif"},
+        {"path": "ne2yr24ha.asc.tif", "freq": 2, "ext": ".tif"},
+        {"path": "ne500yr24ha.asc.tif", "freq": 500, "ext": ".tif"},
+        {"path": "ne50yr24ha.asc.tif", "freq": 5, "ext": ".tif"},
+        {"path": "ne5yr24ha.asc.tif", "freq": 5, "ext": ".tif"}
+    ]
+}
