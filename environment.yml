@@ -1,0 +1,14 @@
+name: drainit-for-arcgispro
+channels:
+  - esri
+  - defaults
+  - conda-forge
+dependencies:
+  - pytest  
+  - click
+  - requests  
+  - marshmallow
+  - petl
+  - pint
+  - tqdm
+  - marshmallow-dataclass
