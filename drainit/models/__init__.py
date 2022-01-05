@@ -6,15 +6,9 @@ from marshmallow_dataclass import class_schema
 
 units = pint.UnitRegistry()
 
-from ..calculators.runoff import Runoff, _calculate_tc
+from ..calculators.runoff import Runoff, calc_time_of_concentration
 from ..calculators.capacity import Capacity
 from ..calculators.overflow import Overflow
-from ..config import (
-    NAACC_HEADER_LOOKUP, 
-    NAACC_TYPECASTS_FULLNAME,
-    NAACC_INLET_SHAPE_CROSSWALK, 
-    NAACC_INLET_TYPE_CROSSWALK
-)
 
 
 # ------------------------------------------------------------------------------
@@ -49,12 +43,15 @@ def cast_to_numeric_fields(data, dataclass_model, **kwargs):
 
 @dataclass
 class RainfallRaster:
-    """store a reference to a NOAA Rainfall raster
+    """store a reference on disk to a NOAA Rainfall raster.
+    `path` is used for the raster filepath. Optionally, supply a constant 
+    value via `const`, which will be used in place of a raster
     """
 
-    path: str = None
+    path: Optional[str] = None
     freq: int = None
     ext: str = None
+    const: Optional[float] = None    
 
 RainfallRasterSchema = class_schema(RainfallRaster)
 
@@ -65,7 +62,7 @@ class RainfallRasterConfig:
     """
 
     root: str = None
-    rasters: List[RainfallRaster] = field(default_factory=list)
+    rasters: List[RainfallRaster] = field(default_factory=list) 
 
 RainfallRasterConfigSchema = class_schema(RainfallRasterConfig)
 
@@ -80,24 +77,23 @@ class Rainfall:
     freq: str = None
     dur: str = None
     value: float = None
-    valtyp: str = "avg"
+    valtyp: Optional[str] = "mean"
+    units: Optional[str] = "mm"
 
 
 @dataclass
-class RainfallBasedAnalytics:
+class Analytics:
     """analytics--runoff and overflow--for a given rainfall storm frequency and duration interval
     """
-
     # rainfall 
-    rain_frq: str = None
-    rain_dur: str = None
-    rain_val: float = None
-    rain_valtyp: str = "avg"
+    frequency: str = None
+    duration: str = None
+    rainfall_avg_cm: float = None
     # analytics
-    runoff: Runoff = None
-    overflow: Overflow = None
+    runoff: Optional[Runoff] = None
+    overflow: Optional[Overflow] = None
 
-RainfallBasedAnalyticsSchema = class_schema(RainfallBasedAnalytics)
+AnalyticsSchema = class_schema(Analytics)
 
 # -------------------------------------
 # LOCATION TYPES
@@ -137,6 +133,9 @@ class NaaccCulvert:
     Road: Optional[str] = None # 'field_short': 'Rd_Name'
     Crossing_Comment: Optional[str] = None # 'field_short': 'Comments'
 
+    # TODO: eventually include the date/time capture from the NAACC model here 
+    # so that we can filter multiple surveys for a single location.
+
 
     @pre_load
     def cast_numeric_fields(self, data, **kwargs):
@@ -144,7 +143,7 @@ class NaaccCulvert:
         return cast_to_numeric_fields(data, NaaccCulvert, **kwargs)
     
     class Meta:
-        unknown = EXCLUDE    
+        unknown = EXCLUDE
 
 NaaccCulvertSchema = class_schema(NaaccCulvert)
 
@@ -167,49 +166,50 @@ class Shed:
     # unique id field, derived from the outlet point; the value from the
     # "pour_point_field". For NAACC-based culvert modeling, this is the
     # NAACC Naacc_Culvert_Id field
-    uid: str = None
+    uid: Optional[str] = None
     
     # a group id field. non-unique ID field that indicates groups of related
     # outlets. Used primarily for NAACC-based culvert modeling, this is the
     # NAACC Survey_Id field
-    group_id: str = None
+    group_id: Optional[str] = None
 
     # characteristics used for calculating peak flow
-    area_sqkm: float = None# <area of inlet's catchment in square km>
-    avg_slope_pct: float = None # <average slope of DEM in catchment>
-    avg_cn: float = None # <average curve number in the catchment>
-    max_fl: float = None # <maximum flow length in the catchment>
-    avg_rainfall: List[Rainfall] = field(default_factory=list) # <average rainfall in the catchment>
+    area_sqkm: Optional[float] = None# <area of inlet's catchment in square km>
+    avg_slope_pct: Optional[float] = None # <average slope of DEM in catchment>
+    avg_cn: Optional[float] = None # <average curve number in the catchment>
+    max_fl: Optional[float] = None # <maximum flow length in the catchment>
+    avg_rainfall: Optional[List[Rainfall]] = field(default_factory=list) # <average rainfall in the catchment>
 
     # derived attributes
-    tc_hr: float = None # time of concentration for runoff in the shed
+    tc_hr: Optional[float] = None # time of concentration for runoff in the shed
 
     # geometries
-    inlet_geom: str = None
-    shed_geom: str = None
+    inlet_geom: Optional[str] = None
+    shed_geom: Optional[str] = None
     
     # for recording the location of intermediate geospatial output files
-    filepath_raster: str = None
-    filepath_vector: str = None
+    filepath_raster: Optional[str] = None
+    filepath_vector: Optional[str] = None
 
     def calculate_tc(self):
         if self.avg_slope_pct and self.max_fl:
-            self.tc_hr = _calculate_tc(self.max_fl, self.avg_slope_pct)
+            self.tc_hr = calc_time_of_concentration(self.max_fl, self.avg_slope_pct)
             return self.tc_hr
 
 ShedSchema = class_schema(Shed)
 
 
 @dataclass
-class Point:
+class DrainItPoint:
     """Basic model for points used as source delineations for peak-flow-calcs;
     minimal attributes required.
     """
 
     # unique id field, derived from the outlet point; the value from the
     # "pour_point_field". For NAACC-based culvert modeling, this is the
-    # NAACC Naacc_Culvert_Id field
-    uid: str
+    # NAACC `Naacc_Culvert_Id` field...though some NAACC data doesn't
+    # have this, so it has to be optional.
+    uid: Optional[str]
 
     # geometry
     lat: float = None
@@ -218,25 +218,25 @@ class Point:
 
     # a group id field. non-unique ID field that indicates groups of related
     # outlets. Used primarily for NAACC-based culvert modeling, this is the
-    # NAACC Survey_Id field
-    group_id: str = None
+    # NAACC `Survey_Id` field
+    group_id: Optional[str] = None
 
     # optionally extend with NAACC attributes
-    naacc: NaaccCulvert = None
+    naacc: Optional[NaaccCulvert] = None
 
     # ---------------------------------
     ## analytics
 
     # the flow capacity of the culvert feature. auto-derived for NAACC data.
-    capacity: Capacity = None
+    capacity: Optional[Capacity] = None
 
     # Attributes of the area delineated upstream of the point.
     # Includes average rainfall per storm event.
-    shed: Shed = None
+    shed: Optional[Shed] = None
 
     # Rainfall frequency-based analytical results for the point:
     # runoff (peak-flow) and overflow (peak-flow vs capacity)
-    analytics: List[RainfallBasedAnalytics] = field(default_factory=list)
+    analytics: Optional[List[Analytics]] = field(default_factory=list)
 
     # flags, errors, and notes
     include: bool = True
@@ -244,25 +244,29 @@ class Point:
     notes: list = field(default_factory=list)
 
     # place to optionally store the raw input
-    raw: dict = None
+    raw: Optional[dict] = None
 
-    def rainfall_from_shed_to_point(self):
-        """moves the rainfall interval data from the shed (where it was derived)
-        into analytics (since analysis is done per rainfall interval) associated
-        with the point.
+
+    def derive_rainfall_analytics(self):
+        """Derive an initial calculator results object using the geographically-derived 
+        data from the shed.
         """
         if not self.shed:
             return
+        # copy rainfall analytics 
         for r in self.shed.avg_rainfall:
-            self.analytics.append(RainfallBasedAnalytics(
-                rain_dur=r.dur,
-                rain_frq=r.freq,
-                rain_val=r.value,
-                rain_valtyp=r.valtyp
+
+            self.analytics.append(Analytics(
+                duration=r.dur,
+                frequency=r.freq,
+                # rainfall_avg_cm=units.Quantity(r.value, r.units).m_as('cm')
+                # NOTE: this carries over from Cornell Culvert 2.1, but 
+                # the unit conversion happening here is unclear:
+                rainfall_avg_cm=r.value*25.4/1000 
             ))
 
 
-PointSchema = class_schema(Point)
+PointSchema = class_schema(DrainItPoint)
 
 # ------------------------------------------------------------------------------
 # WORKFLOW MODELS
@@ -273,7 +277,7 @@ class WorkflowConfig:
     """
 
     # directories
-    work_dir: str = None
+    work_dir: Optional[str] = None
 
     # -----------------------------
     # input points (culverts or catch-basins)
@@ -281,16 +285,17 @@ class WorkflowConfig:
     # filepath to source data
     points_filepath: str = None
     # in-memory representation of that source data; format depends on GP service
-    points_features: dict = None
-    points_id_fieldname: str = None
-    points_spatial_ref_code: int = None
+    points_features: Optional[dict] = field(default_factory=dict)
+    points_id_fieldname: Optional[str] = None
+    points_group_fieldname: Optional[str] = None
+    points_spatial_ref_code: Optional[int] = None
     
     # -----------------------------
     # input landscape rasters
 
     # optional for peak-flow-calc
-    raster_dem_filepath: str = None
-    raster_watershed_filepath: str = None
+    raster_dem_filepath: Optional[str] = None
+    raster_watershed_filepath: Optional[str] = None
 
     # required for peak-flow-calc (can be derived)
     raster_flowdir_filepath: str = None
@@ -300,10 +305,10 @@ class WorkflowConfig:
     # --------------------------
     # input rainfall
 
-    precip_src_config_filepath: str = None
-    precip_noaa_csv_filepath: str = None
+    precip_src_config_filepath: Optional[str] = None
+    precip_noaa_csv_filepath: Optional[str] = None
 
-    rainfall_rasters: List[RainfallRaster] = field(default_factory=list)
+    precip_src_config: Optional[RainfallRasterConfig] = None
 
     # --------------------------
     # analysis parameters
@@ -315,20 +320,20 @@ class WorkflowConfig:
 
     # --------------------------
     # file output parameters
-    output_points_filepath: str = None
-    output_sheds_filepath: str = None
+    output_points_filepath: Optional[str] = None
+    output_sheds_filepath: Optional[str] = None
 
     # --------------------------
     # intermediate and internal data
-    all_sheds_raster: str = None
-    all_sheds_vector: str = None
+    all_sheds_raster: Optional[str] = None
+    all_sheds_vector: Optional[str] = None
 
     # List of Points for this workflow.
     # A Point optionally has its associated "Shed" object nested internally
-    points: List[Point] = field(default_factory=list)
+    points: Optional[List[DrainItPoint]] = field(default_factory=list)
     # List of Sheds generated for this workflow. Each shed is associated with 
     # a point on the `uid` attribute.
-    sheds: List[Shed] = field(default_factory=list)
+    # sheds: List[Shed] = field(default_factory=list)
 
 
 WorkflowConfigSchema = class_schema(WorkflowConfig)

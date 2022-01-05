@@ -5,18 +5,30 @@ geoprocessing tasks with Esri Arcpy
 
 '''
 # standard library
-from drainit.services.naacc import etl_naacc_table
 import os, time
 from collections import defaultdict
 from pathlib import Path
 from typing import List, Tuple, Dict
 import json
 from statistics import mean
+from arcpy.arcobjects.arcobjects import Extent
 from tqdm import tqdm
+from tempfile import mkdtemp
+
+# third party tools
+import petl as etl
+import pint
+import click
+import pandas as pd
+import numpy as np
+
+# ArcGIS imports
+# this import enables the Esri Spatially-Enabled DataFrame extension to Pandas DataFrames
+from arcgis.features import GeoAccessor, GeoSeriesAccessor 
 
 # ArcPy imports
 from arcpy import EnvManager, env
-from arcpy import Describe, Raster, FeatureSet, RecordSet, CreateUniqueName
+from arcpy import Describe, Raster, FeatureSet, RecordSet, CreateUniqueName, ListFields
 from arcpy import SpatialReference, PointGeometry
 from arcpy import Point as ArcPoint
 
@@ -36,7 +48,7 @@ from arcpy.sa import (
     Con, 
     CellStatistics
 ) #, ZonalGeometryAsTable
-from arcpy.da import SearchCursor, InsertCursor
+from arcpy.da import SearchCursor, InsertCursor, NumPyArrayToFeatureClass
 from arcpy.management import (
     CreateFileGDB,
     Delete,
@@ -44,11 +56,13 @@ from arcpy.management import (
     GetCount,
     Clip,
     Dissolve,
+    Copy,
     CopyFeatures,
     CreateFeatureclass,
     AddFields,
     BuildRasterAttributeTable,
-    MinimumBoundingGeometry
+    MinimumBoundingGeometry,
+    Merge
 )
 from arcpy import (
     GetCount_management, 
@@ -66,15 +80,11 @@ from arcpy import SetProgressor, SetProgressorLabel, SetProgressorPosition, Rese
 from arcpy import AddMessage, AddWarning, AddError
 
 
-# third party tools
-import petl as etl
-import pint
-import click
 
 # this package
-from ...config import FREQUENCIES, QP_HEADER
-from ...models import WorkflowConfig, Point, Shed, Rainfall
-# from ..naacc import etl_naacc_table
+from ...config import FREQUENCIES, QP_HEADER, VALIDATION_ERRORS_FIELD_LENGTH
+from ...models import WorkflowConfig, DrainItPoint, Shed, Rainfall
+from ..naacc import NaaccEtl
 
 class GP:
 
@@ -84,6 +94,13 @@ class GP:
         self.raster_field = "Value"
         self.all_sheds_raster = ""
 
+        # create unique scratch directories
+        # scratchFolder = mkdtemp(prefix="drainit_{0}_".format(time.strftime("%Y%m%d%H%M%S", time.localtime())))
+        # print(scratchFolder)
+        # env.scratchFolder = scratchFolder
+        # scratchGDB = self.create_workspace(env.scratchFolder, 'scratch.gdb')
+        # env.scratchGDB = str(scratchGDB)
+
     # --------------------------------------------------------------------------
     # Workflow utility functions
 
@@ -92,7 +109,7 @@ class GP:
         output messages through Click.echo (cross-platform shell printing) 
         and the ArcPy GP messaging interface and progress bars
         """
-        click.echo(text)
+        # click.echo(text)
 
         if arc_status == "warning":
             AddWarning(text)
@@ -104,7 +121,7 @@ class GP:
         if set_progressor_label:
             SetProgressorLabel(text)
 
-    def so(self, prefix, suffix="random", where="fgdb"):
+    def so(self, prefix, suffix="unique", where="fgdb"):
         """complete path generator for Scratch Output (for use with ArcPy GP tools)
 
         Generates a string represnting a complete and unique file path, which is
@@ -125,8 +142,8 @@ class GP:
                 "in_memory": the ArcGIS in-memory workspace. good for big
                     datasets, but not too big. only set to this for intermediate
                     data, as the workspace is not persistent.
-                "<user string>": any other value provided that is an existing Path
-                will be used as the save location; fallback is `fgdb`
+                "<user-provided path>": any other value provided that is an 
+                existing Path will be used as the save location.
                     
         Returns:
             A string representing a complete and unique file path.
@@ -135,7 +152,7 @@ class GP:
         
         # set workspace location
         if where == "in_memory":
-            location = "in_memory"
+            location = "memory"
         elif where == "fgdb":
             location = Path(env.scratchGDB)
         elif where == "folder":
@@ -145,7 +162,8 @@ class GP:
             if loc.exists():
                 location = loc
             else:
-                location = Path(env.scratchGDB)
+                os.makedirs(where)
+                # location = Path(env.scratchGDB)
         
         # create and return full path
         if suffix == "unique":
@@ -185,11 +203,6 @@ class GP:
         CreateFileGDB(str(out_folder_path), out_name)
         return out_folder_path / out_name
 
-
-    # --------------------------------------------------------------------------
-    # Data utility functions
-
-
     def clean(self, val):
         """post-process empty values ("") from ArcPy geoprocessing tools.
         """
@@ -198,19 +211,7 @@ class GP:
         else:
             return val
 
-    def csv_to_fgdb_table(self, csv):
-        """loads a csv into the ArcMap scratch geodatabase. Use for temporary files only.
-        Output: path to the imported csv
-        """
-        t = self.so("csv","random","fgdb")
-        TableToTable(
-            in_rows=csv, 
-            out_path=os.path.dirname(t), 
-            out_name=os.path.basename(t)
-        )
-        return t
-
-    def fc_to_csv(self, feature_class, out_csv):
+    def geodata_to_csv(self, feature_class, out_csv):
         """Convert an Esri Feature Class to a CSV file.
 
         Convert an Esri Feature Class to a CSV file. Requires ArcPy.
@@ -229,7 +230,7 @@ class GP:
 
         return out_csv
 
-    def fc_to_petl_table(
+    def geodata_to_petl_table(
         self,
         feature_class, 
         include_geom=False,
@@ -249,7 +250,7 @@ class GP:
         :return: tuple containing an PETL Table object and FeatureSet
         :rtype: Tuple(petl.Table, FeatureSet)
         """
-        print("Reading {0} into a PETL table object".format(feature_class))
+        # print("Reading {0} into a PETL table object".format(feature_class))
         
         feature_set = FeatureSet(feature_class)
         # convert the FeatureSet object to a python dictionary
@@ -301,13 +302,65 @@ class GP:
         return out_data
 
     def geodata_as_dict(self, path_to_geodata):
-        fs = FeatureSet(path_to_geodata)
-        return json.loads(fs.JSON)
+        if Path(path_to_geodata).exists:
+            fs = FeatureSet(path_to_geodata)
+            return json.loads(fs.JSON)
+        else:
+            return {}
+
     def feature_count(self, path_to_geodata):
         fs = FeatureSet(path_to_geodata)
-        GetCount(fs)
-        d = json.loads(fs.JSON)        
+        return GetCount(fs)
+        # d = json.loads(fs.JSON)
+    
+    def fallback_to_json_str(self, v):
+        if isinstance(v, dict) or isinstance(v, list):
+            return json.dumps(v)#[:254]
+        return v
 
+    # --------------------------------------------------------------------------
+    # Provider-specific utilities
+
+    def _csv_to_fgdb_table(self, csv):
+        """loads a csv into the ArcMap scratch geodatabase. Use for temporary files only.
+        Output: path to the imported csv
+        """
+        t = self.so("csv","random","fgdb")
+        TableToTable(
+            in_rows=csv, 
+            out_path=os.path.dirname(t), 
+            out_name=os.path.basename(t)
+        )
+        return t
+
+    def _xwalk_types_to_arcgis_fields(self, t):
+        if t is int:
+            return "LONG"
+        if t is float:
+            return "FLOAT"
+        if t is str:
+            return "TEXT"
+        return "TEXT"
+
+    def _convert_dtypes_arcgis(self, df):
+        """Convert dataframe dtypes which are not compatible with ArcGIS
+        https://community.esri.com/t5/arcgis-api-for-python-questions/system-error-when-exporting-spatially-enabled/td-p/1044880
+        
+        """
+        
+        # Use builtin Pandas dtype conversion
+        df = df.convert_dtypes()
+        
+        # Then str convert any remaining special object/category fields 
+        for col in df.columns:
+            # if df[col].dtype not in ["str", "float"]:
+            #     print(col, '/', df[col].dtype)
+            if df[col].dtype == 'object' or df[col].dtype == 'O':
+                print(col)
+                df[col] = df[col].astype("str")
+            df[col].replace({pd.NA:None})
+        # Return modified df
+        return df
 
     # --------------------------------------------------------------------------
     # Pre-Processing for supporting raster   
@@ -514,17 +567,146 @@ class GP:
             "slope_raster": slope_raster,
         }
 
-
     # --------------------------------------------------------------------------
     # ETL for input point datasets
     # extract, transform, and load the input points
 
+    def create_dataframe_from_geodata(
+        in_table, 
+        input_fields=None, 
+        where_clause=None
+        ):
+        """Convert an arcgis table into a pandas dataframe with an object ID 
+        index, and the selected
+        input fields using an arcpy.da.SearchCursor.
+        https://gist.github.com/d-wasserman/e9c98be1d0caebc2935afecf0ba239a0
+        """
+        OIDFieldName = Describe(in_table).OIDFieldName
+        if input_fields:
+            final_fields = [OIDFieldName] + input_fields
+        else:
+            final_fields = [field.name for field in ListFields(in_table)]
+        data = [row for row in SearchCursor(in_table, final_fields, where_clause=where_clause)]
+        fc_dataframe = pd.DataFrame(data, columns=final_fields)
+        fc_dataframe = fc_dataframe.set_index(OIDFieldName, drop=True)
+        return fc_dataframe
+
+    def create_geodata_from_petl_table(
+        self,
+        petl_table,
+        field_types_lookup,
+        x_column,
+        y_column,
+        output_featureclass=None,
+        sr=4326
+        ):
+        """convert a PETL table to a feature class in a file geodatabase. 
+        This handles type-casting to column types that work with Esri FGDB 
+        feature classes. 
+
+        Args:
+            petl_table ([type]): [description]
+            field_types_lookup ([type]): [description]
+            x_column ([type]): [description]
+            y_column ([type]): [description]
+            output_featureclass ([type], optional): [description]. Defaults to None.
+            sr (int, optional): [description]. Defaults to 4326.
+
+        Returns:
+            [type]: [description]
+        """        
+
+        # approach 1: via arcgis/pandas spatially-enabled dataframe. 
+        # Chokes on None/null/NaN/NAType values and the conversion of column 
+        # types between the arcgis package and pandas (e.g., columns with nulls 
+        # converted to objects; stringified NoneTypes converted to NAType which 
+        # arcgis can't convert back to None) See: https://community.esri.com/t5/arcgis-api-for-python-questions/i-m-done-with-spatially-enabled-dataframes/m-p/1026149#M5535
+        # df = etl.todataframe(petl_table)
+        # sdf = pd.DataFrame.spatial.from_xy(df=df, x_column=x_column, y_column=y_column, sr=sr)
+        # sdf = self.convert_dtypes_arcgis(sdf)
+        # sdf.copy().spatial.to_featureclass(location=output_featureclass, sanitize_columns=False)
+        # return sdf
+
+        # approach 2: workaround for approach 1 that uses numpy. Similar issues.
+        # See: https://my.usgs.gov/confluence/display/cdi/pandas.DataFrame+to+ArcGIS+Table
+        # x = np.array(np.rec.fromrecords(df.values))
+        # names = df.dtypes.index.tolist()
+        # x.dtype.names = tuple(names)
+        # print(x)
+        # NumPyArrayToFeatureClass(x, output_featureclass, (x_column, y_column), SpatialReference(sr))
+
+        with EnvManager(overwriteOutput=True):
+
+            spatial_ref = SpatialReference(sr)
+
+            # Create an in_memory feature class to initially contain the points
+            temp_feature_class = CreateFeatureclass_management(
+                out_path="memory", 
+                out_name="temp_drainit_points", 
+                geometry_type="POINT",
+                spatial_reference=spatial_ref
+            )
+
+            # fields_to_add = [
+            #   ['uid', 'TEXT', 'uid', 255], 
+            #   ['group_id', 'TEXT', 'group_id', 255]
+            # ]
+            # fields_to_add = [
+            #     [f[0], self._xwalk_types_to_arcgis_fields(f[1]), f[0]]
+            #     for f 
+            #     in fields_to_include
+            # ]
+
+            # create the fields arg for AddFields_management from the fields in 
+            # the provided PETL table, with field types coming from the provided 
+            # field_types_lookup and crosswalked to the ArcPy field type args. 
+            # Fallback to a string type if the field in the table isn't in the
+            # lookup. Handle `validation_errors` field separately.
+            # TODO - do this in a more generic way (e.g., a better field_lookup 
+            # format)
+            fields_to_add = []
+            for h in etl.header(petl_table):
+                if h == 'validation_errors':
+                    fields_to_add.append([h, self._xwalk_types_to_arcgis_fields(field_types_lookup.get(h, str)), h, VALIDATION_ERRORS_FIELD_LENGTH])
+                else:
+                    fields_to_add.append([h, self._xwalk_types_to_arcgis_fields(field_types_lookup.get(h, str))])
+ 
+            AddFields_management(
+                temp_feature_class,
+                fields_to_add
+            )
+
+            # Use an insert cursor to write rows from the PETL table to the temp feature class
+            fields_to_insert = [f[0] for f in fields_to_add]
+            fields_to_insert.append("SHAPE@XY")
+            with InsertCursor(temp_feature_class, fields_to_insert) as cursor:
+                for idx, row in enumerate(list(etl.records(petl_table))):
+                    print(idx, row['Survey_Id'])
+                    r = [self.fallback_to_json_str(v) for v in row] # all field values
+                    r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
+                    cursor.insertRow(r)
+
+        print("temp_feature_class", int(GetCount(temp_feature_class).getOutput(0)))
+        if output_featureclass:
+            CopyFeatures(temp_feature_class, output_featureclass)
+            print("output_featureclass", int(GetCount(output_featureclass).getOutput(0)))
+
+        # Create a FeatureSet object and load in_memory feature class JSON as dict
+        feature_set = FeatureSet(temp_feature_class)
+        # feature_set.load(feature_class)
+
+        # return the dictionary (geoservices JSON as Python dictionary)
+        # if as_dict:
+        #     return json.loads(feature_set.JSON)
+        # else:
+        return json.loads(feature_set.JSON)
+
     def create_geodata_from_points(
         self, 
-        points: List[Point],
+        points: List[DrainItPoint],
         output_points_filepath=None,
         as_dict=True,
-        default_spatial_ref_code=4326
+        wkid=4326
         ) -> dict:
         """from a list of Drain-It Point objects, create an ArcPy FeatureSet,
         for use in other ArcPy GP tools.
@@ -547,21 +729,23 @@ class GP:
                 try:
                     spatial_ref = SpatialReference(p_srs[0].spatial_ref_code)
                 except:
-                    spatial_ref = SpatialReference(default_spatial_ref_code)
+                    spatial_ref = SpatialReference(wkid)
             else:
-                spatial_ref = SpatialReference(default_spatial_ref_code)
+                spatial_ref = SpatialReference(wkid)
 
             # Create an in_memory feature class to initially contain the points
             feature_class = CreateFeatureclass_management(
-                out_path="in_memory", 
+                out_path="memory", 
                 out_name="temp_drainit_points", 
                 geometry_type="POINT",
                 spatial_reference=spatial_ref
             )
 
+            fields_to_add = [['uid', 'TEXT', 'uid', 255], ['group_id', 'TEXT', 'group_id', 255]]
+
             AddFields_management(
                 feature_class,
-                [['uid', 'TEXT', 'uid', 255], ['group_id', 'TEXT', 'group_id', 255]]
+                fields_to_add
             )
 
             # Open an insert cursor
@@ -591,19 +775,19 @@ class GP:
         is_naacc=False,
         group_id_field=None,
         output_points_filepath=None
-        ) -> Tuple[List[Point], dict]:
+        ) -> Tuple[List[DrainItPoint], dict]:
         """from any geodata input file, create a list of Point objects and an 
         ArcGIS FeatureSet object
         """
 
         # # handle inputs that are from an interactive selection in ArcMap/Pro
-        if isinstance(points_filepath, FeatureSet):
-            self.msg("Reading from interactive selection")
-        else:
-            self.msg('Reading from file')
+        # if isinstance(points_filepath, FeatureSet):
+        #     self.msg("Reading from interactive selection")
+        # else:
+        #     self.msg('Reading from file')
         
         # extract feature class to a PETL table and a FeatureSet
-        raw_table, feature_set = self.fc_to_petl_table(
+        raw_table, feature_set = self.geodata_to_petl_table(
             points_filepath,
             include_geom=True,
             return_featureset=True
@@ -620,18 +804,23 @@ class GP:
         # with nested NAACC and capacity calc-ready attributes where possible
         # (This is workflow for Culvert Capacity when geodata is provided 
         # instead of a CSV)
+        points = []
         if is_naacc:
             self.msg('reading points and capturing NAACC attributes')
-            points = etl_naacc_table(
-                naacc_petl_table=raw_table,
-                wkid=spatial_ref_code
-            )
+            # TODO: make this less clunky and with clearer assumptions:
+            # load up the NaaccETL class with defaults
+            naacc_etl = NaaccEtl(wkid=spatial_ref_code)
+            # assign the PETL table to the object
+            naacc_etl.table = raw_table
+            # run the DrainItPoint generation method for NAACC data
+            naacc_etl.generate_points_from_table()
+            # assign the list
+            points = naacc_etl.points
 
         # Otherwise we transform the raw table to a list of Point objects here
         # (This is workflow for Peak-Flow)
         else:
             self.msg('reading points')
-            points = []
             for idx, r in enumerate(list(etl.dicts(raw_table))):
                 point_kwargs = dict(
                     uid=r[uid_field],
@@ -642,9 +831,9 @@ class GP:
                     raw=r
                 )
                 if group_id_field:
-                    point_kwargs['group_id'] = r[group_id_field],
+                    point_kwargs['group_id'] = r[group_id_field]
                 
-                p = Point(**point_kwargs)
+                p = DrainItPoint(**point_kwargs)
                 points.append(p)
 
         if output_points_filepath:
@@ -700,7 +889,6 @@ class GP:
         self.config.all_sheds_raster = self.all_sheds_raster
 
         return self.all_sheds_raster
-
 
     # --------------------------------------------------------------------------
     # Analytics for delineation and data derivation in Series
@@ -1095,7 +1283,6 @@ class GP:
             out_catchment_polygons_simplify=False            
         )
 
-
     # --------------------------------------------------------------------------
     # Analytics for delineation and data derivation in Parallel
     # Used for *culvert* analysis; works with multiple overlapping watershed 
@@ -1103,23 +1290,30 @@ class GP:
 
     def _delineate_and_analyze_one_catchment(
         self,
-        point_feature, # 
-        pour_point_field,
-        flow_direction_raster,
-        slope_raster,
-        curve_number_raster,
-        out_catchment_polygons,
-        rainfall_rasters=None,
-        out_catchment_polygons_simplify=False
-        ):
+        point_geodata: FeatureSet,
+        pour_point_field: str,
+        flow_direction_raster: str,
+        slope_raster: str,
+        curve_number_raster: str,
+        out_shed_polygon: str,
+        rainfall_rasters: tuple = None,
+        out_catchment_polygons_simplify: bool = False
+        # rainfall_unit_conversion_factor = 0.1,
+        ) -> Shed:
+        """perform delineation one point and analysis on the watershed
+        Results are saved to a single Shed object.
 
-        # create a shed (dataclass object)
+        Since esri GP tools operate on multiple features, we feed them a
+        JSON-ified arcpy.FeatureSet object as a Python dictionary. That 
+        FeatureSet should only contain one point feature.
+        """
+        fs = json.loads(point_geodata.JSON)
+        # create a shed (dataclass object) from the feature
+        fprops = fs['features'][0]['attributes']
         shed = Shed(
-            uid=point_feature[0]
+            uid=fprops['uid'],
+            group_id=fprops['group_id'],
         )        
-
-        # get the ID from the field.
-        shed.uid = point_feature[0]
 
         self.msg("--------------------------------")
         self.msg("analyzing point {0}".format(shed.uid))
@@ -1135,13 +1329,14 @@ class GP:
             cellSize=flow_direction_raster,
         ):
             # delineate one watershed
-            self.msg('Delineating catchment')
+            self.msg('delineating catchment')
             one_shed = Watershed(
                 in_flow_direction_raster=flow_direction_raster,
-                in_pour_point_data=point_feature,
+                in_pour_point_data=point_geodata,
             )
-            # one_shed_path = r"in_memory/catchment_{}.tif".format(inlet[0])
-            shed.filepath_raster = self.so("shed_{}_raster".format(shed.uid))
+            
+            shed.filepath_raster = self.so("shed_{}_delineation".format(shed.uid))
+            # print(shed.filepath_raster)
             one_shed.save(shed.filepath_raster)
         
         ## ---------------------------------------------------------------------
@@ -1165,10 +1360,10 @@ class GP:
 
         # Dissolve the converted polygons, since some of the raster zones may have corner-corner links
         #cpd = self.so("catchmentpolygonsdissolved","timestamp","fgdb")
-        if out_catchment_polygons:
-            shed.filepath_vector = out_catchment_polygons
+        if out_shed_polygon:
+            shed.filepath_vector = out_shed_polygon
         else:
-            shed.filepath_vector = self.so("shed_{}_polygon_dissolved".format(shed.uid))
+            shed.filepath_vector = self.so("shed_{}_delineation_dissolved".format(shed.uid))
         
         Dissolve(
             in_features=cp,
@@ -1177,17 +1372,18 @@ class GP:
             multi_part="MULTI_PART"
         )
 
-        # get the area for each record, and push into results object
-        total_area = None
+        # get and sum the areas for all records 
+        # (there should only be one at this point, but...)
         areas = []
-        with SearchCursor(shed.filepath_vector,["gridcode","SHAPE@AREA"]) as c:
+        with SearchCursor(shed.filepath_vector,["SHAPE@"]) as c:
             for r in c:
-                this_id = r[0]
-                this_area = r[1] # * area_conv_factor
+                # the "SHAPE@" field token returns a Geometry object.
+                # we use the getArea method to get the area in the preferred 
+                # units, regardless of coordinate system
+                this_area = r[0].getArea(units="SQUAREKILOMETERS")
                 areas.append(this_area)
-                    
-        total_area = sum(areas)
-        #print("area:", total_area)
+        
+        shed.area_sqkm = sum(areas)
 
         
         ## ---------------------------------------------------------------------
@@ -1197,7 +1393,8 @@ class GP:
         
         with EnvManager(
             snapRaster=flow_direction_raster,
-            cellSize=flow_direction_raster
+            cellSize=flow_direction_raster,
+            overwriteOutput=True
         ):
         
             # clip the flow direction raster to the catchment area (zone value)
@@ -1216,12 +1413,13 @@ class GP:
 
         self.msg("calculating average curve number")
         
-        table_cn_avg = self.so("shed_{0}_cn_avg".format(point_feature[0]))
+        table_cn_avg = self.so("shed_{0}_cn_avg".format(shed.uid))
 
         with EnvManager(
             cellSizeProjectionMethod="PRESERVE_RESOLUTION",
             extent="MINOF",
-            cellSize=one_shed
+            cellSize=one_shed,
+            overwriteOutput=True
         ):        
             ZonalStatisticsAsTable(
                 one_shed,
@@ -1232,24 +1430,24 @@ class GP:
                 "MEAN"
             )
             cn_stats = json.loads(RecordSet(table_cn_avg).JSON)
+            
 
             if len(cn_stats['features']) > 0:
                 # in the event we get more than one record here, we avg the avg
-                # (but we should only end up with 1 at most)
                 means = [f['attributes']['MEAN'] for f in cn_stats['features']]
-
                 shed.avg_cn = mean(means)
         
         ## ---------------------------------------------------------------------
         # calculate average slope
         
         
-        table_slope_avg = self.so("shed_{0}_slope_avg".format(point_feature[0]))
+        table_slope_avg = self.so("shed_{0}_slope_avg".format(shed.uid))
         
         with EnvManager(
             cellSizeProjectionMethod="PRESERVE_RESOLUTION",
             extent="MINOF",
-            cellSize=one_shed
+            cellSize=one_shed,
+            overwriteOutput=True
         ):
             ZonalStatisticsAsTable(
                 one_shed, 
@@ -1262,6 +1460,7 @@ class GP:
             
             slope_stats = json.loads(RecordSet(table_slope_avg).JSON)
             if len(slope_stats['features']) > 0:
+                # in the event we get more than one record here, we avg the avg                
                 means = [f['attributes']['MEAN'] for f in slope_stats['features']]
                 shed.avg_slope_pct = mean(means)
         
@@ -1271,21 +1470,23 @@ class GP:
         
         rainfalls = []
         
-        self.msg('calculating average rainfall in the catchment for')
+        self.msg('calculating average rainfall')
 
+        # for each rainfall raster representing a storm frequency:
         for rr in rainfall_rasters:
+            # self.msg(rr['freq'])
+            # print(rr)
 
-            avg_rainfall = None
-
-            #table_rainfall_avg = self.so("rainfall_avg", p, "fgdb")
             table_rainfall_avg = self.so(
-                "shed_{0}_rain_avg_{1}".format(point_feature[0], rr['freq'])
+                "shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq'])
             )
             
+            # calculate the average rainfall for the watershed
             with EnvManager(
                 cellSizeProjectionMethod="PRESERVE_RESOLUTION",
                 extent="MINOF",
-                cellSize=one_shed
+                cellSize=one_shed,
+                overwriteOutput=True
             ):
                 ZonalStatisticsAsTable(
                     one_shed,
@@ -1300,10 +1501,12 @@ class GP:
 
             if len(rainfall_stats['features']) > 0:
                 means = [f['attributes']['MEAN'] for f in rainfall_stats['features']]
-                # TODO: confirm this unit conversion from the NOAA raster values
-                avg_rainfall = mean(means) # * 25.4 / 1000
+                # NOAA Atlas 14 precip values are in mm, converted to cm
+                avg_rainfall = mean(means)# * rainfall_unit_conversion_factor
+            else:
+                avg_rainfall = None
 
-            self.msg(rr['freq'], "year event:", avg_rainfall)
+            # self.msg(rr['freq'], "year event:", avg_rainfall)
             rainfalls.append(
                 Rainfall(
                     freq=rr['freq'], 
@@ -1311,66 +1514,74 @@ class GP:
                     value=avg_rainfall
                 )
             )
-
-        shed.avg_rainfall = rainfalls
+            
+        shed.avg_rainfall = sorted(rainfalls, key=lambda x: x.freq)
 
         return shed
 
     def delineation_and_analysis_in_parallel(
         self,
-        points: List[Point],
+        points: List[DrainItPoint],
         pour_point_field: str,
         flow_direction_raster: str,
         slope_raster: str,
         curve_number_raster: str,
-        out_shed_polygons: str,
-        rainfall_config: dict,
-        out_catchment_polygons_simplify: bool
-        ) -> Tuple[List[Point], List[Shed]]:
+        precip_src_config: dict,
+        out_shed_polygons: str = None,
+        out_shed_polygons_simplify: bool = False,
+        override_skip: bool = False
+        ) -> Tuple[DrainItPoint]:
 
-        sheds = []
+        shed_geodata = []
         
         # open up the rainfall rasters config and get a list of 
         # just the rasters, with the full paths assembled
             
-        rainfall_rasters = [
-            {
-                'path': str(Path(rainfall_config['root']) / r['path']),
-                'freq': r['freq']
-            }
-            # TODO: handle multiple formats with this filter:
-            for r in rainfall_config['rasters'] if r['ext'] == ".asc"
-        ]
-
+        # rainfall_rasters = [
+        #     {
+        #         'path': str(Path(precip_src_config['root']) / r['path']),
+        #         'freq': r['freq']
+        #     }
+        #     # TODO: handle multiple formats with this filter:
+        #     for r in precip_src_config['rasters'] if r['ext'] == ".asc"
+        # ]
+        
         # for each Point in the input points list
         for point in tqdm(points):
-            
+
+            # if point is marked as not include and override_skip is false,
+            # skip this iteration.
+            if not override_skip and not point.include:
+                continue
+
             # create a FeatureSet for each individual Point object
             # this lets us keep our Point objects around while feeding
             # the GP tools a native input format.
-            feature_set_for_point = self.create_geodata_from_points(list(point), as_dict=False)
+            point_geodata = self.create_geodata_from_points([point], as_dict=False)
 
             # delineate a catchment/basin/watershed ("shed") and derive 
             # some data from that, storing it in a Shed object.
             shed = self._delineate_and_analyze_one_catchment(
-                point_feature=feature_set_for_point,
+                point_geodata=point_geodata,
                 pour_point_field=pour_point_field,
                 flow_direction_raster=flow_direction_raster,
                 slope_raster=slope_raster,
                 curve_number_raster=curve_number_raster,
-                out_catchment_polygons=out_shed_polygons,
-                rainfall_rasters=rainfall_rasters,
-                out_catchment_polygons_simplify=out_catchment_polygons_simplify
+                rainfall_rasters=precip_src_config['rasters'],
+                out_shed_polygon=None,
+                out_catchment_polygons_simplify=out_shed_polygons_simplify
             )
 
             # save that to the Point object
             point.shed = shed
-            # also append to a list of sheds
-            sheds.append(shed)
+            shed_geodata.append(shed.filepath_vector)
+        
+        # merge the sheds into a single layer
+        if out_shed_polygons:
+            Merge(shed_geodata, out_shed_polygons)
 
         # return all updated Point objects and a separate list of sheds.
-        return points, sheds
-
+        return points#, sheds
 
     def centroid_of_feature_envelope(self, in_features, project_as=4326) -> Dict:
         """given features, calculate the envelope, and return

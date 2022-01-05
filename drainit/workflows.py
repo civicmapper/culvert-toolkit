@@ -2,13 +2,17 @@
 """
 
 import json
+from math import exp
+from os import makedirs
 from pathlib import Path
-from dataclasses import asdict, replace
+from dataclasses import asdict, replace, fields
 from marshmallow import ValidationError
 from typing import Tuple, List
 
+import petl as etl
 import click
 import pint
+from tqdm import tqdm
 
 from .models import (
     WorkflowConfig, 
@@ -16,73 +20,59 @@ from .models import (
     RainfallRasterConfig, 
     RainfallRasterConfigSchema,
     PeakFlow01Schema,
-    Point
+    DrainItPoint,
+    NaaccCulvert
 )
 from .calculators import runoff, capacity, overflow
 from .settings import USE_ESRI
 from .services.gp import GP
 from .services.noaa import retrieve_noaa_rainfall_rasters, retrieve_noaa_rainfall_pf_est
-from .services.naacc import etl_naacc_table
+from .services.naacc import NaaccEtl
 
 # ------------------------------------------------------------------------------
 # Workflow Base Class
 
-class WorkflowManager():
+
+class WorkflowManager:
     """Base class for all workflows. Provides methods for storing and 
     persisting results from various workflow components.
     """
 
     def __init__(
-        self, 
+        self,
+        config_json_filepath=None,
         use_esri=USE_ESRI, 
-        config_json_filepath=None, 
-        rainfall_raster_json_filepath=None, 
         **kwargs
     ):
+        # print("WorkflowManager")
 
         # initialize an empty WorkflowConfig object with default values
         self.config: WorkflowConfig = WorkflowConfig()
         # click.echo(self.config)
 
-        # if any confile files provided, load here. This will replace the
+        # if any config files provided, load here. This will replace the
         # config object entirely
         self.config_json_filepath = config_json_filepath
-        self.rainfall_raster_json_filepath = rainfall_raster_json_filepath
-        self.load()
+        self.load_config()
         # click.echo(self.config)
         
         # regardless of what happens above, we have a config object. Now we
         # use the provided keyword arguments to update it, overriding any that
         # were provided in the JSON file.
+        # print(kwargs)
         self.config = replace(self.config, **kwargs)
         # (individual workflows that subclass WorkflowManager handle whether or 
         # not the needed kwargs are actually present)
 
         # self.schema = WorkflowConfigSchema().load(**kwargs)
-
-        self.rainfall_config = None
+        # click.echo(self.config)
         
         self.using_esri = use_esri
         self.using_wbt = not use_esri
         self.units = pint.UnitRegistry()
         self.gp = GP(self.config)
-    
-    def save(self, config_json_filepath):
-        """Save workflow config to JSON. 
 
-        Note that validation via WorkflowConfigSchema will only fail
-        if our code is doing something wrong.
-        """
-
-        self.config_json_filepath = Path(config_json_filepath)
-
-        c = WorkflowConfigSchema().dump(asdict(self.config))
-        with open(config_json_filepath, 'w') as fp:
-            json.dump(c, fp)
-
-        return self
-
-    def load(self, config_json_filepath=None, rainfall_raster_json_filepath=None):
+    def load_config(self, config_json_filepath=None):
         """load a workflow from a JSON file
         
         Note that validation via WorkflowConfigSchema will fail if the JSON has 
@@ -105,40 +95,154 @@ class WorkflowManager():
 
         # reads from disk, validates, and stores
         if cjf:
-            click.echo("Reading config from JSON file")
+            click.echo("Reading general config from JSON file")
             with open(cjf) as fp:
                 config_as_dict = json.load(fp)
-            self.config = WorkflowConfigSchema().load(config_as_dict)
+                # print(config_as_dict)
+            self.config = WorkflowConfigSchema().load(config_as_dict, partial=True, unknown="INCLUDE")
 
         # ----------------------------------------------------------------------
-        # Rainfall Raster Config
+        # Rainfall Raster Config (nested within the workflow config)
+        # print("Workflow Manager: precip_src_config_filepath", self.config.precip_src_config_filepath)
 
-        # select the file path ref to load. defaults to arg, fallsback to 
-        # instance variable
+        if self.config.precip_src_config_filepath is not None:
+            click.echo("Reading rainfall config from JSON file")
+            with open(self.config.precip_src_config_filepath) as fp:
+                rainfall_config_as_dict = json.load(fp)
+                self.config.precip_src_config = RainfallRasterConfigSchema().load(rainfall_config_as_dict)            
 
-        rrj = None
-        if rainfall_raster_json_filepath:
-            rrj = rainfall_raster_json_filepath
-            self.rainfall_raster_json_filepath = rrj
-        elif self.rainfall_raster_json_filepath:
-            rrj = self.rainfall_raster_json_filepath
+        return self        
+    
+    def save_config(self, config_json_filepath):
+        """Save workflow config to JSON. 
 
-        # reads from disk, validates, and stores
-        
-        if rrj:
-            click.echo("Reading config from JSON file")
-            with open(rrj) as fp:
-                rainfall_config_as_dict = json.load(fp) 
-                self.rainfall_config = RainfallRasterConfigSchema().load(rainfall_config_as_dict)
+        Note that validation via WorkflowConfigSchema will only fail
+        if our code is doing something wrong.
+        """
+
+        self.config_json_filepath = Path(config_json_filepath)
+
+        c = WorkflowConfigSchema().dump(self.config)
+        # print(c)
+        with open(config_json_filepath, 'w') as fp:
+            json.dump(c, fp)
 
         return self
-            
+
 
 # ------------------------------------------------------------------------------
 # Data Prep Workflows
 
+
+class NaaccDataIngest(WorkflowManager):
+    """read in and validate a NAACC compliant CSV, save to a Geodatabase.
+    Include any/all fields required for modeling!
+    """
+    def __init__(
+        self, 
+        naacc_csv,
+        output_folder,
+        output_workspace,
+        output_fc_name,
+        crs_wkid=4326,
+        naacc_x="GIS_Longitude",
+        naacc_y="GIS_Latitude",
+        **kwargs
+        ):
+        """Read and validate a NAACC compliant CSV, and save to a Geodatabase.
+
+        Args:
+            naac_csv ([type]): The path to the NAACC CSV
+            output_folder: the path to the folder where outputs will be saved
+            output_workspace ([type]): the path to the output workspace for geodata.
+            output_fc_name ([type]): name of output files (feature class or shapefile, also used for the csv)
+            crs_wkid (int, optional): the WKID of the coordinates in the NAACC CSV. Defaults to 4326.
+        """
+        super().__init__(**kwargs)
+        self.output_folder = Path(output_folder)
+        self.output_workspace = Path(output_workspace)
+        self.output_fc_name = output_fc_name
+        self.naacc_csv = naacc_csv
+
+        self.crs_wkid = crs_wkid
+        self.naacc_x = naacc_x
+        self.naacc_y = naacc_y
+
+        self.naacc_table = None
+        self.output_points_filepath = None
+        #self.points = None
+        #self.points_features = None
+
+        self._run()
+
+    def _run(self):
+
+        # initialize the appropriate GP object with the config variables
+        self.gp = GP(self.config)
+
+        # create folders and workspaces if they don't exist
+        if not self.output_folder.exists():
+            self.output_folder.mkdir(parents=True)
+        if not self.output_workspace.exists():
+            self.gp.create_workspace(self.output_workspace.parent, self.output_workspace.name)
+        # save path for the output table
+        self.output_points_filepath = str(Path(self.output_workspace) / self.output_fc_name)
+        # set the file name of the output csv (will be used to derive subset tables as well)
+        output_csv = self.output_folder / str(self.output_fc_name + ".csv")
+
+        # extract the NAACC-compliant CSV to a PETL table, validating all fields *and* calculating
+        # culvert capacity on-the-fly
+        naacc = NaaccEtl(
+            naacc_csv_file=self.naacc_csv,
+            output_path=output_csv,
+            wkid=4326
+        )
+        naacc.read_naacc_csv_to_petl()
+        self.naacc_table = naacc.table
+        
+        # specify which fields we'll carry over to the geodata using existing models
+        # TODO: make this work within the GP provider's context; use a flattened 
+        # DrainItPoint object to derive fields
+        field_types_lookup = {}
+        field_types_lookup.update({f.name: f.type for f in fields(NaaccCulvert)})
+        field_types_lookup.update({f.name: f.type for f in fields(capacity.Capacity)})
+        field_types_lookup.update({'validation_errors': str, 'include': str})
+        
+        # save the PETL-ified NAACC table to a geodata table (default: Esri FGDB feature class)
+        featureset_json = self.gp.create_geodata_from_petl_table(
+            petl_table=self.naacc_table,
+            field_types_lookup=field_types_lookup,
+            x_column=self.naacc_x, 
+            y_column=self.naacc_y,
+            output_featureclass=str(self.output_points_filepath),
+            sr=self.crs_wkid
+        )
+
+        with open(self.output_folder / str(self.output_fc_name + ".json"), 'w') as fp:
+            json.dump(featureset_json, fp)
+
+        # return the location of the output on disk
+        return self.output_points_filepath
+
+    def _testing_output_geodata(self):
+        """function used to read the saved geodata into a dictionary 
+        in a geoprocessing-library-agnostic way
+        """
+        if Path(self.output_points_filepath).exists:
+            d = self.gp.geodata_as_dict(self.output_points_filepath)
+            return d['features']
+        else: return {}
+
+
 class RainfallDataGetter(WorkflowManager):
     """Tool for acquiring and persisting rainfall rasters for a study area.
+    Defaults to acquiring rainfall data for 24hr events for frequencies from 1 to 1000 year.
+    All rasters are saved to a specified folder. A JSON file is automatically created; this 
+    file is used as a required input to other tools.
+
+    Note that NOAA Atlas 14 precip values are in mm. The Peak Flow calculator 
+    requires those values be converted to cm. Currently that happens in the gp
+    module.
     """
     def __init__(
         self,
@@ -201,73 +305,21 @@ class CurveNumberMaker(WorkflowManager):
     pass
 
 
-class NaaccDataIngest(WorkflowManager):
-    """read in and validate a NAACC compliant CSV, save to a Geodatabase.
-    Include any fields required for modeling!
-    """
-    def __init__(
-        self, 
-        naacc_csv,
-        output_workspace,
-        output_fc_name,
-        crs_wkid=4326,
-        **kwargs
-        ):
-        """Read and validate a NAACC compliant CSV, and save to a Geodatabase.
-
-        Args:
-            naac_csv ([type]): The path to the NAACC CSV
-            output_workspace ([type]): the path to the output workspace (geodatabase or folder) 
-            output_fc_name ([type]): the output file name (feature class or shapefile)
-            crs_wkid (int, optional): the WKID of the coordinates in the NAACC CSV. Defaults to 4326.
-        """
-        super().__init__(**kwargs)
-        self.output_workspace = Path(output_workspace)
-        self.output_fc_name = output_fc_name
-        self.naacc_csv = naacc_csv
-        self.crs_wkid = crs_wkid
-        self.points = None
-        self.points_features = None
-
-        self._run()
-
-    def _run(self):
-
-        # initialize the appropriate GP object with the config variables
-        self.gp = GP(self.config)
-
-        if not self.output_workspace.exists():
-            self.gp.create_workspace(self.output_workspace.parent, self.output_workspace.name)
-
-        self.output_points_filepath = Path(self.output_workspace) / self.output_fc_name
-
-        self.points = etl_naacc_table(
-            naacc_csv_file=self.naacc_csv,
-            wkid=4326
-        )
-        self.points_features = self.gp.create_geodata_from_points(
-            points=self.points,
-            output_points_filepath=str(self.output_points_filepath),
-            default_spatial_ref_code=self.crs_wkid
-        )
-
-        return self.output_points_filepath
-
-    def _testing_output_geodata(self):
-        """function used to read the saved geodata into a dictionary 
-        in a geoprocessing-library-agnostic way
-        """
-        return self.gp.geodata_as_dict(self.output_points_filepath)
-
-
 # ------------------------------------------------------------------------------
 # Peak-Flow Calculator
+
+#     """Peak flow calculator; BYO watersheds (to skip delineations)
+#     """
+#     """Peak flow calculator, with BYO dem-derived slope and flow direction 
+#     rasters.
+#     """
+
 
 class PeakFlowCore(WorkflowManager):
 
     def __init__(
         self, 
-        rainfall_raster_json_filepath,
+        precip_src_config_filepath,
         save_config_json_filepath=None,
         **kwargs
     ):
@@ -281,7 +333,7 @@ class PeakFlowCore(WorkflowManager):
 
         super().__init__(**kwargs)
         self.save_config_json_filepath = save_config_json_filepath
-        self.load(rainfall_raster_json_filepath=rainfall_raster_json_filepath)
+        self.load_config(precip_src_config_filepath=precip_src_config_filepath)
 
         # initialize the appropriate GP object with the config variables
         self.gp = GP(self.config)
@@ -305,7 +357,7 @@ class PeakFlowCore(WorkflowManager):
 
         # save the config
         if self.save_config_json_filepath:
-            self.save(self.save_config_json_filepath)        
+            self.save_config(self.save_config_json_filepath)        
         
         return
 
@@ -340,22 +392,6 @@ class PeakFlow01(PeakFlowCore):
         self.run_core_workflow()
         
 
-# class PeakFlow02(PeakFlowCore):
-#     """Peak flow calculator, with BYO dem-derived slope and flow direction 
-#     rasters.
-#     """
-#     def __init__(**kwargs):
-#         super().__init__(**kwargs)
-#     pass
-
-
-# class PeakFlow03(PeakFlowCore):
-#     """Peak flow calculator; BYO watersheds (to skip delineations)
-#     """
-#     def __init__(**kwargs):
-#         super().__init__(**kwargs)    
-#     pass
-
 
 # ------------------------------------------------------------------------------
 # Culvert Capacity Calculator
@@ -366,27 +402,34 @@ class PeakFlow01(PeakFlowCore):
 class CulvertCapacityCore(WorkflowManager):
 
     def __init__(
-        self, 
-        rainfall_raster_json_filepath,
+        self,
         save_config_json_filepath=None,
+        # points_filepath,
+        # raster_flowdir_filepath,
+        # raster_slope_filepath,
+        # raster_curvenumber_filepath,
+        # output_points_filepath=None,
+        # points_id_fieldname="Naacc_Culvert_Id",
+        # points_group_fieldname="Survey_Id",
         **kwargs
-    ):
+        ):
         """End-to-end calculation of culvert capacity, peak-flow, and overflow. 
         Relies on points that follow the NAACC standard, which are required for 
-        the capacity calculations to work here.
+        the capacity calculations to work here. Defaults reflect that assumption.
         """
+        # print("CulvertCapacityCore")
 
         super().__init__(**kwargs)
         self.save_config_json_filepath = save_config_json_filepath
-        self.load(rainfall_raster_json_filepath=rainfall_raster_json_filepath)
+        self.load_config(config_json_filepath=save_config_json_filepath)
 
-        # initialize the appropriate GP object with the config variables
+        # initialize the appropriate GP module with the config variables
         self.gp = GP(self.config)
     
-    def load_points(self) -> Tuple[List[Point], dict]:
+    def load_points(self) -> Tuple[List[DrainItPoint], dict]:
         """workflow-specific approach to ETL of source point dataset. Handles
         Either the NAACC csv or a points geodataset that matches the NAACC
-        schema can work here; this handles the ETL appropriately.
+        schema.
         """
 
         p = Path(self.config.points_filepath)
@@ -394,28 +437,31 @@ class CulvertCapacityCore(WorkflowManager):
         # for a NAACC CSV input, we ETL the table, create a Python representation
         # of that data in a geo-format (dependent on the GP service used), and 
         # save the geo-formatted version to disk using output_points_filepath
-        if p.suffix == ".csv":
-            points = etl_naacc_table(
-                naacc_csv_file=self.config.points_filepath,
-                spatial_ref=4326 # TODO: require spatial reference WKID for NAACC coords to be provided as input
-            )
-            points_features = self.gp.create_geodata_from_points(
-                points=self.config.points,
-                output_points_filepath=self.config.output_points_filepath
-            )
-            points_spatial_ref_code = 4326 # TODO: require spatial reference WKID for NAACC coords to be provided as input
+        # if p.suffix == ".csv":
+        #     # TODO:
+        #     pass
+            # points = etl_naacc_table(
+            #     naacc_csv_file=self.config.points_filepath,
+            #     spatial_ref=4326 # TODO: require spatial reference WKID for NAACC coords to be provided as input
+            # )
+            # points_features = self.gp.create_geodata_from_points(
+            #     points=self.config.points,
+            #     output_points_filepath=self.config.output_points_filepath
+            # )
+            # points_spatial_ref_code = 4326 # TODO: require spatial reference WKID for NAACC coords to be provided as inputs
             
         # for anything else (assuming we've already restricted input types to
         # a geodatabase feature class, geopackage table, geoservices json, or 
         # geojson), load it into a Python representation of that data in a 
-        # geo-format (dependent on the GP service used), ETL the table
-        else:
-            points, points_features, points_spatial_ref_code = self.gp.extract_points_from_geodata(
-                points_filepath=self.config.points_filepath,
-                uid_field=self.config.points_id_fieldname,
-                is_naacc=True,
-                output_points_filepath=self.config.output_points_filepath
-            )
+        # geo-format (e.g., geojson or geoservices json (Esri)), ETL the table
+        # else:
+        points, points_features, points_spatial_ref_code = self.gp.extract_points_from_geodata(
+            points_filepath=self.config.points_filepath,
+            uid_field=self.config.points_id_fieldname,
+            group_id_field=self.config.points_group_fieldname,
+            is_naacc=True,
+            output_points_filepath=self.config.output_points_filepath
+        )
         
         # save those to the config
         # ...as a list of Drain-It Point objects:
@@ -427,6 +473,40 @@ class CulvertCapacityCore(WorkflowManager):
 
         return self.config.points, self.config.points_features
     
+    def _calculate_one_point(self, pt: DrainItPoint):
+        """for a single point:
+        * derive the data structure for frequency-based analytics from the shed
+        * calculate *time of concentration* for the point's shed.
+        * 
+        """
+
+        # calculate time of concentration for the point's shed
+        pt.shed.calculate_tc()
+
+        # copy rainfall intervals from point.shed to point.analytics
+        pt.derive_rainfall_analytics()
+
+        # for each rainfall interval, calculate peak flow
+        for ri in pt.analytics:
+
+            # instantiate a Runoff dataclass
+            ri.runoff = runoff.Runoff()
+            # add in the tc that has already been calculated for the shed
+            ri.runoff.time_of_concentration = pt.shed.tc_hr
+            # calculate peak flow
+            ri.runoff.calculate_peak_flow(
+                mean_slope_pct=pt.shed.avg_slope_pct,
+                max_flow_length_m=pt.shed.max_fl,
+                rainfall_cm=ri.rainfall_avg_cm,
+                basin_area_sqkm=pt.shed.area_sqkm,
+                avg_cn=pt.shed.avg_cn,
+                tc_hr=pt.shed.tc_hr
+            )
+            # if capacity was calculated, calculate overflow
+            if pt.capacity is not None:
+                # instantiate the Overflow dataclass
+                ri.overflow = overflow.Overflow() #calc_culvert_overflow
+
     def run(self):
 
         # load points
@@ -434,47 +514,41 @@ class CulvertCapacityCore(WorkflowManager):
         self.load_points() # updates self.config.points and self.config.points_features
 
         # delineate and analyze catchments for each point
-        self.config.points, self.config.sheds = self.gp.delineation_and_analysis_in_parallel(
+        self.config.points = self.gp.delineation_and_analysis_in_parallel(
             points=self.config.points,
             pour_point_field=self.config.points_id_fieldname,
             flow_direction_raster=self.config.raster_flowdir_filepath,
             slope_raster=self.config.raster_slope_filepath,
             curve_number_raster=self.config.raster_curvenumber_filepath,
+            precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
             out_shed_polygons=self.config.output_sheds_filepath,
-            rainfall_config=self.config.rainfall_rasters,
-            out_catchment_polygons_simplify=self.config.sheds_simplify
+            out_shed_polygons_simplify=self.config.sheds_simplify
         )
         
-        for pt in self.config.points:
-            
-            # copy rainfall intervals from point.shed to point.analytics
-            pt.rainfall_from_shed_to_point()
-            # calculate time of concentration for the point's shed
-            pt.shed.calculate_tc()
+        for pt in tqdm(self.config.points):
 
-            # for each rainfall interval, calculate peak flow
-            for rainfall_interval in pt.analytics:
+            if not pt.include:
+                click.echo("skipping {0}".format(pt.uid))
+                continue
+            else:
+                click.echo("analyzing {0}".format(pt.uid))
 
-                # instantiate a Runoff dataclass
-                rainfall_interval.runoff = runoff.Runoff()
-                # add in the tc that has already been calculated for the shed
-                rainfall_interval.runoff.time_of_concentration = pt.shed.tc_hr
-                # calculate peak flow
-                rainfall_interval.runoff.calculate_peak_flow(
-                    mean_slope_pct=pt.shed.avg_slope_pct,
-                    max_flow_length_m=pt.shed.max_fl,
-                    rainfall_cm=rainfall_interval.rain_val,
-                    basin_area_sqkm=pt.shed.area_sqkm,
-                    avg_cn=pt.shed.avg_cn,
-                    tc_hr=pt.shed.tc_hr
-                )
-            
-            # if capacity was calculated, calculate overflow
-            rainfall_interval.overflow = overflow.Overflow()
+            self._calculate_one_point(pt)
 
 
         # save the config
         if self.save_config_json_filepath:
-            self.save(self.save_config_json_filepath)
+            self.save_config(self.save_config_json_filepath)
         
         return
+
+
+'''
+* One output with 1:1 between input culvert and output culvert records.
+* One output that is crossing-based: one point per crossing. Sum capacities of culverts. One peak-flow; pick the first one in the group. One overflow calculation as a result.
+* Calc for every record first, independent of any grouping. Then use those results for the crossing-based calculations. At that point we can boil it down to a non-nested tabular format for pivoting.
+* Derived analytical outputs
+  * layer showing peak flow (size) vs overflow (color)
+  * simple tabular summary output for which ones go over
+  * flow vs area vs capacity/overflow, to identify risks
+'''

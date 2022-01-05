@@ -1,5 +1,6 @@
 import math
 from collections import OrderedDict
+from typing import Tuple
 # dependencies
 import numpy
 import math
@@ -8,13 +9,13 @@ from dataclasses import dataclass
 
 units = pint.UnitRegistry()
 
-def _calculate_tc(
+def calc_time_of_concentration(
     max_flow_length, #units of meters
-    mean_slope, # percent slope
+    mean_slope_pct, # percent slope
     const_a=0.000325,
     const_b=0.77,
     const_c=-0.385
-    ):
+    ) -> float:
     """
     calculate time of concentration (hourly)
 
@@ -27,32 +28,32 @@ def _calculate_tc(
     Outputs:
         tc_hr: time of concentration (hourly)
     """
-    if not mean_slope:
-        mean_slope = 0.00001
-    tc_hr = const_a * math.pow(max_flow_length, const_b) * math.pow((mean_slope / 100), const_c)
+    if not mean_slope_pct:
+        mean_slope_pct = 0.00001
+    tc_hr = const_a * math.pow(max_flow_length, const_b) * math.pow((mean_slope_pct / 100), const_c)
     return tc_hr
 
-def _calculate_tc_simple(
+def calc_time_of_concentration_simple(
     min_elevation,
     max_elevation,
     max_flow_length,
     const_a=0.000325,
     const_b=0.77,
     const_c=-0.385
-    ):
+    ) -> float:
     """
     Thhis equation is from Cornell's ArcMap Field Calculator-based implementation
     
     """
     return const_a * math.pow(max_flow_length, const_b) * math.pow( ((max_elevation - min_elevation) / max_flow_length), const_c)
 
-def _calculate_peak_flow(
+def calculate_peak_flow_from_precip_table(
     catchment_area_sqkm,
     tc_hr,
     avg_cn,
     precip_table,
     init_abstraction=0.2
-    ):
+    ) -> OrderedDict:
     """Calculate peak runoff statistics at a "pour point" (e.g., a stormwater
     inlet, a culvert, or otherwise a basin's outlet of some sort) using
     parameters dervied from prior analysis of that pour point's catchment 
@@ -137,16 +138,27 @@ def _calculate_peak_flow(
 
     return results
 
-def _peak_flow_core(
+def calculate_peak_flow( 
     mean_slope_pct,
     max_flow_length_m,
-    rainfall_cm,
+    avg_rainfall_cm,
     basin_area_sqkm,
     avg_cn,
     tc_hr=None
-    ):
-    """This is a bare bones version of the two functions above and represents 
-    the core TR-55 logic originally developed by the Cornell Soil and Water lab. 
+    ) -> Tuple[float, float]:
+    """Calculate peak runoff statistics at a "pour point" (e.g., a stormwater
+    inlet, a culvert, or otherwise a basin's outlet of some sort) using
+    parameters dervied from prior analysis of that pour point's catchment 
+    area (i.e., it's watershed or contributing area) an a *24-hour* 
+    precipitation estimate for a single storm frequency (e.g., 100 year storm).
+
+    Note that the TR-55 methodology is designed around a 24-hour storm *duration*. 
+    YMMV if providing a rainfall estimate based on for other storm durations.
+    
+    This calculator by default returns peak flow in cubic meters/second and the 
+    time of concentration in hours.
+    
+    This uses the calculator logic originally developed by the Cornell Soil and Water lab.
     
     Numbers go in, numbers come out.
 
@@ -163,7 +175,7 @@ def _peak_flow_core(
     :param avg_cn: average curve number of the basin, area-weighted
     :type avg_cn: float
     :return: a tuple of peak flow, in cubic meters / second, and time of concentration, in hours
-    :rtype: tuple[float]
+    :rtype: tuple[float, float]
     """
 
     # INIITAL CHECKS ------------------------------------------
@@ -177,7 +189,7 @@ def _peak_flow_core(
     # TIME OF CONCENTRATION
 
     if not tc_hr:
-        tc_hr = _calculate_tc(max_flow_length_m, mean_slope_pct)
+        tc_hr = calc_time_of_concentration(max_flow_length_m, mean_slope_pct)
     
     # -------------------------------------------
     # STORAGE 
@@ -194,11 +206,11 @@ def _peak_flow_core(
     
     # calculate depth of runoff from each storm
     # if P < Ia NO runoff is produced
-    Pe = (rainfall_cm - init_abstraction)
+    Pe = (avg_rainfall_cm - init_abstraction)
     if Pe < 0:
         return None
 
-    Q = (Pe**2) / (rainfall_cm + (storage - init_abstraction))
+    Q = (Pe**2) / (avg_rainfall_cm + (storage - init_abstraction))
     
     # -------------------------------------------
     # RAIN RATIO AND PEAK FLOW
@@ -208,7 +220,7 @@ def _peak_flow_core(
     # and constants Const0, Const1, and Const2 which are in turn functions of Ia/P (rain_ratio) and rainfall type
     # We are using rainfall Type II because that is applicable to most of New York State
     # rain_ratio is a vector with one element per input return period
-    rain_ratio = init_abstraction / rainfall_cm
+    rain_ratio = init_abstraction / avg_rainfall_cm
     rain_ratio = [.1 if i < .1 else .5 if i > .5 else i for i in [rain_ratio]][0] # keep rain ratio within limits set by TR55
     
     CONST_0 = (rain_ratio**2) * -2.2349 + (rain_ratio * 0.4759) + 2.5273
@@ -229,8 +241,8 @@ class Runoff:
     time_of_concentration: float = None
     peak_flow: float = None
 
-    def calculate_tc(self, **kwargs):
-        self.time_of_concentration = _calculate_tc(**kwargs)
+    def calculate_time_of_concentration(self, **kwargs):
+        self.time_of_concentration = calc_time_of_concentration(**kwargs)
 
     def calculate_peak_flow(self, **kwargs):
-        self.peak_flow = _peak_flow_core(**kwargs)
+        self.peak_flow, self.time_of_concentration = calculate_peak_flow(**kwargs)

@@ -13,7 +13,7 @@ def validate_petl_record_w_schema(row, schema):
     errors = schema.validate(r)
     if errors:
         return errors
-    return []
+    return None
 
 def convert_value_via_xwalk(k, crosswalk, preserve_non_matches=True, no_match_value=None):
     """Returns match from a lookup (dictionary), with add'l params for fallbacks.

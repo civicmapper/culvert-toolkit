@@ -1,9 +1,22 @@
 import json
 from pathlib import Path
 import zipfile
+
+import pytest
+import petl as etl
+
 from .conftest import TEST_DATA_DIR
+
 from drainit import workflows
 from drainit import models
+from drainit import utils
+from drainit.calculators import (
+    runoff, 
+    capacity, 
+    overflow
+)
+
+pp = utils.pretty_print
 
 
 # class TestWorkflowManagement:
@@ -33,9 +46,9 @@ class TestRainfallETL:
             p = Path(r.path)
             assert p.exists()
 
-    def test_mock_e2e_rainfall_data_getter(self, sample_rainfall_rasters):
+    def test_mock_e2e_rainfall_data_getter(self, sample_rainfall_data):
 
-        rconfig = sample_rainfall_rasters
+        rconfig, rconfig_path = sample_rainfall_data
         for r in rconfig.rasters:
             p = Path(r.path)
             assert p.exists()
@@ -46,21 +59,27 @@ class TestRainfallETL:
 class TestNaaccETL:
 
     def test_naacc_data_ingest(self, tmp_path):
-        d = tmp_path / "naacc" / "naacc.gdb"
+        d = tmp_path
+        # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\drainit')
         results = workflows.NaaccDataIngest(
-            str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
-            str(d),
-            'naacc_points'
+            naacc_csv=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
+            output_folder=str(d),
+            output_workspace=str(d / "naacc.gdb"),
+            output_fc_name='naacc_points'
         )
+        t = results.naacc_table # petl table
+        
         # evaluate the sample results:
         # 8 records
-        assert len(results.points) == 8
-        # 2 with validation errors
-        assert len([p for p in results.points if bool(p.validation_errors)]) == 2
-        # the results were saves as geodata
-        d = results._testing_output_geodata()
-        assert isinstance(d, dict)
+        assert etl.nrows(t) == 8
+        
+        # 3 with validation errors
+        assert etl.nrows(etl.selectfalse(t, "include")) == 3
+        assert etl.nrows(etl.selectnotnone(t, "validation_errors")) == 3
 
+        # the results were saved as geodata; check we have 8 features
+        f = results._testing_output_geodata()
+        assert len(f) == 8
 
-
+        # capacity calculated for 5 records
 

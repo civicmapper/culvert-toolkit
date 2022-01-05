@@ -1,5 +1,6 @@
 import math
-from dataclasses import dataclass, field
+from typing import Optional, Union
+from dataclasses import dataclass, field, fields
 from marshmallow import EXCLUDE
 from marshmallow_dataclass import class_schema
 import pint
@@ -9,7 +10,7 @@ import pint
 units = pint.UnitRegistry()
 
 
-def _culvert_capacity(
+def calc_culvert_capacity(
     culvert_area_sqm, 
     head_over_invert, 
     culvert_depth_m, 
@@ -47,21 +48,26 @@ def _culvert_capacity(
     :rtype: float
     """
     
-    # Calculate and return the capacity for the culvert and store with the rest of the data for that culvert.
+    # Calculate and return the capacity for the culvert
     try:
-        return (culvert_area_sqm * math.sqrt(culvert_depth_m * ((head_over_invert / culvert_depth_m) - coefficient_y - coefficient_slope * slope_rr) / coefficient_c)) / si_conv_factor
+        capacity = (culvert_area_sqm * math.sqrt(culvert_depth_m * ((head_over_invert / culvert_depth_m) - coefficient_y - coefficient_slope * slope_rr) / coefficient_c)) / si_conv_factor
+        # print("capacity", capacity)
+        return capacity
     except:
-        return -9999
+        return None
 
 
 @dataclass
 class Capacity:
-    """Model for culvert capacity. Includes paramters both crosswalked and 
+    """Model for culvert capacity. Includes parameters both crosswalked and 
     derived from the NAACC data required for the culvert capacity calculation.
     """
 
     # ----------------------------
-    # cross-walked attributes:
+    # Cross-walked attributes:
+    # 
+    # These are the short names for the subset of fields
+    # needed to calculate capacity
 
     culv_mat: str = None
     in_type: str = None
@@ -74,7 +80,7 @@ class Capacity:
     out_shape: str = None
     out_a: float = None
     out_b: float = None
-    crossing_type: str = None
+    crossing_type: Optional[str] = None
         
     #flags: int = 1
 
@@ -96,8 +102,7 @@ class Capacity:
     head_over_invert: float = None
 
     # comment field
-    comments: list = field(default_factory=list)
-    
+    comments: str = None
     # include flag
     include: bool = True
 
@@ -105,11 +110,11 @@ class Capacity:
     culvert_capacity: float = None
         
     class Meta:
-        unknown = EXCLUDE        
+        unknown = EXCLUDE
     
     def calculate(self, si_conv_factor=1.811):
         
-        self.culvert_capacity = _culvert_capacity(
+        self.culvert_capacity = calc_culvert_capacity(
             culvert_area_sqm=self.culvert_area_sqm, 
             head_over_invert=self.head_over_invert, 
             culvert_depth_m=self.culvert_depth_m, 
@@ -121,7 +126,8 @@ class Capacity:
         )
         return self.culvert_capacity
 
-        
-capacity_numeric_fields = {k: v.type for k, v in Capacity.__dataclass_fields__.items() if v.type in [int, float]}
+CapacitySchema = class_schema(Capacity)
 
-CapacitySchema = class_schema(Capacity)        
+# helper that creates a lookup of numeric fields, used during crosswalking + validation
+capacity_fields_and_defaults = [(f.name, f.default) for f in fields(Capacity)]
+capacity_numeric_fields = {f.name: f.type for f in fields(Capacity) if f.type in [int, float]}
