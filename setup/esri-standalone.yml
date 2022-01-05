@@ -1,10 +1,10 @@
-name: drainit-for-foss4g
+name: drainit-for-arcgispro28-standalone
 channels:
   - esri
   - conda-forge
   - defaults
 dependencies:
-  - python=3.7.*
+  - arcpy=3.8.*
   - click
   - marshmallow
   - marshmallow-dataclass  

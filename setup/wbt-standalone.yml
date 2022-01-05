@@ -1,10 +1,11 @@
-name: drainit-for-arcgispro27
+name: drainit-for-foss4g
 channels:
-  - esri
   - conda-forge
   - defaults
 dependencies:
+  - python=3.9.*
   - click
+  - geopandas
   - marshmallow
   - marshmallow-dataclass  
   - petl
@@ -12,3 +13,4 @@ dependencies:
   - pytest
   - requests  
   - tqdm
+  - whitebox

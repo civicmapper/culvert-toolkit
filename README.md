@@ -20,7 +20,7 @@ Download and unzip, or `git clone` a copy of this repository locally. Then follo
 *Requires:*
 
 * ArcGIS Pro 2.7.\* (which includes Anaconda Python 3.7.\*)
-* Python dependencies listed in `cfg/esri-cloned-requirements.txt`
+* Python dependencies listed in `setup/esri-cloned-requirements.txt`
 
 *Steps:*
 
@@ -30,7 +30,7 @@ Download and unzip, or `git clone` a copy of this repository locally. Then follo
 
 ### *Planned Functionality:* Using Drain-It without **Esri ArcGIS Pro**
 
-This planned enhancement will rely on Whitebox Tools instead of Esri ArcPy for geoprocessing; its user interface will be available at the command line or a Python package.
+This planned enhancement will rely on Whitebox Tools and GeoPandas instead of Esri ArcPy for geoprocessing; its user interface will be available at the command line or a Python package.
 
 *Requires:*
 

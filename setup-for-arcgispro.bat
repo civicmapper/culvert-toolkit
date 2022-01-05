@@ -8,6 +8,6 @@ call "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\activate.bat" drainit-for-a
 
 @echo Installing additional dependencies...
 
-for /f %%i in (cfg\esri-cloned-requirements.txt) do "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe" install --yes --verbose %%i
+for /f %%i in (setup\esri-cloned-requirements.txt) do "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe" install --yes --verbose %%i
 
 @echo Done!
