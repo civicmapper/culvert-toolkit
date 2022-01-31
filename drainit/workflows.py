@@ -8,6 +8,7 @@ from pathlib import Path
 from dataclasses import asdict, replace, fields
 from marshmallow import ValidationError
 from typing import Tuple, List
+from collections import Counter
 
 import petl as etl
 import click
@@ -15,12 +16,14 @@ import pint
 from tqdm import tqdm
 
 from .models import (
+    Analytics,
     WorkflowConfig, 
     WorkflowConfigSchema, 
     RainfallRasterConfig, 
     RainfallRasterConfigSchema,
     PeakFlow01Schema,
     DrainItPoint,
+    DrainItPointSchema,
     NaaccCulvert
 )
 from .calculators import runoff, capacity, overflow
@@ -473,12 +476,13 @@ class CulvertCapacityCore(WorkflowManager):
 
         return self.config.points, self.config.points_features
     
-    def _calculate_one_point(self, pt: DrainItPoint):
+    def _calculate_peak_flow_for_point(self, pt: DrainItPoint):
         """for a single point:
         * derive the data structure for frequency-based analytics from the shed
         * calculate *time of concentration* for the point's shed.
-        * 
+        * for each storm frequency, calculate analytics
         """
+        print('\n', pt.uid, pt.group_id)
 
         # calculate time of concentration for the point's shed
         pt.shed.calculate_tc()
@@ -486,26 +490,140 @@ class CulvertCapacityCore(WorkflowManager):
         # copy rainfall intervals from point.shed to point.analytics
         pt.derive_rainfall_analytics()
 
-        # for each rainfall interval, calculate peak flow
-        for ri in pt.analytics:
+        # for each rainfall frequency
+        for freq in pt.analytics:
 
-            # instantiate a Runoff dataclass
-            ri.runoff = runoff.Runoff()
+            # print("freq", freq.frequency)
+
+            # instantiate a Runoff dataclass within 
+            freq.peakflow = runoff.Runoff()
             # add in the tc that has already been calculated for the shed
-            ri.runoff.time_of_concentration = pt.shed.tc_hr
+            freq.peakflow.time_of_concentration_hr = pt.shed.tc_hr
             # calculate peak flow
-            ri.runoff.calculate_peak_flow(
+            freq.peakflow.calculate_peak_flow(
                 mean_slope_pct=pt.shed.avg_slope_pct,
                 max_flow_length_m=pt.shed.max_fl,
-                rainfall_cm=ri.rainfall_avg_cm,
+                avg_rainfall_cm=freq.avg_rainfall_cm,
                 basin_area_sqkm=pt.shed.area_sqkm,
                 avg_cn=pt.shed.avg_cn,
                 tc_hr=pt.shed.tc_hr
             )
+            # print(freq.peakflow)
+
+            # instantiate the Overflow dataclass
+            freq.overflow = overflow.Overflow()
             # if capacity was calculated, calculate overflow
-            if pt.capacity is not None:
+            if all([
+                pt.capacity.culvert_capacity is not None,
+                freq.peakflow.culvert_peakflow_m3s is not None
+            ]):
+                # calculate overflow at the single culvert
+                freq.overflow.calculate_overflow(
+                    culvert_capacity=pt.capacity.culvert_capacity,
+                    peak_flow=freq.peakflow.culvert_peakflow_m3s
+                )
+                
+    def _analyze_all_points(self):
+        
+        # filter out points that we can't analyze
+        points_to_analyze: List[DrainItPoint] = [
+            pt for pt in self.config.points if pt.include
+        ]
+
+        # ----------------------------------------------------------------------
+        # ANALYZE all points individually
+
+        for pt in tqdm(points_to_analyze):
+            print('\n', pt.uid, pt.group_id)
+
+            # Copy rainfall intervals from point.shed to point.analytics list.
+            # This is object is used for peak-flow and overflow calculations per
+            # rainfall frequency.
+            pt.derive_rainfall_analytics()
+
+            # Set crossing capacity equal to culvert capacity
+            # (later we re-evaluate if the point is part of a crossing)
+            pt.capacity.crossing_capacity = pt.capacity.culvert_capacity
+
+            # PEAK FLOW
+            # calculate time of concentration for the point's shed
+            pt.shed.calculate_tc()
+            # for each rainfall frequency
+            for freq in pt.analytics:
+                # print("freq", freq.frequency)
+                # instantiate a Runoff dataclass within 
+                freq.peakflow = runoff.Runoff()
+                # add in the tc that has already been calculated for the shed
+                freq.peakflow.time_of_concentration_hr = pt.shed.tc_hr
+                # calculate peak flow
+                freq.peakflow.calculate_peak_flow(
+                    mean_slope_pct=pt.shed.avg_slope_pct,
+                    max_flow_length_m=pt.shed.max_fl,
+                    avg_rainfall_cm=freq.avg_rainfall_cm,
+                    basin_area_sqkm=pt.shed.area_sqkm,
+                    avg_cn=pt.shed.avg_cn,
+                    tc_hr=pt.shed.tc_hr
+                )
+                
+                # OVERFLOW
+
                 # instantiate the Overflow dataclass
-                ri.overflow = overflow.Overflow() #calc_culvert_overflow
+                freq.overflow = overflow.Overflow()
+                # if capacity was calculated, calculate overflow
+                if all([
+                    pt.capacity.culvert_capacity is not None,
+                    freq.peakflow.culvert_peakflow_m3s is not None
+                ]):
+                    # calculate overflow at the single culvert
+                    freq.overflow.calculate_overflow(
+                        culvert_capacity=pt.capacity.culvert_capacity,
+                        peak_flow=freq.peakflow.culvert_peakflow_m3s
+                    )
+                    # assign culvert overflow for the crossing as well.
+                    # (later we'll calc/reassign if it's part of a crossing)
+                    freq.overflow.crossing_overflow_m3s = freq.overflow.culvert_overflow_m3s
+
+        
+        # ----------------------------------------------------------------------
+        # create a list of group_ids for the multi-culvert crossings
+        multiculvert_crossing_group_ids = [
+            group_id for group_id, count in 
+            Counter([pt.group_id for pt in points_to_analyze]).items()
+            if count > 1
+        ]
+
+        # iterate through the group_ids, getting matching records from the table
+        # and running calculations
+        for mcc in tqdm(multiculvert_crossing_group_ids):
+
+            # get list of points with the same group id:
+            crossing_pts: List[DrainItPoint] = list(filter(lambda pt: pt.group_id == mcc, points_to_analyze))
+            
+            # CROSSING CAPACITY
+            # sum culvert capacity to get crossing capacity
+            crossing_capacity = sum([pt.capacity.culvert_capacity for pt in crossing_pts if pt.capacity.culvert_capacity is not None])
+            
+            # CROSSING PEAK FLOW and OVERFLOW
+            # Calculate overflow (peak flow - crossing capacity)
+
+            # use the peak flow from the point with the largest shed (or secondarily, the longest flow length)
+            ref_xing_peakflow_point: DrainItPoint = sorted(crossing_pts, key=lambda pt: (pt.shed.area_sqkm, pt.shed.max_fl))[-1]
+
+            # for each point in the crossing
+            for each_xing in crossing_pts:
+                # (re)assign crossing capacity to all points in the crossing
+                each_xing.capacity.crossing_capacity = crossing_capacity
+
+                # for each of the rainfall analytics items in the crossing point
+                for xing_ra_item in each_xing.analytics:
+                    # get the matching rainall analytics item from crossing point by frequency
+                    for ref_xing_point_ra_item in filter(lambda a: a.frequency == xing_ra_item.frequency, ref_xing_peakflow_point.analytics):
+                        # (re)assign the reference point's peak flow to the point's crossing peakflow
+                        xing_ra_item.peakflow.crossing_peakflow_m3s = ref_xing_point_ra_item.peakflow.culvert_peakflow_m3s
+                        # calculate and (re)assign crossing overflow
+                        xing_ra_item.overflow.crossing_overflow_m3s = overflow.culvert_overflow_calculator(
+                            each_xing.capacity.crossing_capacity, xing_ra_item.peakflow.crossing_peakflow_m3s
+                        )
 
     def run(self):
 
@@ -533,8 +651,9 @@ class CulvertCapacityCore(WorkflowManager):
             else:
                 click.echo("analyzing {0}".format(pt.uid))
 
-            self._calculate_one_point(pt)
+            self._calculate_peak_flow_for_point(pt)
 
+        self._analyze_all_points()
 
         # save the config
         if self.save_config_json_filepath:

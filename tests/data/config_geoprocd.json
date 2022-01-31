@@ -120,70 +120,70 @@
                 "avg_slope_pct": 5.899276006604845,
                 "avg_rainfall": [
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2282.38574876159,
                         "freq": "1"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2813.1129175663664,
                         "freq": "2"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 3680.2570811634782,
                         "freq": "5"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 4399.531309538928,
                         "freq": "10"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 5389.594055633181,
                         "freq": "25"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6125.125873237643,
                         "freq": "50"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6916.281722342186,
                         "freq": "100"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 7863.787374571319,
                         "freq": "200"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 9292.34065794487,
                         "freq": "500"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 10507.530166391443,
@@ -262,70 +262,70 @@
                 "avg_slope_pct": 5.899276006604845,
                 "avg_rainfall": [
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2282.38574876159,
                         "freq": "1"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2813.1129175663664,
                         "freq": "2"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 3680.2570811634782,
                         "freq": "5"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 4399.531309538928,
                         "freq": "10"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 5389.594055633181,
                         "freq": "25"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6125.125873237643,
                         "freq": "50"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6916.281722342186,
                         "freq": "100"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 7863.787374571319,
                         "freq": "200"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 9292.34065794487,
                         "freq": "500"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 10507.530166391443,
@@ -404,70 +404,70 @@
                 "avg_slope_pct": 5.0,
                 "avg_rainfall": [
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2233.0,
                         "freq": "1"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2754.0,
                         "freq": "2"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 3606.0,
                         "freq": "5"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 4313.0,
                         "freq": "10"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 5285.0,
                         "freq": "25"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6005.0,
                         "freq": "50"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6785.0,
                         "freq": "100"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 7727.0,
                         "freq": "200"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 9162.0,
                         "freq": "500"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 10389.0,
@@ -546,70 +546,70 @@
                 "avg_slope_pct": 4.0,
                 "avg_rainfall": [
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2353.0,
                         "freq": "1"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2912.0,
                         "freq": "2"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 3828.0,
                         "freq": "5"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 4587.0,
                         "freq": "10"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 5633.0,
                         "freq": "25"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6411.0,
                         "freq": "50"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 7245.0,
                         "freq": "100"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 8227.0,
                         "freq": "200"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 9693.0,
                         "freq": "500"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 10929.0,
@@ -688,70 +688,70 @@
                 "avg_slope_pct": 1.25,
                 "avg_rainfall": [
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2233.0,
                         "freq": "1"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 2754.0,
                         "freq": "2"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 3606.0,
                         "freq": "5"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 4313.0,
                         "freq": "10"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 5285.0,
                         "freq": "25"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6005.0,
                         "freq": "50"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 6785.0,
                         "freq": "100"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 7727.0,
                         "freq": "200"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 9162.0,
                         "freq": "500"
                     },
                     {
-                        "units": "mm",
+                        "units": "inches",
                         "valtyp": "mean",
                         "dur": "24hr",
                         "value": 10389.0,

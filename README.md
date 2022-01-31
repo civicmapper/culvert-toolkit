@@ -31,7 +31,3 @@ Download and unzip, or `git clone` a copy of this repository locally. Then follo
 ### *Planned Functionality:* Using Drain-It without **Esri ArcGIS Pro**
 
 This planned enhancement will rely on Whitebox Tools and GeoPandas instead of Esri ArcPy for geoprocessing; its user interface will be available at the command line or a Python package.
-
-*Requires:*
-
-* Python 3.7+

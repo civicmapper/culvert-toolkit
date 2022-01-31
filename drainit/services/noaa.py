@@ -281,7 +281,7 @@ def retrieve_noaa_rainfall_rasters(
                 # freq = re.findall(r'\d+', f)[0]
                 if ext == raster_format:
                     c.rasters.append(
-                        RainfallRaster(str(p), freq, ext)
+                        RainfallRaster(str(p), freq, ext, )
                     )
         else:
             print("Download failed for {0} ({1})".format(data["freq"], data))

@@ -20,7 +20,6 @@ import petl as etl
 import pint
 import click
 import pandas as pd
-import numpy as np
 
 # ArcGIS imports
 # this import enables the Esri Spatially-Enabled DataFrame extension to Pandas DataFrames
@@ -79,12 +78,12 @@ from arcpy import (
 from arcpy import SetProgressor, SetProgressorLabel, SetProgressorPosition, ResetProgressor
 from arcpy import AddMessage, AddWarning, AddError
 
-
-
 # this package
 from ...config import FREQUENCIES, QP_HEADER, VALIDATION_ERRORS_FIELD_LENGTH
 from ...models import WorkflowConfig, DrainItPoint, Shed, Rainfall
 from ..naacc import NaaccEtl
+
+units = pint.UnitRegistry()
 
 class GP:
 
@@ -167,16 +166,16 @@ class GP:
         
         # create and return full path
         if suffix == "unique":
-            return CreateUniqueName(prefix, str(location))
+            p = CreateUniqueName(prefix, str(location))
         elif suffix == "random":
-            return str(
+            p = str(
                 location / "{0}_{1}".format(
                     prefix,
                     abs(hash(time.strftime("%Y%m%d%H%M%S", time.localtime())))
                 )
             )
         elif suffix == "timestamp":
-            return str(
+            p = str(
                 location /
                 "{0}_{1}".format(
                     prefix,
@@ -184,7 +183,10 @@ class GP:
                 )
             )
         else:
-            return str(location / "_".join([prefix, suffix]))
+            p = str(location / "_".join([prefix, suffix]))
+
+        # print(p)
+        return p
 
     def create_workspace(self, out_folder_path: Path, out_name: str) -> Path:
         """wrapper around arcpy.management.CreateFileGDB that
@@ -1499,10 +1501,16 @@ class GP:
 
             rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
 
+            rainfall_units = "inches"
+
             if len(rainfall_stats['features']) > 0:
-                means = [f['attributes']['MEAN'] for f in rainfall_stats['features']]
-                # NOAA Atlas 14 precip values are in mm, converted to cm
-                avg_rainfall = mean(means)# * rainfall_unit_conversion_factor
+                # there shouldn't be multiple polygon features here, but this 
+                # willhandle edge cases:
+                means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
+                avg_rainfall = mean(means)
+                # NOAA Atlas 14 precip values are in 1000ths/inch, converted to inches here
+                # use Pint
+                avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
             else:
                 avg_rainfall = None
 
@@ -1511,7 +1519,8 @@ class GP:
                 Rainfall(
                     freq=rr['freq'], 
                     dur='24hr', 
-                    value=avg_rainfall
+                    value=avg_rainfall,
+                    units=rainfall_units
                 )
             )
             

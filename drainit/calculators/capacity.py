@@ -106,8 +106,17 @@ class Capacity:
     # include flag
     include: bool = True
 
+    # ---------------------------------
+    ## analytics    
+
     # culvert capacity, in cubic meters / second (m^3/s)
     culvert_capacity: float = None
+    # crossing capacity, in cubic meters / second (m^3/s)
+    # this will be the same as culvert_capacity unless
+    # this point is part of a group of >= 2 culvert,
+    # in which case it will be the sum of all capacities
+    # in the group
+    crossing_capacity: float = None
         
     class Meta:
         unknown = EXCLUDE

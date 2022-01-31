@@ -1,4 +1,5 @@
 from typing import List, Optional
+import json
 import pint
 from dataclasses import dataclass, field, asdict
 from marshmallow import Schema, fields, EXCLUDE, pre_load
@@ -6,7 +7,7 @@ from marshmallow_dataclass import class_schema
 
 units = pint.UnitRegistry()
 
-from ..calculators.runoff import Runoff, calc_time_of_concentration
+from ..calculators.runoff import Runoff, time_of_concentration_calculator
 from ..calculators.capacity import Capacity
 from ..calculators.overflow import Overflow
 
@@ -39,7 +40,11 @@ def cast_to_numeric_fields(data, dataclass_model, **kwargs):
 
 
 # -------------------------------------
-# RAINFALL
+# RAINFALL DATA REFERENCE
+# Rainfall data comes in up to 10 rasters from NOAA. Rather than
+# force the end-user to provide 10 file inputs or a folder, we store information
+# about each raster (RainfallRaster) in a config object, RainfallRasterConfig,
+# that is written out to a JSON file.
 
 @dataclass
 class RainfallRaster:
@@ -51,7 +56,8 @@ class RainfallRaster:
     path: Optional[str] = None
     freq: int = None
     ext: str = None
-    const: Optional[float] = None    
+    const: Optional[float] = None
+    units: Optional[str] = "1000ths of inches"
 
 RainfallRasterSchema = class_schema(RainfallRaster)
 
@@ -62,7 +68,15 @@ class RainfallRasterConfig:
     """
 
     root: str = None
-    rasters: List[RainfallRaster] = field(default_factory=list) 
+    rasters: List[RainfallRaster] = field(default_factory=list)
+
+    # def read(self, f):
+    #     with open(f) as fp:
+    #        RainfallRasterConfigSchema().load(json.load(fp))
+    #     return
+    
+    # def write(self, fp):
+    #     return        
 
 RainfallRasterConfigSchema = class_schema(RainfallRasterConfig)
 
@@ -78,7 +92,7 @@ class Rainfall:
     dur: str = None
     value: float = None
     valtyp: Optional[str] = "mean"
-    units: Optional[str] = "mm"
+    units: Optional[str] = "inches"
 
 
 @dataclass
@@ -88,9 +102,9 @@ class Analytics:
     # rainfall 
     frequency: str = None
     duration: str = None
-    rainfall_avg_cm: float = None
+    avg_rainfall_cm: float = None
     # analytics
-    runoff: Optional[Runoff] = None
+    peakflow: Optional[Runoff] = None
     overflow: Optional[Overflow] = None
 
 AnalyticsSchema = class_schema(Analytics)
@@ -193,7 +207,7 @@ class Shed:
 
     def calculate_tc(self):
         if self.avg_slope_pct and self.max_fl:
-            self.tc_hr = calc_time_of_concentration(self.max_fl, self.avg_slope_pct)
+            self.tc_hr = time_of_concentration_calculator(self.max_fl, self.avg_slope_pct)
             return self.tc_hr
 
 ShedSchema = class_schema(Shed)
@@ -259,14 +273,11 @@ class DrainItPoint:
             self.analytics.append(Analytics(
                 duration=r.dur,
                 frequency=r.freq,
-                # rainfall_avg_cm=units.Quantity(r.value, r.units).m_as('cm')
-                # NOTE: this carries over from Cornell Culvert 2.1, but 
-                # the unit conversion happening here is unclear:
-                rainfall_avg_cm=r.value*25.4/1000 
+                avg_rainfall_cm=units.Quantity(r.value / 1000, r.units).m_as('cm')
             ))
 
 
-PointSchema = class_schema(DrainItPoint)
+DrainItPointSchema = class_schema(DrainItPoint)
 
 # ------------------------------------------------------------------------------
 # WORKFLOW MODELS
@@ -333,7 +344,7 @@ class WorkflowConfig:
     points: Optional[List[DrainItPoint]] = field(default_factory=list)
     # List of Sheds generated for this workflow. Each shed is associated with 
     # a point on the `uid` attribute.
-    # sheds: List[Shed] = field(default_factory=list)
+    # sheds: Optional[List[Shed]] = field(default_factory=list)
 
 
 WorkflowConfigSchema = class_schema(WorkflowConfig)
