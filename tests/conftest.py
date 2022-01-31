@@ -108,3 +108,13 @@ def sample_geoprocd_config(tmp_path, all_sample_inputs):
     )
 
     return tmp_path / 'config_geoprocd.json'
+
+@pytest.fixture
+def sample_completed_capacity_config(tmp_path):
+
+    shutil.copyfile(
+        TEST_DATA_DIR / 'config_capacity_completed.json',
+        tmp_path / 'config_capacity_completed.json'
+    )
+
+    return tmp_path / 'config_capacity_completed.json'    

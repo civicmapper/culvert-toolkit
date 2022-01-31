@@ -251,6 +251,8 @@ class DrainItPoint:
     # Rainfall frequency-based analytical results for the point:
     # runoff (peak-flow) and overflow (peak-flow vs capacity)
     analytics: Optional[List[Analytics]] = field(default_factory=list)
+    # the analytics rainfall
+    failure_event: Optional[str] = None
 
     # flags, errors, and notes
     include: bool = True

@@ -683,7 +683,7 @@ class GP:
             fields_to_insert.append("SHAPE@XY")
             with InsertCursor(temp_feature_class, fields_to_insert) as cursor:
                 for idx, row in enumerate(list(etl.records(petl_table))):
-                    print(idx, row['Survey_Id'])
+                    # print(idx, row['Survey_Id'])
                     r = [self.fallback_to_json_str(v) for v in row] # all field values
                     r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
                     cursor.insertRow(r)

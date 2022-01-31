@@ -198,19 +198,40 @@ class TestCapacityCalc:
         # run the calculation
         cc._analyze_all_points()
         
-        # for pt in cc.config.points:
-        #     # confirm that we have an analytics object
-        #     assert pt.analytics is not None
-        #     # confirm that the analytics for each frequency exist
-        #     for ri in pt.analytics:
-        #         assert ri.peakflow.time_of_concentration_hr == pt.shed.tc_hr
-        #         assert ri.peakflow.culvert_peakflow_m3s is not None
-        #         assert ri.overflow.culvert_overflow_m3s is not None
-        #         assert ri.peakflow.crossing_peakflow_m3s is not None
-        #         assert ri.overflow.crossing_overflow_m3s is not None
+        # for all the points:
+        for pt in cc.config.points:
+            # confirm that we have an analytics object
+            assert pt.analytics is not None
+            # confirm that the analytics for each frequency exist
+            for ri in pt.analytics:
+                assert ri.peakflow.time_of_concentration_hr == pt.shed.tc_hr
+                assert ri.peakflow.culvert_peakflow_m3s is not None
+                assert ri.overflow.culvert_overflow_m3s is not None
+                assert ri.peakflow.crossing_peakflow_m3s is not None
+                assert ri.overflow.crossing_overflow_m3s is not None
 
+        # for select points
+        # crossings:
+        test_crossings = list(filter(lambda pt: pt.group_id == "75158", cc.config.points))
+        assert len(test_crossings) == 2
+        assert test_crossings[0].shed.area_sqkm == test_crossings[0].shed.area_sqkm
+        assert test_crossings[0].analytics[0].overflow.crossing_overflow_m3s == test_crossings[1].analytics[0].overflow.crossing_overflow_m3s
+        
         output_config_filepath = Path(tmp_path) / 'drainit_config.json'
         # pp(cc.config)
-        # cc.save_config(str(output_config_filepath))       
+        # cc.save_config(str(output_config_filepath))
         with open(output_config_filepath, 'w') as fp:
             json.dump(asdict(cc.config), fp)
+
+
+    def test_export(self, tmp_path, sample_completed_capacity_config):
+
+        cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_completed_capacity_config))
+
+        cc.gp.create_workspace(tmp_path, 'outputs')
+
+        cc.config.output_points_filepath = str(tmp_path / 'outputs.gdb' / 'points')
+        
+        cc._points_to_featureclass()
+
+        

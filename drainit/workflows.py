@@ -4,11 +4,12 @@
 import json
 from math import exp
 from os import makedirs
+from copy import deepcopy
 from pathlib import Path
 from dataclasses import asdict, replace, fields
 from marshmallow import ValidationError
 from typing import Tuple, List
-from collections import Counter
+from collections import Counter, OrderedDict
 
 import petl as etl
 import click
@@ -31,6 +32,7 @@ from .settings import USE_ESRI
 from .services.gp import GP
 from .services.noaa import retrieve_noaa_rainfall_rasters, retrieve_noaa_rainfall_pf_est
 from .services.naacc import NaaccEtl
+from .config import FREQUENCIES
 
 # ------------------------------------------------------------------------------
 # Workflow Base Class
@@ -534,6 +536,7 @@ class CulvertCapacityCore(WorkflowManager):
         # ANALYZE all points individually
 
         for pt in tqdm(points_to_analyze):
+
             print('\n', pt.uid, pt.group_id)
 
             # Copy rainfall intervals from point.shed to point.analytics list.
@@ -541,10 +544,13 @@ class CulvertCapacityCore(WorkflowManager):
             # rainfall frequency.
             pt.derive_rainfall_analytics()
 
+            # ------------------
+            # CAPACITY
             # Set crossing capacity equal to culvert capacity
-            # (later we re-evaluate if the point is part of a crossing)
+            # (later we re-evaluate if the point is part of a multi-culvert crossing)
             pt.capacity.crossing_capacity = pt.capacity.culvert_capacity
 
+            # ------------------
             # PEAK FLOW
             # calculate time of concentration for the point's shed
             pt.shed.calculate_tc()
@@ -564,9 +570,12 @@ class CulvertCapacityCore(WorkflowManager):
                     avg_cn=pt.shed.avg_cn,
                     tc_hr=pt.shed.tc_hr
                 )
+
+                # assign culvert peak-flow for the crossing as well
+                # (later we'll calc/reassign if it's part of a multi-culvert crossing)
+                freq.peakflow.crossing_peakflow_m3s = freq.peakflow.culvert_peakflow_m3s
                 
                 # OVERFLOW
-
                 # instantiate the Overflow dataclass
                 freq.overflow = overflow.Overflow()
                 # if capacity was calculated, calculate overflow
@@ -579,8 +588,9 @@ class CulvertCapacityCore(WorkflowManager):
                         culvert_capacity=pt.capacity.culvert_capacity,
                         peak_flow=freq.peakflow.culvert_peakflow_m3s
                     )
+                    
                     # assign culvert overflow for the crossing as well.
-                    # (later we'll calc/reassign if it's part of a crossing)
+                    # (later we'll calc/reassign if it's part of a multi-crossing)
                     freq.overflow.crossing_overflow_m3s = freq.overflow.culvert_overflow_m3s
 
         
@@ -625,6 +635,97 @@ class CulvertCapacityCore(WorkflowManager):
                             each_xing.capacity.crossing_capacity, xing_ra_item.peakflow.crossing_peakflow_m3s
                         )
 
+    def _points_to_featureclass(self):
+        
+        # Field maps. TODO: derive from dataclass field metadata
+        shed_field_map = OrderedDict({
+            "area_sqkm": "shed_area_sqkm", 
+            "avg_slope_pct": "shed_avg_slope_pct", 
+            "avg_cn": "shed_avg_cn", 
+            "max_fl": "shed_max_fl", 
+            "tc_hr": "shed_tc_hr", 
+            #"avg_rainfall": "shed_avg_rainfall"
+        })
+        analytics_field_map = OrderedDict({
+            'culvert_peakflow_m3s': 'ppf_m3s',
+            'crossing_peakflow_m3s': 'xpf_m3s',
+            'culvert_overflow_m3s': 'pof_m3s',
+            'crossing_overflow_m3s': 'xof_m3s'
+        })
+        capacity_field_map = OrderedDict({
+            "culv_mat": "culv_mat",
+            "in_type": "in_type",
+            "in_shape": "in_shape",
+            "in_a": "in_a",
+            "in_b": "in_b",
+            "hw": "hw",
+            "slope": "slope",
+            "length": "length",
+            "out_shape": "out_shape",
+            "out_a": "out_a",
+            "out_b": "out_b",
+            "crossing_type": "crossing_type",
+            "culvert_area_sqm": "culvert_area_sqm",
+            "culvert_depth_m": "culvert_depth_m",
+            "coefficient_c": "coefficient_c",
+            "coefficient_y": "coefficient_y",
+            "coefficient_slope": "coefficient_slope",
+            "slope_rr": "slope_rr",
+            "head_over_invert": "head_over_invert",
+            "culvert_capacity": "culvert_capacity",
+            "crossing_capacity": "crossing_capacity"
+        })             
+        frequency_fields = [f'y{freq}' for freq in FREQUENCIES]
+
+        # import and unpack the data structure
+        t = etl\
+            .fromdicts([DrainItPointSchema(partial=True).dump(pt) for pt in self.config.points])\
+            .addrownumbers(field='oid')\
+            .cutout(*['naacc', 'raw', 'notes'])\
+            .convert('validation_errors', lambda d: "; ".join(['{0} ({1})'.format(k, ",".join([i for i in v])) for k,v in d.items()]))\
+            .unpackdict('capacity', keys=list(capacity_field_map.keys()))\
+            .unpackdict('shed', keys=list(shed_field_map.keys()))\
+            .rename(shed_field_map)\
+            .unpack('analytics', frequency_fields)
+
+        # unpack the rainfall frequency-based analytics
+        t2 = deepcopy(t)
+        for ff in frequency_fields:
+            analytics_table = etl\
+                .cut(t2, ['oid', ff])\
+                .convert(ff, lambda d: dict(**d['overflow'], **d['peakflow']))\
+                .unpackdict(ff, list(analytics_field_map.keys()))\
+                .prefixheader(f'{ff}_')\
+                .rename(f'{ff}_oid', 'oid')
+            t2 = etl.join(t2, analytics_table, 'oid')
+            
+        # remove old fields
+        t2 = etl.cutout(t2, *frequency_fields)
+
+        # create a feature class from the table
+
+        # create a types lookup
+        field_types_lookup = {}
+        for h in etl.header(t2):
+            ftypes = [n for n in etl.typeset(t2, h) if n != 'NoneType']
+            if 'float' in ftypes:
+                field_types_lookup[h] = float
+            elif 'int' in ftypes:
+                field_types_lookup[h] = int
+            elif 'str' in ftypes:
+                field_types_lookup[h] = str
+            else:
+                field_types_lookup[h] = str
+
+        self.gp.create_geodata_from_petl_table(
+            t2, 
+            field_types_lookup, 
+            'lng', 'lat',
+            self.config.output_points_filepath
+        )
+
+        return self.config.output_points_filepath
+
     def run(self):
 
         # load points
@@ -642,16 +743,6 @@ class CulvertCapacityCore(WorkflowManager):
             out_shed_polygons=self.config.output_sheds_filepath,
             out_shed_polygons_simplify=self.config.sheds_simplify
         )
-        
-        for pt in tqdm(self.config.points):
-
-            if not pt.include:
-                click.echo("skipping {0}".format(pt.uid))
-                continue
-            else:
-                click.echo("analyzing {0}".format(pt.uid))
-
-            self._calculate_peak_flow_for_point(pt)
 
         self._analyze_all_points()
 
@@ -670,4 +761,5 @@ class CulvertCapacityCore(WorkflowManager):
   * layer showing peak flow (size) vs overflow (color)
   * simple tabular summary output for which ones go over
   * flow vs area vs capacity/overflow, to identify risks
+* field that indicates which storm the culvert fails on
 '''

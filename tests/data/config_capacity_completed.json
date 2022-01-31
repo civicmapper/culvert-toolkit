@@ -1,0 +1,3377 @@
+{
+    "work_dir": null,
+    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points",
+    "points_features": {
+        "displayFieldName": "",
+        "fieldAliases": {
+            "OBJECTID": "OBJECTID",
+            "Survey_Id": "Survey_Id",
+            "Crossing_Code": "Crossing_Code",
+            "Alignment": "Alignment",
+            "Aqua_Pass_Score": "Aqua_Pass_Score",
+            "AOP": "AOP",
+            "Approved": "Approved",
+            "Bankfull_Width": "Bankfull_Width",
+            "Bankfull_Width_Confidence": "Bankfull_Width_Confidence",
+            "Coordinator": "Coordinator",
+            "Crossing_Comment": "Crossing_Comment",
+            "Crossing_Condition": "Crossing_Condition",
+            "Crossing_Span": "Crossing_Span",
+            "Crossing_Type": "Crossing_Type",
+            "Data_Checked_Coordinator": "Data_Checked_Coordinator",
+            "Database_Entry_By": "Database_Entry_By",
+            "Date_Data_Checked": "Date_Data_Checked",
+            "Date_First_Entered": "Date_First_Entered",
+            "Date_Last_Updated": "Date_Last_Updated",
+            "Date_Observed": "Date_Observed",
+            "Evaluation": "Evaluation",
+            "Flag_Name": "Flag_Name",
+            "Flow_Condition": "Flow_Condition",
+            "GIS_Latitude": "GIS_Latitude",
+            "GIS_Longitude": "GIS_Longitude",
+            "GPS_X_Coordinate": "GPS_X_Coordinate",
+            "GPS_Y_Coordinate": "GPS_Y_Coordinate",
+            "GPS_Distance": "GPS_Distance",
+            "Inlet_Type": "Inlet_Type",
+            "Lccx": "Lccx",
+            "Lccy": "Lccy",
+            "Lccx_Moved": "Lccx_Moved",
+            "Lccy_Moved": "Lccy_Moved",
+            "Local_Id": "Local_Id",
+            "Location_Description": "Location_Description",
+            "Maine_Private": "Maine_Private",
+            "No_Crossing": "No_Crossing",
+            "Number_Of_Culverts": "Number_Of_Culverts",
+            "Observer": "Observer",
+            "Road": "Road",
+            "Road_Fill_Height": "Road_Fill_Height",
+            "Road_Type": "Road_Type",
+            "Scour_Pool": "Scour_Pool",
+            "State": "State",
+            "Stream_Name": "Stream_Name",
+            "Terrestrial_Passage_Score": "Terrestrial_Passage_Score",
+            "Tidal_Site": "Tidal_Site",
+            "Town": "Town",
+            "Naacc_Culvert_Id": "Naacc_Culvert_Id",
+            "Armoring": "Armoring",
+            "Barrier_Name": "Barrier_Name",
+            "Barrier_Severity": "Barrier_Severity",
+            "Crossing_Structure_Length": "Crossing_Structure_Length",
+            "Culvert_Condition_Assess_Id": "Culvert_Condition_Assess_Id",
+            "Dry_Passage": "Dry_Passage",
+            "Inlet_Abutment_Height": "Inlet_Abutment_Height",
+            "Inlet_Grade": "Inlet_Grade",
+            "Inlet_Height": "Inlet_Height",
+            "Inlet_Openness": "Inlet_Openness",
+            "Inlet_Structure_Type": "Inlet_Structure_Type",
+            "Inlet_Substrate_Water_Width": "Inlet_Substrate_Water_Width",
+            "Inlet_Type1": "Inlet_Type1",
+            "Inlet_Water_Depth": "Inlet_Water_Depth",
+            "Inlet_Width": "Inlet_Width",
+            "Internal_Structure": "Internal_Structure",
+            "Internal_Structure_Comment": "Internal_Structure_Comment",
+            "Material": "Material",
+            "NHD_HUC8_Watershed": "NHD_HUC8_Watershed",
+            "Outlet_Drop_To_Stream_Bottom": "Outlet_Drop_To_Stream_Bottom",
+            "Outlet_Drop_To_Water_Surface": "Outlet_Drop_To_Water_Surface",
+            "Outlet_Grade": "Outlet_Grade",
+            "Outlet_Height": "Outlet_Height",
+            "Outlet_Openness": "Outlet_Openness",
+            "Outlet_Structure_Type": "Outlet_Structure_Type",
+            "Outlet_Substrate_Water_Width": "Outlet_Substrate_Water_Width",
+            "Outlet_Water_Depth": "Outlet_Water_Depth",
+            "Outlet_Width": "Outlet_Width",
+            "Passage_Height": "Passage_Height",
+            "Slope_Confidence": "Slope_Confidence",
+            "Slope_Percent": "Slope_Percent",
+            "Structure_Comment": "Structure_Comment",
+            "Structure_Substrate_Matches_Stream": "Structure_Substrate_Matches_Stream",
+            "Substrate_Continuous": "Substrate_Continuous",
+            "Substrate_Type": "Substrate_Type",
+            "Water_Depth_Matches_Stream": "Water_Depth_Matches_Stream",
+            "Water_Velocity": "Water_Velocity",
+            "County": "County",
+            "validation_errors": "validation_errors",
+            "culv_mat": "culv_mat",
+            "in_type": "in_type",
+            "in_shape": "in_shape",
+            "in_a": "in_a",
+            "in_b": "in_b",
+            "hw": "hw",
+            "slope": "slope",
+            "length": "length",
+            "out_shape": "out_shape",
+            "out_a": "out_a",
+            "out_b": "out_b",
+            "culvert_area_sqm": "culvert_area_sqm",
+            "culvert_depth_m": "culvert_depth_m",
+            "coefficient_c": "coefficient_c",
+            "coefficient_y": "coefficient_y",
+            "coefficient_slope": "coefficient_slope",
+            "slope_rr": "slope_rr",
+            "head_over_invert": "head_over_invert",
+            "comments": "comments",
+            "include": "include",
+            "culvert_capacity": "culvert_capacity"
+        },
+        "geometryType": "esriGeometryPoint",
+        "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+        },
+        "fields": [
+            {
+                "name": "OBJECTID",
+                "type": "esriFieldTypeOID",
+                "alias": "OBJECTID"
+            },
+            {
+                "name": "Survey_Id",
+                "type": "esriFieldTypeString",
+                "alias": "Survey_Id",
+                "length": 255
+            },
+            {
+                "name": "Crossing_Code",
+                "type": "esriFieldTypeString",
+                "alias": "Crossing_Code",
+                "length": 255
+            },
+            {
+                "name": "Alignment",
+                "type": "esriFieldTypeString",
+                "alias": "Alignment",
+                "length": 255
+            },
+            {
+                "name": "Aqua_Pass_Score",
+                "type": "esriFieldTypeString",
+                "alias": "Aqua_Pass_Score",
+                "length": 255
+            },
+            {
+                "name": "AOP",
+                "type": "esriFieldTypeString",
+                "alias": "AOP",
+                "length": 255
+            },
+            {
+                "name": "Approved",
+                "type": "esriFieldTypeString",
+                "alias": "Approved",
+                "length": 255
+            },
+            {
+                "name": "Bankfull_Width",
+                "type": "esriFieldTypeString",
+                "alias": "Bankfull_Width",
+                "length": 255
+            },
+            {
+                "name": "Bankfull_Width_Confidence",
+                "type": "esriFieldTypeString",
+                "alias": "Bankfull_Width_Confidence",
+                "length": 255
+            },
+            {
+                "name": "Coordinator",
+                "type": "esriFieldTypeString",
+                "alias": "Coordinator",
+                "length": 255
+            },
+            {
+                "name": "Crossing_Comment",
+                "type": "esriFieldTypeString",
+                "alias": "Crossing_Comment",
+                "length": 255
+            },
+            {
+                "name": "Crossing_Condition",
+                "type": "esriFieldTypeString",
+                "alias": "Crossing_Condition",
+                "length": 255
+            },
+            {
+                "name": "Crossing_Span",
+                "type": "esriFieldTypeString",
+                "alias": "Crossing_Span",
+                "length": 255
+            },
+            {
+                "name": "Crossing_Type",
+                "type": "esriFieldTypeString",
+                "alias": "Crossing_Type",
+                "length": 255
+            },
+            {
+                "name": "Data_Checked_Coordinator",
+                "type": "esriFieldTypeString",
+                "alias": "Data_Checked_Coordinator",
+                "length": 255
+            },
+            {
+                "name": "Database_Entry_By",
+                "type": "esriFieldTypeString",
+                "alias": "Database_Entry_By",
+                "length": 255
+            },
+            {
+                "name": "Date_Data_Checked",
+                "type": "esriFieldTypeString",
+                "alias": "Date_Data_Checked",
+                "length": 255
+            },
+            {
+                "name": "Date_First_Entered",
+                "type": "esriFieldTypeString",
+                "alias": "Date_First_Entered",
+                "length": 255
+            },
+            {
+                "name": "Date_Last_Updated",
+                "type": "esriFieldTypeString",
+                "alias": "Date_Last_Updated",
+                "length": 255
+            },
+            {
+                "name": "Date_Observed",
+                "type": "esriFieldTypeString",
+                "alias": "Date_Observed",
+                "length": 255
+            },
+            {
+                "name": "Evaluation",
+                "type": "esriFieldTypeString",
+                "alias": "Evaluation",
+                "length": 255
+            },
+            {
+                "name": "Flag_Name",
+                "type": "esriFieldTypeString",
+                "alias": "Flag_Name",
+                "length": 255
+            },
+            {
+                "name": "Flow_Condition",
+                "type": "esriFieldTypeString",
+                "alias": "Flow_Condition",
+                "length": 255
+            },
+            {
+                "name": "GIS_Latitude",
+                "type": "esriFieldTypeSingle",
+                "alias": "GIS_Latitude"
+            },
+            {
+                "name": "GIS_Longitude",
+                "type": "esriFieldTypeSingle",
+                "alias": "GIS_Longitude"
+            },
+            {
+                "name": "GPS_X_Coordinate",
+                "type": "esriFieldTypeString",
+                "alias": "GPS_X_Coordinate",
+                "length": 255
+            },
+            {
+                "name": "GPS_Y_Coordinate",
+                "type": "esriFieldTypeString",
+                "alias": "GPS_Y_Coordinate",
+                "length": 255
+            },
+            {
+                "name": "GPS_Distance",
+                "type": "esriFieldTypeString",
+                "alias": "GPS_Distance",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Type",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Type",
+                "length": 255
+            },
+            {
+                "name": "Lccx",
+                "type": "esriFieldTypeString",
+                "alias": "Lccx",
+                "length": 255
+            },
+            {
+                "name": "Lccy",
+                "type": "esriFieldTypeString",
+                "alias": "Lccy",
+                "length": 255
+            },
+            {
+                "name": "Lccx_Moved",
+                "type": "esriFieldTypeString",
+                "alias": "Lccx_Moved",
+                "length": 255
+            },
+            {
+                "name": "Lccy_Moved",
+                "type": "esriFieldTypeString",
+                "alias": "Lccy_Moved",
+                "length": 255
+            },
+            {
+                "name": "Local_Id",
+                "type": "esriFieldTypeString",
+                "alias": "Local_Id",
+                "length": 255
+            },
+            {
+                "name": "Location_Description",
+                "type": "esriFieldTypeString",
+                "alias": "Location_Description",
+                "length": 255
+            },
+            {
+                "name": "Maine_Private",
+                "type": "esriFieldTypeString",
+                "alias": "Maine_Private",
+                "length": 255
+            },
+            {
+                "name": "No_Crossing",
+                "type": "esriFieldTypeString",
+                "alias": "No_Crossing",
+                "length": 255
+            },
+            {
+                "name": "Number_Of_Culverts",
+                "type": "esriFieldTypeInteger",
+                "alias": "Number_Of_Culverts"
+            },
+            {
+                "name": "Observer",
+                "type": "esriFieldTypeString",
+                "alias": "Observer",
+                "length": 255
+            },
+            {
+                "name": "Road",
+                "type": "esriFieldTypeString",
+                "alias": "Road",
+                "length": 255
+            },
+            {
+                "name": "Road_Fill_Height",
+                "type": "esriFieldTypeSingle",
+                "alias": "Road_Fill_Height"
+            },
+            {
+                "name": "Road_Type",
+                "type": "esriFieldTypeString",
+                "alias": "Road_Type",
+                "length": 255
+            },
+            {
+                "name": "Scour_Pool",
+                "type": "esriFieldTypeString",
+                "alias": "Scour_Pool",
+                "length": 255
+            },
+            {
+                "name": "State",
+                "type": "esriFieldTypeString",
+                "alias": "State",
+                "length": 255
+            },
+            {
+                "name": "Stream_Name",
+                "type": "esriFieldTypeString",
+                "alias": "Stream_Name",
+                "length": 255
+            },
+            {
+                "name": "Terrestrial_Passage_Score",
+                "type": "esriFieldTypeString",
+                "alias": "Terrestrial_Passage_Score",
+                "length": 255
+            },
+            {
+                "name": "Tidal_Site",
+                "type": "esriFieldTypeString",
+                "alias": "Tidal_Site",
+                "length": 255
+            },
+            {
+                "name": "Town",
+                "type": "esriFieldTypeString",
+                "alias": "Town",
+                "length": 255
+            },
+            {
+                "name": "Naacc_Culvert_Id",
+                "type": "esriFieldTypeString",
+                "alias": "Naacc_Culvert_Id",
+                "length": 255
+            },
+            {
+                "name": "Armoring",
+                "type": "esriFieldTypeString",
+                "alias": "Armoring",
+                "length": 255
+            },
+            {
+                "name": "Barrier_Name",
+                "type": "esriFieldTypeString",
+                "alias": "Barrier_Name",
+                "length": 255
+            },
+            {
+                "name": "Barrier_Severity",
+                "type": "esriFieldTypeString",
+                "alias": "Barrier_Severity",
+                "length": 255
+            },
+            {
+                "name": "Crossing_Structure_Length",
+                "type": "esriFieldTypeSingle",
+                "alias": "Crossing_Structure_Length"
+            },
+            {
+                "name": "Culvert_Condition_Assess_Id",
+                "type": "esriFieldTypeString",
+                "alias": "Culvert_Condition_Assess_Id",
+                "length": 255
+            },
+            {
+                "name": "Dry_Passage",
+                "type": "esriFieldTypeString",
+                "alias": "Dry_Passage",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Abutment_Height",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Abutment_Height",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Grade",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Grade",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Height",
+                "type": "esriFieldTypeSingle",
+                "alias": "Inlet_Height"
+            },
+            {
+                "name": "Inlet_Openness",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Openness",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Structure_Type",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Structure_Type",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Substrate_Water_Width",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Substrate_Water_Width",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Type1",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Type1",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Water_Depth",
+                "type": "esriFieldTypeString",
+                "alias": "Inlet_Water_Depth",
+                "length": 255
+            },
+            {
+                "name": "Inlet_Width",
+                "type": "esriFieldTypeSingle",
+                "alias": "Inlet_Width"
+            },
+            {
+                "name": "Internal_Structure",
+                "type": "esriFieldTypeString",
+                "alias": "Internal_Structure",
+                "length": 255
+            },
+            {
+                "name": "Internal_Structure_Comment",
+                "type": "esriFieldTypeString",
+                "alias": "Internal_Structure_Comment",
+                "length": 255
+            },
+            {
+                "name": "Material",
+                "type": "esriFieldTypeString",
+                "alias": "Material",
+                "length": 255
+            },
+            {
+                "name": "NHD_HUC8_Watershed",
+                "type": "esriFieldTypeString",
+                "alias": "NHD_HUC8_Watershed",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Drop_To_Stream_Bottom",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Drop_To_Stream_Bottom",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Drop_To_Water_Surface",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Drop_To_Water_Surface",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Grade",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Grade",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Height",
+                "type": "esriFieldTypeSingle",
+                "alias": "Outlet_Height"
+            },
+            {
+                "name": "Outlet_Openness",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Openness",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Structure_Type",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Structure_Type",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Substrate_Water_Width",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Substrate_Water_Width",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Water_Depth",
+                "type": "esriFieldTypeString",
+                "alias": "Outlet_Water_Depth",
+                "length": 255
+            },
+            {
+                "name": "Outlet_Width",
+                "type": "esriFieldTypeSingle",
+                "alias": "Outlet_Width"
+            },
+            {
+                "name": "Passage_Height",
+                "type": "esriFieldTypeString",
+                "alias": "Passage_Height",
+                "length": 255
+            },
+            {
+                "name": "Slope_Confidence",
+                "type": "esriFieldTypeString",
+                "alias": "Slope_Confidence",
+                "length": 255
+            },
+            {
+                "name": "Slope_Percent",
+                "type": "esriFieldTypeSingle",
+                "alias": "Slope_Percent"
+            },
+            {
+                "name": "Structure_Comment",
+                "type": "esriFieldTypeString",
+                "alias": "Structure_Comment",
+                "length": 255
+            },
+            {
+                "name": "Structure_Substrate_Matches_Stream",
+                "type": "esriFieldTypeString",
+                "alias": "Structure_Substrate_Matches_Stream",
+                "length": 255
+            },
+            {
+                "name": "Substrate_Continuous",
+                "type": "esriFieldTypeString",
+                "alias": "Substrate_Continuous",
+                "length": 255
+            },
+            {
+                "name": "Substrate_Type",
+                "type": "esriFieldTypeString",
+                "alias": "Substrate_Type",
+                "length": 255
+            },
+            {
+                "name": "Water_Depth_Matches_Stream",
+                "type": "esriFieldTypeString",
+                "alias": "Water_Depth_Matches_Stream",
+                "length": 255
+            },
+            {
+                "name": "Water_Velocity",
+                "type": "esriFieldTypeString",
+                "alias": "Water_Velocity",
+                "length": 255
+            },
+            {
+                "name": "County",
+                "type": "esriFieldTypeString",
+                "alias": "County",
+                "length": 255
+            },
+            {
+                "name": "validation_errors",
+                "type": "esriFieldTypeString",
+                "alias": "validation_errors",
+                "length": 1024
+            },
+            {
+                "name": "culv_mat",
+                "type": "esriFieldTypeString",
+                "alias": "culv_mat",
+                "length": 255
+            },
+            {
+                "name": "in_type",
+                "type": "esriFieldTypeString",
+                "alias": "in_type",
+                "length": 255
+            },
+            {
+                "name": "in_shape",
+                "type": "esriFieldTypeString",
+                "alias": "in_shape",
+                "length": 255
+            },
+            {
+                "name": "in_a",
+                "type": "esriFieldTypeSingle",
+                "alias": "in_a"
+            },
+            {
+                "name": "in_b",
+                "type": "esriFieldTypeSingle",
+                "alias": "in_b"
+            },
+            {
+                "name": "hw",
+                "type": "esriFieldTypeSingle",
+                "alias": "hw"
+            },
+            {
+                "name": "slope",
+                "type": "esriFieldTypeSingle",
+                "alias": "slope"
+            },
+            {
+                "name": "length",
+                "type": "esriFieldTypeSingle",
+                "alias": "length"
+            },
+            {
+                "name": "out_shape",
+                "type": "esriFieldTypeString",
+                "alias": "out_shape",
+                "length": 255
+            },
+            {
+                "name": "out_a",
+                "type": "esriFieldTypeSingle",
+                "alias": "out_a"
+            },
+            {
+                "name": "out_b",
+                "type": "esriFieldTypeSingle",
+                "alias": "out_b"
+            },
+            {
+                "name": "culvert_area_sqm",
+                "type": "esriFieldTypeSingle",
+                "alias": "culvert_area_sqm"
+            },
+            {
+                "name": "culvert_depth_m",
+                "type": "esriFieldTypeSingle",
+                "alias": "culvert_depth_m"
+            },
+            {
+                "name": "coefficient_c",
+                "type": "esriFieldTypeSingle",
+                "alias": "coefficient_c"
+            },
+            {
+                "name": "coefficient_y",
+                "type": "esriFieldTypeSingle",
+                "alias": "coefficient_y"
+            },
+            {
+                "name": "coefficient_slope",
+                "type": "esriFieldTypeSingle",
+                "alias": "coefficient_slope"
+            },
+            {
+                "name": "slope_rr",
+                "type": "esriFieldTypeSingle",
+                "alias": "slope_rr"
+            },
+            {
+                "name": "head_over_invert",
+                "type": "esriFieldTypeSingle",
+                "alias": "head_over_invert"
+            },
+            {
+                "name": "comments",
+                "type": "esriFieldTypeString",
+                "alias": "comments",
+                "length": 255
+            },
+            {
+                "name": "include",
+                "type": "esriFieldTypeString",
+                "alias": "include",
+                "length": 255
+            },
+            {
+                "name": "culvert_capacity",
+                "type": "esriFieldTypeSingle",
+                "alias": "culvert_capacity"
+            }
+        ],
+        "features": [
+            {
+                "attributes": {
+                    "OBJECTID": 1,
+                    "Survey_Id": "66697",
+                    "Crossing_Code": "xy4216342773600046",
+                    "Alignment": "No data",
+                    "Aqua_Pass_Score": "-1",
+                    "AOP": "no score - missing data",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, John",
+                    "Crossing_Comment": "Long hike in, off gated driveway",
+                    "Crossing_Condition": "No data",
+                    "Crossing_Span": "No data",
+                    "Crossing_Type": "Inaccessible",
+                    "Data_Checked_Coordinator": "Doe, John",
+                    "Database_Entry_By": "1234",
+                    "Date_Data_Checked": "06:43.5",
+                    "Date_First_Entered": "01:41.8",
+                    "Date_Last_Updated": "01:41.9",
+                    "Date_Observed": "8/14/2018",
+                    "Evaluation": "no score - missing data",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "No data",
+                    "GIS_Latitude": 42.16342544555664,
+                    "GIS_Longitude": -73.60004425048828,
+                    "GPS_X_Coordinate": "-73.600091",
+                    "GPS_Y_Coordinate": "42.163404",
+                    "GPS_Distance": "4.5",
+                    "Inlet_Type": null,
+                    "Lccx": "1821475.438",
+                    "Lccy": "2344858.227",
+                    "Lccx_Moved": "1821475.438",
+                    "Lccy_Moved": "2344858.227",
+                    "Local_Id": null,
+                    "Location_Description": "Hike in, possible dirt path off driveway 115 Copake Lake Road",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": -1,
+                    "Observer": "Larson, Lindsay",
+                    "Road": null,
+                    "Road_Fill_Height": -1,
+                    "Road_Type": "Trail",
+                    "Scour_Pool": "No data",
+                    "State": "NY",
+                    "Stream_Name": "Unnamed",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No data",
+                    "Town": "Copake",
+                    "Naacc_Culvert_Id": null,
+                    "Armoring": null,
+                    "Barrier_Name": "No culvert",
+                    "Barrier_Severity": null,
+                    "Crossing_Structure_Length": null,
+                    "Culvert_Condition_Assess_Id": null,
+                    "Dry_Passage": null,
+                    "Inlet_Abutment_Height": null,
+                    "Inlet_Grade": null,
+                    "Inlet_Height": null,
+                    "Inlet_Openness": null,
+                    "Inlet_Structure_Type": null,
+                    "Inlet_Substrate_Water_Width": null,
+                    "Inlet_Type1": null,
+                    "Inlet_Water_Depth": null,
+                    "Inlet_Width": null,
+                    "Internal_Structure": null,
+                    "Internal_Structure_Comment": null,
+                    "Material": null,
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": null,
+                    "Outlet_Drop_To_Water_Surface": null,
+                    "Outlet_Grade": null,
+                    "Outlet_Height": null,
+                    "Outlet_Openness": null,
+                    "Outlet_Structure_Type": null,
+                    "Outlet_Substrate_Water_Width": null,
+                    "Outlet_Water_Depth": null,
+                    "Outlet_Width": null,
+                    "Passage_Height": null,
+                    "Slope_Confidence": null,
+                    "Slope_Percent": null,
+                    "Structure_Comment": null,
+                    "Structure_Substrate_Matches_Stream": null,
+                    "Substrate_Continuous": null,
+                    "Substrate_Type": null,
+                    "Water_Depth_Matches_Stream": null,
+                    "Water_Velocity": null,
+                    "County": "Columbia",
+                    "validation_errors": "{\"Slope_Percent\": [\"Field may not be null.\"], \"Inlet_Structure_Type\": [\"Field may not be null.\"], \"Naacc_Culvert_Id\": [\"Field may not be null.\"], \"Material\": [\"Field may not be null.\"], \"Crossing_Structure_Length\": [\"Field may not be null.\"], \"Outlet_Structure_Type\": [\"Field may not be null.\"], \"Inlet_Width\": [\"Field may not be null.\"], \"Inlet_Type\": [\"Field may not be null.\"], \"Outlet_Width\": [\"Field may not be null.\"], \"Outlet_Height\": [\"Field may not be null.\"], \"Inlet_Height\": [\"Field may not be null.\"], \"in_a\": [\"must be a number (False)\"], \"in_b\": [\"must be a number (False)\"], \"hw\": [\"must be a number (True)\"], \"length\": [\"must be a number (False)\"]}",
+                    "culv_mat": null,
+                    "in_type": null,
+                    "in_shape": null,
+                    "in_a": null,
+                    "in_b": null,
+                    "hw": -1,
+                    "slope": null,
+                    "length": null,
+                    "out_shape": null,
+                    "out_a": null,
+                    "out_b": null,
+                    "culvert_area_sqm": null,
+                    "culvert_depth_m": null,
+                    "coefficient_c": 0.03999999910593033,
+                    "coefficient_y": 0.699999988079071,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": null,
+                    "head_over_invert": null,
+                    "comments": "Long hike in, off gated driveway",
+                    "include": "0",
+                    "culvert_capacity": null
+                },
+                "geometry": {
+                    "x": -73.60004599999996,
+                    "y": 42.16342700000007
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 2,
+                    "Survey_Id": "66742",
+                    "Crossing_Code": "xy4210207573548535",
+                    "Alignment": "Flow-Aligned",
+                    "Aqua_Pass_Score": "0.868200103",
+                    "AOP": "Reduced AOP",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "34",
+                    "Bankfull_Width_Confidence": "Low/Estimated",
+                    "Coordinator": "Doe, John",
+                    "Crossing_Comment": null,
+                    "Crossing_Condition": "OK",
+                    "Crossing_Span": "Spans Full Channel & Banks",
+                    "Crossing_Type": "Bridge",
+                    "Data_Checked_Coordinator": "Doe, John",
+                    "Database_Entry_By": "1234",
+                    "Date_Data_Checked": "40:00.0",
+                    "Date_First_Entered": "46:16.4",
+                    "Date_Last_Updated": "46:16.9",
+                    "Date_Observed": "1/17/2019",
+                    "Evaluation": "Insignificant barrier",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "Typical low-flow",
+                    "GIS_Latitude": 42.102073669433594,
+                    "GIS_Longitude": -73.54853820800781,
+                    "GPS_X_Coordinate": "-73.548579",
+                    "GPS_Y_Coordinate": "42.102078",
+                    "GPS_Distance": "3.6",
+                    "Inlet_Type": "Headwall and Wingwalls",
+                    "Lccx": "1827192.044",
+                    "Lccy": "2339175.387",
+                    "Lccx_Moved": "1827192.044",
+                    "Lccy_Moved": "2339175.387",
+                    "Local_Id": null,
+                    "Location_Description": "1st bridge on 7a after empire road intersection",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": 1,
+                    "Observer": "Larson, Lindsay",
+                    "Road": "County Route 7a",
+                    "Road_Fill_Height": 0,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "None",
+                    "State": "NY",
+                    "Stream_Name": "Bish Bash Brook",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No",
+                    "Town": "Copake",
+                    "Naacc_Culvert_Id": "64662",
+                    "Armoring": "None",
+                    "Barrier_Name": "None",
+                    "Barrier_Severity": "None",
+                    "Crossing_Structure_Length": 35,
+                    "Culvert_Condition_Assess_Id": "0",
+                    "Dry_Passage": "Yes",
+                    "Inlet_Abutment_Height": "-1",
+                    "Inlet_Grade": "At Stream Grade",
+                    "Inlet_Height": 6.800000190734863,
+                    "Inlet_Openness": "10.891",
+                    "Inlet_Structure_Type": "Box/Bridge with Abutments",
+                    "Inlet_Substrate_Water_Width": "48.5",
+                    "Inlet_Type1": "Headwall and Wingwalls",
+                    "Inlet_Water_Depth": "0.89",
+                    "Inlet_Width": 64.5,
+                    "Internal_Structure": "None",
+                    "Internal_Structure_Comment": null,
+                    "Material": "Combination",
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": "0",
+                    "Outlet_Drop_To_Water_Surface": "0",
+                    "Outlet_Grade": "At Stream Grade",
+                    "Outlet_Height": 8,
+                    "Outlet_Openness": "12.974",
+                    "Outlet_Structure_Type": "Box/Bridge with Abutments",
+                    "Outlet_Substrate_Water_Width": "32.2",
+                    "Outlet_Water_Depth": "0.96",
+                    "Outlet_Width": 64.5,
+                    "Passage_Height": "5",
+                    "Slope_Confidence": null,
+                    "Slope_Percent": -1,
+                    "Structure_Comment": "No data",
+                    "Structure_Substrate_Matches_Stream": "None",
+                    "Substrate_Continuous": "None",
+                    "Substrate_Type": "None",
+                    "Water_Depth_Matches_Stream": "Yes",
+                    "Water_Velocity": "Yes",
+                    "County": "Columbia",
+                    "validation_errors": "{\"in_shape\": [\"Wrong bridge type (Box)\"], \"in_a\": [\"Bridge wider than 20 ft (64.5 ft)\"]}",
+                    "culv_mat": "Combination",
+                    "in_type": "Wingwall and Headwall",
+                    "in_shape": "Box",
+                    "in_a": 64.5,
+                    "in_b": 6.800000190734863,
+                    "hw": 0,
+                    "slope": -1,
+                    "length": 35,
+                    "out_shape": "Box/Bridge with Abutments",
+                    "out_a": 64.5,
+                    "out_b": 8,
+                    "culvert_area_sqm": null,
+                    "culvert_depth_m": null,
+                    "coefficient_c": 0.03999999910593033,
+                    "coefficient_y": 0.699999988079071,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": null,
+                    "head_over_invert": null,
+                    "comments": null,
+                    "include": "0",
+                    "culvert_capacity": null
+                },
+                "geometry": {
+                    "x": -73.54853499999996,
+                    "y": 42.10207500000007
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 3,
+                    "Survey_Id": "75158",
+                    "Crossing_Code": "xy4230766073704447",
+                    "Alignment": "Flow-Aligned",
+                    "Aqua_Pass_Score": "0.879142099",
+                    "AOP": "Reduced AOP",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, Jane",
+                    "Crossing_Comment": null,
+                    "Crossing_Condition": "OK",
+                    "Crossing_Span": "Moderate",
+                    "Crossing_Type": "Multiple Culvert",
+                    "Data_Checked_Coordinator": "Doe, Jane",
+                    "Database_Entry_By": "5678",
+                    "Date_Data_Checked": "38:40.7",
+                    "Date_First_Entered": "27:05.7",
+                    "Date_Last_Updated": "27:06.4",
+                    "Date_Observed": "10/24/2019",
+                    "Evaluation": "Insignificant barrier",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "Moderate",
+                    "GIS_Latitude": 42.30765914916992,
+                    "GIS_Longitude": -73.7044448852539,
+                    "GPS_X_Coordinate": "-73.7044329",
+                    "GPS_Y_Coordinate": "42.307659",
+                    "GPS_Distance": "1.2",
+                    "Inlet_Type": "Projecting",
+                    "Lccx": "1809393.117",
+                    "Lccy": "2358549.608",
+                    "Lccx_Moved": "1809393.117",
+                    "Lccy_Moved": "2358549.608",
+                    "Local_Id": null,
+                    "Location_Description": "next to house 117",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": 2,
+                    "Observer": "Facchine, Stephanie",
+                    "Road": "Old Post Road",
+                    "Road_Fill_Height": 1,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "Small",
+                    "State": "NY",
+                    "Stream_Name": "Fitting Creek",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No",
+                    "Town": "Ghent",
+                    "Naacc_Culvert_Id": "72498",
+                    "Armoring": "None",
+                    "Barrier_Name": "Debris/Sediment/Rock",
+                    "Barrier_Severity": "Minor",
+                    "Crossing_Structure_Length": 25,
+                    "Culvert_Condition_Assess_Id": "0",
+                    "Dry_Passage": "No",
+                    "Inlet_Abutment_Height": "-1",
+                    "Inlet_Grade": "At Stream Grade",
+                    "Inlet_Height": 6.300000190734863,
+                    "Inlet_Openness": "1.6",
+                    "Inlet_Structure_Type": "Box Culvert",
+                    "Inlet_Substrate_Water_Width": "8",
+                    "Inlet_Type1": "Projecting",
+                    "Inlet_Water_Depth": "1.3",
+                    "Inlet_Width": 8,
+                    "Internal_Structure": "None",
+                    "Internal_Structure_Comment": "No data",
+                    "Material": "Concrete",
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": "0",
+                    "Outlet_Drop_To_Water_Surface": "0",
+                    "Outlet_Grade": "At Stream Grade",
+                    "Outlet_Height": 6.300000190734863,
+                    "Outlet_Openness": "1.6",
+                    "Outlet_Structure_Type": "Box Culvert",
+                    "Outlet_Substrate_Water_Width": "8",
+                    "Outlet_Water_Depth": "1.3",
+                    "Outlet_Width": 8,
+                    "Passage_Height": "-1",
+                    "Slope_Confidence": "Low",
+                    "Slope_Percent": 0.8999999761581421,
+                    "Structure_Comment": "No data",
+                    "Structure_Substrate_Matches_Stream": "Comparable",
+                    "Substrate_Continuous": "50%",
+                    "Substrate_Type": "Sand",
+                    "Water_Depth_Matches_Stream": "Yes",
+                    "Water_Velocity": "Yes",
+                    "County": "Columbia",
+                    "validation_errors": null,
+                    "culv_mat": "Concrete",
+                    "in_type": "Projecting",
+                    "in_shape": "Box",
+                    "in_a": 2.4384000301361084,
+                    "in_b": 1.920240044593811,
+                    "hw": 0.30480000376701355,
+                    "slope": 0.8999999761581421,
+                    "length": 7.619999885559082,
+                    "out_shape": "Box Culvert",
+                    "out_a": 8,
+                    "out_b": 6.300000190734863,
+                    "culvert_area_sqm": 4.682313442230225,
+                    "culvert_depth_m": 1.920240044593811,
+                    "coefficient_c": 0.03779999911785126,
+                    "coefficient_y": 0.8700000047683716,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": 0.008999999612569809,
+                    "head_over_invert": 2.2250399589538574,
+                    "comments": "",
+                    "include": "1",
+                    "culvert_capacity": 9.97879695892334
+                },
+                "geometry": {
+                    "x": -73.70444699999996,
+                    "y": 42.307660000000055
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 4,
+                    "Survey_Id": "75158",
+                    "Crossing_Code": "xy4230766073704447",
+                    "Alignment": "Flow-Aligned",
+                    "Aqua_Pass_Score": "0.879142099",
+                    "AOP": "Reduced AOP",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, Jane",
+                    "Crossing_Comment": null,
+                    "Crossing_Condition": "OK",
+                    "Crossing_Span": "Moderate",
+                    "Crossing_Type": "Multiple Culvert",
+                    "Data_Checked_Coordinator": "Doe, Jane",
+                    "Database_Entry_By": "5678",
+                    "Date_Data_Checked": "38:40.7",
+                    "Date_First_Entered": "27:05.7",
+                    "Date_Last_Updated": "27:06.4",
+                    "Date_Observed": "10/24/2019",
+                    "Evaluation": "Insignificant barrier",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "Moderate",
+                    "GIS_Latitude": 42.30765914916992,
+                    "GIS_Longitude": -73.7044448852539,
+                    "GPS_X_Coordinate": "-73.7044329",
+                    "GPS_Y_Coordinate": "42.307659",
+                    "GPS_Distance": "1.2",
+                    "Inlet_Type": "Projecting",
+                    "Lccx": "1809393.117",
+                    "Lccy": "2358549.608",
+                    "Lccx_Moved": "1809393.117",
+                    "Lccy_Moved": "2358549.608",
+                    "Local_Id": null,
+                    "Location_Description": "next to house 117",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": 2,
+                    "Observer": "Facchine, Stephanie",
+                    "Road": "Old Post Road",
+                    "Road_Fill_Height": 1,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "Small",
+                    "State": "NY",
+                    "Stream_Name": "Fitting Creek",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No",
+                    "Town": "Ghent",
+                    "Naacc_Culvert_Id": "72499",
+                    "Armoring": "None",
+                    "Barrier_Name": "Debris/Sediment/Rock",
+                    "Barrier_Severity": "Minor",
+                    "Crossing_Structure_Length": 25,
+                    "Culvert_Condition_Assess_Id": "0",
+                    "Dry_Passage": "No",
+                    "Inlet_Abutment_Height": "-1",
+                    "Inlet_Grade": "At Stream Grade",
+                    "Inlet_Height": 6.300000190734863,
+                    "Inlet_Openness": "1.6",
+                    "Inlet_Structure_Type": "Box Culvert",
+                    "Inlet_Substrate_Water_Width": "8",
+                    "Inlet_Type1": "Projecting",
+                    "Inlet_Water_Depth": "1.3",
+                    "Inlet_Width": 8,
+                    "Internal_Structure": "None",
+                    "Internal_Structure_Comment": "No data",
+                    "Material": "Concrete",
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": "0",
+                    "Outlet_Drop_To_Water_Surface": "0",
+                    "Outlet_Grade": "At Stream Grade",
+                    "Outlet_Height": 6.300000190734863,
+                    "Outlet_Openness": "1.6",
+                    "Outlet_Structure_Type": "Box Culvert",
+                    "Outlet_Substrate_Water_Width": "8",
+                    "Outlet_Water_Depth": "1.3",
+                    "Outlet_Width": 8,
+                    "Passage_Height": "-1",
+                    "Slope_Confidence": "Low",
+                    "Slope_Percent": 1,
+                    "Structure_Comment": "No data",
+                    "Structure_Substrate_Matches_Stream": "Comparable",
+                    "Substrate_Continuous": "25%",
+                    "Substrate_Type": "Cobble",
+                    "Water_Depth_Matches_Stream": "Yes",
+                    "Water_Velocity": "Yes",
+                    "County": "Columbia",
+                    "validation_errors": null,
+                    "culv_mat": "Concrete",
+                    "in_type": "Projecting",
+                    "in_shape": "Box",
+                    "in_a": 2.4384000301361084,
+                    "in_b": 1.920240044593811,
+                    "hw": 0.30480000376701355,
+                    "slope": 1,
+                    "length": 7.619999885559082,
+                    "out_shape": "Box Culvert",
+                    "out_a": 8,
+                    "out_b": 6.300000190734863,
+                    "culvert_area_sqm": 4.682313442230225,
+                    "culvert_depth_m": 1.920240044593811,
+                    "coefficient_c": 0.03779999911785126,
+                    "coefficient_y": 0.8700000047683716,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": 0.009999999776482582,
+                    "head_over_invert": 2.2250399589538574,
+                    "comments": "",
+                    "include": "1",
+                    "culvert_capacity": 9.987300872802734
+                },
+                "geometry": {
+                    "x": -73.70444699999996,
+                    "y": 42.307660000000055
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 5,
+                    "Survey_Id": "75159",
+                    "Crossing_Code": "xy4234887773604209",
+                    "Alignment": "Flow-Aligned",
+                    "Aqua_Pass_Score": "0.701365948",
+                    "AOP": "Reduced AOP",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, Jane",
+                    "Crossing_Comment": null,
+                    "Crossing_Condition": "Poor",
+                    "Crossing_Span": "Severe",
+                    "Crossing_Type": "Culvert",
+                    "Data_Checked_Coordinator": "Doe, Jane",
+                    "Database_Entry_By": "2018",
+                    "Date_Data_Checked": "33:00.0",
+                    "Date_First_Entered": "29:18.4",
+                    "Date_Last_Updated": "29:19.0",
+                    "Date_Observed": "11/5/2019",
+                    "Evaluation": "Minor barrier",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "No Flow",
+                    "GIS_Latitude": 42.348876953125,
+                    "GIS_Longitude": -73.60420989990234,
+                    "GPS_X_Coordinate": "-73.6039717",
+                    "GPS_Y_Coordinate": "42.3489233",
+                    "GPS_Distance": "20.2",
+                    "Inlet_Type": "Projecting",
+                    "Lccx": "1816301.031",
+                    "Lccy": "2364943.654",
+                    "Lccx_Moved": "1816301.031",
+                    "Lccy_Moved": "2364943.654",
+                    "Local_Id": null,
+                    "Location_Description": "bank of Greene Countty",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": 1,
+                    "Observer": "Facchine, Stephanie",
+                    "Road": "Payn Avenue",
+                    "Road_Fill_Height": 1.5,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "Large",
+                    "State": "NY",
+                    "Stream_Name": "unnamed",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No",
+                    "Town": "Ghent",
+                    "Naacc_Culvert_Id": "72500",
+                    "Armoring": "None",
+                    "Barrier_Name": "None",
+                    "Barrier_Severity": "None",
+                    "Crossing_Structure_Length": 90,
+                    "Culvert_Condition_Assess_Id": "0",
+                    "Dry_Passage": "No",
+                    "Inlet_Abutment_Height": "-1",
+                    "Inlet_Grade": "At Stream Grade",
+                    "Inlet_Height": 1.2000000476837158,
+                    "Inlet_Openness": "0.009",
+                    "Inlet_Structure_Type": "Round Culvert",
+                    "Inlet_Substrate_Water_Width": "1.5",
+                    "Inlet_Type1": "Projecting",
+                    "Inlet_Water_Depth": "0.6",
+                    "Inlet_Width": 1.5,
+                    "Internal_Structure": "None",
+                    "Internal_Structure_Comment": "No data",
+                    "Material": "Metal",
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": "0",
+                    "Outlet_Drop_To_Water_Surface": "0",
+                    "Outlet_Grade": "At Stream Grade",
+                    "Outlet_Height": 2.4000000953674316,
+                    "Outlet_Openness": "0.018",
+                    "Outlet_Structure_Type": "Round Culvert",
+                    "Outlet_Substrate_Water_Width": "3",
+                    "Outlet_Water_Depth": "2.2",
+                    "Outlet_Width": 3,
+                    "Passage_Height": "-1",
+                    "Slope_Confidence": "Low",
+                    "Slope_Percent": 0.6000000238418579,
+                    "Structure_Comment": "outlet is almost completely submerged",
+                    "Structure_Substrate_Matches_Stream": "Contrasting",
+                    "Substrate_Continuous": "50%",
+                    "Substrate_Type": "Silt",
+                    "Water_Depth_Matches_Stream": "Yes",
+                    "Water_Velocity": "Yes",
+                    "County": "Columbia",
+                    "validation_errors": null,
+                    "culv_mat": "Metal",
+                    "in_type": "Projecting",
+                    "in_shape": "Round",
+                    "in_a": 0.45719999074935913,
+                    "in_b": 1.2000000476837158,
+                    "hw": 0.45719999074935913,
+                    "slope": 0.6000000238418579,
+                    "length": 27.43199920654297,
+                    "out_shape": "Round Culvert",
+                    "out_a": 3,
+                    "out_b": 2.4000000953674316,
+                    "culvert_area_sqm": 0.16417308151721954,
+                    "culvert_depth_m": 0.45719999074935913,
+                    "coefficient_c": 0.054999999701976776,
+                    "coefficient_y": 0.5400000214576721,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": 0.006000000052154064,
+                    "head_over_invert": 0.9143999814987183,
+                    "comments": "",
+                    "include": "1",
+                    "culvert_capacity": 0.31613853573799133
+                },
+                "geometry": {
+                    "x": -73.60420899999997,
+                    "y": 42.34887700000007
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 6,
+                    "Survey_Id": "75160",
+                    "Crossing_Code": "xy4229190573686120",
+                    "Alignment": "Flow-Aligned",
+                    "Aqua_Pass_Score": "0.760264571",
+                    "AOP": "Reduced AOP",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, Jane",
+                    "Crossing_Comment": null,
+                    "Crossing_Condition": "OK",
+                    "Crossing_Span": "Moderate",
+                    "Crossing_Type": "Culvert",
+                    "Data_Checked_Coordinator": "Doe, Jane",
+                    "Database_Entry_By": "2018",
+                    "Date_Data_Checked": "32:29.9",
+                    "Date_First_Entered": "30:45.8",
+                    "Date_Last_Updated": "30:46.4",
+                    "Date_Observed": "10/24/2019",
+                    "Evaluation": "Minor barrier",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "Moderate",
+                    "GIS_Latitude": 42.29190444946289,
+                    "GIS_Longitude": -73.68611907958984,
+                    "GPS_X_Coordinate": "-73.6861446",
+                    "GPS_Y_Coordinate": "42.2919539",
+                    "GPS_Distance": "5.8",
+                    "Inlet_Type": "Projecting",
+                    "Lccx": "1811262.886",
+                    "Lccy": "2357185.296",
+                    "Lccx_Moved": "1811262.886",
+                    "Lccy_Moved": "2357185.296",
+                    "Local_Id": null,
+                    "Location_Description": "near ostrander rd",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": 1,
+                    "Observer": "Facchine, Stephanie",
+                    "Road": "Route 66",
+                    "Road_Fill_Height": 4,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "Large",
+                    "State": "NY",
+                    "Stream_Name": "Unnamed",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No",
+                    "Town": "Ghent",
+                    "Naacc_Culvert_Id": "72501",
+                    "Armoring": "None",
+                    "Barrier_Name": "None",
+                    "Barrier_Severity": "None",
+                    "Crossing_Structure_Length": 40,
+                    "Culvert_Condition_Assess_Id": "0",
+                    "Dry_Passage": "No",
+                    "Inlet_Abutment_Height": "-1",
+                    "Inlet_Grade": "At Stream Grade",
+                    "Inlet_Height": 2,
+                    "Inlet_Openness": "0.087",
+                    "Inlet_Structure_Type": "Round Culvert",
+                    "Inlet_Substrate_Water_Width": "1.5",
+                    "Inlet_Type1": "Projecting",
+                    "Inlet_Water_Depth": "0.1",
+                    "Inlet_Width": 2.200000047683716,
+                    "Internal_Structure": "None",
+                    "Internal_Structure_Comment": "No data",
+                    "Material": "Concrete",
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": "0",
+                    "Outlet_Drop_To_Water_Surface": "0",
+                    "Outlet_Grade": "At Stream Grade",
+                    "Outlet_Height": 2,
+                    "Outlet_Openness": "0.037",
+                    "Outlet_Structure_Type": "Round Culvert",
+                    "Outlet_Substrate_Water_Width": "2",
+                    "Outlet_Water_Depth": "1.1",
+                    "Outlet_Width": 2,
+                    "Passage_Height": "-1",
+                    "Slope_Confidence": "Low",
+                    "Slope_Percent": 7,
+                    "Structure_Comment": "outlet half full. can see through one side to the other",
+                    "Structure_Substrate_Matches_Stream": "Comparable",
+                    "Substrate_Continuous": "25%",
+                    "Substrate_Type": "Silt",
+                    "Water_Depth_Matches_Stream": "Yes",
+                    "Water_Velocity": "Yes",
+                    "County": "Columbia",
+                    "validation_errors": null,
+                    "culv_mat": "Concrete",
+                    "in_type": "Projecting",
+                    "in_shape": "Round",
+                    "in_a": 0.6705600023269653,
+                    "in_b": 2,
+                    "hw": 1.2192000150680542,
+                    "slope": 7,
+                    "length": 12.192000389099121,
+                    "out_shape": "Round Culvert",
+                    "out_a": 2,
+                    "out_b": 2,
+                    "culvert_area_sqm": 0.3531545400619507,
+                    "culvert_depth_m": 0.6705600023269653,
+                    "coefficient_c": 0.03200000151991844,
+                    "coefficient_y": 0.6899999976158142,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": 0.07000000029802322,
+                    "head_over_invert": 1.8897600173950195,
+                    "comments": "",
+                    "include": "1",
+                    "culvert_capacity": 1.3129152059555054
+                },
+                "geometry": {
+                    "x": -73.68611999999996,
+                    "y": 42.29190500000004
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 7,
+                    "Survey_Id": "75161",
+                    "Crossing_Code": "xy4234758173604898",
+                    "Alignment": "Flow-Aligned",
+                    "Aqua_Pass_Score": "0.977509136",
+                    "AOP": "Full AOP",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, Jane",
+                    "Crossing_Comment": null,
+                    "Crossing_Condition": "OK",
+                    "Crossing_Span": "Spans Only Bankfull/Active Channel",
+                    "Crossing_Type": "Culvert",
+                    "Data_Checked_Coordinator": "Doe, Jane",
+                    "Database_Entry_By": "2018",
+                    "Date_Data_Checked": "31:57.6",
+                    "Date_First_Entered": "43:49.7",
+                    "Date_Last_Updated": "43:50.4",
+                    "Date_Observed": "11/5/2019",
+                    "Evaluation": "Insignificant barrier",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "Moderate",
+                    "GIS_Latitude": 42.34757995605469,
+                    "GIS_Longitude": -73.60489654541016,
+                    "GPS_X_Coordinate": "-73.6050033",
+                    "GPS_Y_Coordinate": "42.3476017",
+                    "GPS_Distance": "9",
+                    "Inlet_Type": "Headwall",
+                    "Lccx": "-1",
+                    "Lccy": "-1",
+                    "Lccx_Moved": "-1",
+                    "Lccy_Moved": "-1",
+                    "Local_Id": null,
+                    "Location_Description": "entry to plaza",
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": 1,
+                    "Observer": "Facchine, Stephanie",
+                    "Road": "Price Chopper Drive",
+                    "Road_Fill_Height": 3.5,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "None",
+                    "State": "NY",
+                    "Stream_Name": "unnmaed",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No",
+                    "Town": "Ghent",
+                    "Naacc_Culvert_Id": "72502",
+                    "Armoring": "None",
+                    "Barrier_Name": "None",
+                    "Barrier_Severity": "None",
+                    "Crossing_Structure_Length": 39,
+                    "Culvert_Condition_Assess_Id": "0",
+                    "Dry_Passage": "No",
+                    "Inlet_Abutment_Height": "-1",
+                    "Inlet_Grade": "At Stream Grade",
+                    "Inlet_Height": 4.5,
+                    "Inlet_Openness": "1.169",
+                    "Inlet_Structure_Type": "Box Culvert",
+                    "Inlet_Substrate_Water_Width": "12",
+                    "Inlet_Type1": "Headwall",
+                    "Inlet_Water_Depth": "0.7",
+                    "Inlet_Width": 12,
+                    "Internal_Structure": "None",
+                    "Internal_Structure_Comment": "No data",
+                    "Material": "Concrete",
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": "0",
+                    "Outlet_Drop_To_Water_Surface": "0",
+                    "Outlet_Grade": "At Stream Grade",
+                    "Outlet_Height": 4.5,
+                    "Outlet_Openness": "1.169",
+                    "Outlet_Structure_Type": "Box Culvert",
+                    "Outlet_Substrate_Water_Width": "12",
+                    "Outlet_Water_Depth": "0.7",
+                    "Outlet_Width": 12,
+                    "Passage_Height": "-1",
+                    "Slope_Confidence": "Low",
+                    "Slope_Percent": 0.30000001192092896,
+                    "Structure_Comment": "No data",
+                    "Structure_Substrate_Matches_Stream": "Comparable",
+                    "Substrate_Continuous": "100%",
+                    "Substrate_Type": "Sand",
+                    "Water_Depth_Matches_Stream": "Yes",
+                    "Water_Velocity": "Yes",
+                    "County": "Columbia",
+                    "validation_errors": null,
+                    "culv_mat": "Concrete",
+                    "in_type": "Headwall",
+                    "in_shape": "Box",
+                    "in_a": 3.657599925994873,
+                    "in_b": 1.3716000318527222,
+                    "hw": 1.0667999982833862,
+                    "slope": 0.30000001192092896,
+                    "length": 11.887200355529785,
+                    "out_shape": "Box Culvert",
+                    "out_a": 12,
+                    "out_b": 4.5,
+                    "culvert_area_sqm": 5.016764163970947,
+                    "culvert_depth_m": 1.3716000318527222,
+                    "coefficient_c": 0.03779999911785126,
+                    "coefficient_y": 0.8700000047683716,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": 0.003000000026077032,
+                    "head_over_invert": 2.4384000301361084,
+                    "comments": "",
+                    "include": "1",
+                    "culvert_capacity": 15.911874771118164
+                },
+                "geometry": {
+                    "x": -73.60489799999993,
+                    "y": 42.34758100000005
+                }
+            },
+            {
+                "attributes": {
+                    "OBJECTID": 8,
+                    "Survey_Id": "75162",
+                    "Crossing_Code": "xy4228882973696558",
+                    "Alignment": "No data",
+                    "Aqua_Pass_Score": "-1",
+                    "AOP": "no score - missing data",
+                    "Approved": "TRUE",
+                    "Bankfull_Width": "-1",
+                    "Bankfull_Width_Confidence": "No data",
+                    "Coordinator": "Doe, Jane",
+                    "Crossing_Comment": "possibly no crossing.",
+                    "Crossing_Condition": "No data",
+                    "Crossing_Span": "No data",
+                    "Crossing_Type": "Inaccessible",
+                    "Data_Checked_Coordinator": "Doe, Jane",
+                    "Database_Entry_By": "2018",
+                    "Date_Data_Checked": "31:39.3",
+                    "Date_First_Entered": "49:32.4",
+                    "Date_Last_Updated": "49:32.5",
+                    "Date_Observed": "10/24/2019",
+                    "Evaluation": "no score - missing data",
+                    "Flag_Name": "No data",
+                    "Flow_Condition": "No data",
+                    "GIS_Latitude": 42.2888298034668,
+                    "GIS_Longitude": -73.6965560913086,
+                    "GPS_X_Coordinate": "-73.6964741",
+                    "GPS_Y_Coordinate": "42.2889452",
+                    "GPS_Distance": "14.7",
+                    "Inlet_Type": null,
+                    "Lccx": "1810511.25",
+                    "Lccy": "2356651.863",
+                    "Lccx_Moved": "1810511.25",
+                    "Lccy_Moved": "2356651.863",
+                    "Local_Id": null,
+                    "Location_Description": null,
+                    "Maine_Private": "FALSE",
+                    "No_Crossing": "FALSE",
+                    "Number_Of_Culverts": -1,
+                    "Observer": "Facchine, Stephanie",
+                    "Road": "Route 66",
+                    "Road_Fill_Height": -1,
+                    "Road_Type": "Paved",
+                    "Scour_Pool": "No data",
+                    "State": "NY",
+                    "Stream_Name": "Mud Creek",
+                    "Terrestrial_Passage_Score": null,
+                    "Tidal_Site": "No data",
+                    "Town": "Ghent",
+                    "Naacc_Culvert_Id": null,
+                    "Armoring": null,
+                    "Barrier_Name": "No culvert",
+                    "Barrier_Severity": null,
+                    "Crossing_Structure_Length": null,
+                    "Culvert_Condition_Assess_Id": null,
+                    "Dry_Passage": null,
+                    "Inlet_Abutment_Height": null,
+                    "Inlet_Grade": null,
+                    "Inlet_Height": null,
+                    "Inlet_Openness": null,
+                    "Inlet_Structure_Type": null,
+                    "Inlet_Substrate_Water_Width": null,
+                    "Inlet_Type1": null,
+                    "Inlet_Water_Depth": null,
+                    "Inlet_Width": null,
+                    "Internal_Structure": null,
+                    "Internal_Structure_Comment": null,
+                    "Material": null,
+                    "NHD_HUC8_Watershed": "Middle Hudson",
+                    "Outlet_Drop_To_Stream_Bottom": null,
+                    "Outlet_Drop_To_Water_Surface": null,
+                    "Outlet_Grade": null,
+                    "Outlet_Height": null,
+                    "Outlet_Openness": null,
+                    "Outlet_Structure_Type": null,
+                    "Outlet_Substrate_Water_Width": null,
+                    "Outlet_Water_Depth": null,
+                    "Outlet_Width": null,
+                    "Passage_Height": null,
+                    "Slope_Confidence": null,
+                    "Slope_Percent": null,
+                    "Structure_Comment": null,
+                    "Structure_Substrate_Matches_Stream": null,
+                    "Substrate_Continuous": null,
+                    "Substrate_Type": null,
+                    "Water_Depth_Matches_Stream": null,
+                    "Water_Velocity": null,
+                    "County": "Columbia",
+                    "validation_errors": "{\"Slope_Percent\": [\"Field may not be null.\"], \"Inlet_Structure_Type\": [\"Field may not be null.\"], \"Naacc_Culvert_Id\": [\"Field may not be null.\"], \"Material\": [\"Field may not be null.\"], \"Crossing_Structure_Length\": [\"Field may not be null.\"], \"Outlet_Structure_Type\": [\"Field may not be null.\"], \"Inlet_Width\": [\"Field may not be null.\"], \"Inlet_Type\": [\"Field may not be null.\"], \"Outlet_Width\": [\"Field may not be null.\"], \"Outlet_Height\": [\"Field may not be null.\"], \"Inlet_Height\": [\"Field may not be null.\"], \"in_a\": [\"must be a number (False)\"], \"in_b\": [\"must be a number (False)\"], \"hw\": [\"must be a number (True)\"], \"length\": [\"must be a number (False)\"]}",
+                    "culv_mat": null,
+                    "in_type": null,
+                    "in_shape": null,
+                    "in_a": null,
+                    "in_b": null,
+                    "hw": -1,
+                    "slope": null,
+                    "length": null,
+                    "out_shape": null,
+                    "out_a": null,
+                    "out_b": null,
+                    "culvert_area_sqm": null,
+                    "culvert_depth_m": null,
+                    "coefficient_c": 0.03999999910593033,
+                    "coefficient_y": 0.699999988079071,
+                    "coefficient_slope": -0.5,
+                    "slope_rr": null,
+                    "head_over_invert": null,
+                    "comments": "possibly no crossing.",
+                    "include": "0",
+                    "culvert_capacity": null
+                },
+                "geometry": {
+                    "x": -73.69655799999998,
+                    "y": 42.28882900000008
+                }
+            }
+        ]
+    },
+    "points_id_fieldname": null,
+    "points_group_fieldname": null,
+    "points_spatial_ref_code": 4326,
+    "raster_dem_filepath": null,
+    "raster_watershed_filepath": null,
+    "raster_flowdir_filepath": "landscape/dem_filled_flowdir.tif",
+    "raster_slope_filepath": "landscape/dem_filled_slope.tif",
+    "raster_curvenumber_filepath": "landscape/curveno.tif",
+    "precip_src_config_filepath": null,
+    "precip_noaa_csv_filepath": null,
+    "precip_src_config": {
+        "root": "rainfall",
+        "rasters": [
+            {
+                "path": "rainfall/ne1000yr24ha.asc.tif",
+                "freq": 1000,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne100yr24ha.asc.tif",
+                "freq": 100,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne10yr24ha.asc.tif",
+                "freq": 10,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne1yr24ha.asc.tif",
+                "freq": 1,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne200yr24ha.asc.tif",
+                "freq": 200,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne25yr24ha.asc.tif",
+                "freq": 25,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne2yr24ha.asc.tif",
+                "freq": 2,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne500yr24ha.asc.tif",
+                "freq": 500,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne50yr24ha.asc.tif",
+                "freq": 50,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            },
+            {
+                "path": "rainfall/ne5yr24ha.asc.tif",
+                "freq": 5,
+                "ext": ".tif",
+                "const": null,
+                "units": "1000ths of inches"
+            }
+        ]
+    },
+    "area_conv_factor": 9.290304e-08,
+    "leng_conv_factor": 1.0,
+    "sheds_simplify": false,
+    "output_points_filepath": null,
+    "output_sheds_filepath": "scratch.gdb/test_delineations8",
+    "all_sheds_raster": null,
+    "all_sheds_vector": null,
+    "points": [
+        {
+            "uid": null,
+            "lat": 42.16342544555664,
+            "lng": -73.60004425048828,
+            "spatial_ref_code": 4326,
+            "group_id": "66697",
+            "naacc": null,
+            "capacity": null,
+            "shed": null,
+            "analytics": [],
+            "failure_event": null,
+            "include": false,
+            "validation_errors": {
+                "Slope_Percent": [
+                    "Field may not be null."
+                ],
+                "Inlet_Structure_Type": [
+                    "Field may not be null."
+                ],
+                "Naacc_Culvert_Id": [
+                    "Field may not be null."
+                ],
+                "Material": [
+                    "Field may not be null."
+                ],
+                "Crossing_Structure_Length": [
+                    "Field may not be null."
+                ],
+                "Outlet_Structure_Type": [
+                    "Field may not be null."
+                ],
+                "Inlet_Width": [
+                    "Field may not be null."
+                ],
+                "Inlet_Type": [
+                    "Field may not be null."
+                ],
+                "Outlet_Width": [
+                    "Field may not be null."
+                ],
+                "Outlet_Height": [
+                    "Field may not be null."
+                ],
+                "Inlet_Height": [
+                    "Field may not be null."
+                ],
+                "in_a": [
+                    "must be a number (False)"
+                ],
+                "in_b": [
+                    "must be a number (False)"
+                ],
+                "hw": [
+                    "must be a number (True)"
+                ],
+                "length": [
+                    "must be a number (False)"
+                ]
+            },
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": "64662",
+            "lat": 42.102073669433594,
+            "lng": -73.54853820800781,
+            "spatial_ref_code": 4326,
+            "group_id": "66742",
+            "naacc": {
+                "Naacc_Culvert_Id": "64662",
+                "Survey_Id": "66742",
+                "GIS_Latitude": 42.102073669433594,
+                "GIS_Longitude": -73.54853820800781,
+                "Number_Of_Culverts": 1,
+                "Material": "Combination",
+                "Inlet_Type": "Headwall and Wingwalls",
+                "Inlet_Structure_Type": "Box/Bridge with Abutments",
+                "Inlet_Width": 64.5,
+                "Inlet_Height": 6.800000190734863,
+                "Road_Fill_Height": 0.0,
+                "Slope_Percent": -1.0,
+                "Crossing_Structure_Length": 35.0,
+                "Outlet_Structure_Type": "Box/Bridge with Abutments",
+                "Outlet_Width": 64.5,
+                "Outlet_Height": 8.0,
+                "Crossing_Type": "Bridge",
+                "Road": "County Route 7a",
+                "Crossing_Comment": null
+            },
+            "capacity": null,
+            "shed": null,
+            "analytics": [],
+            "failure_event": null,
+            "include": false,
+            "validation_errors": {
+                "in_shape": [
+                    "Wrong bridge type (Box)"
+                ],
+                "in_a": [
+                    "Bridge wider than 20 ft (64.5 ft)"
+                ]
+            },
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": "72498",
+            "lat": 42.30765914916992,
+            "lng": -73.7044448852539,
+            "spatial_ref_code": 4326,
+            "group_id": "75158",
+            "naacc": {
+                "Naacc_Culvert_Id": "72498",
+                "Survey_Id": "75158",
+                "GIS_Latitude": 42.30765914916992,
+                "GIS_Longitude": -73.7044448852539,
+                "Number_Of_Culverts": 2,
+                "Material": "Concrete",
+                "Inlet_Type": "Projecting",
+                "Inlet_Structure_Type": "Box Culvert",
+                "Inlet_Width": 8.0,
+                "Inlet_Height": 6.300000190734863,
+                "Road_Fill_Height": 1.0,
+                "Slope_Percent": 0.8999999761581421,
+                "Crossing_Structure_Length": 25.0,
+                "Outlet_Structure_Type": "Box Culvert",
+                "Outlet_Width": 8.0,
+                "Outlet_Height": 6.300000190734863,
+                "Crossing_Type": "Multiple Culvert",
+                "Road": "Old Post Road",
+                "Crossing_Comment": null
+            },
+            "capacity": {
+                "culv_mat": "Concrete",
+                "in_type": "Projecting",
+                "in_shape": "Box",
+                "in_a": 2.4384000301361084,
+                "in_b": 1.920240044593811,
+                "hw": 0.30480000376701355,
+                "slope": 0.8999999761581421,
+                "length": 7.619999885559082,
+                "out_shape": "Box Culvert",
+                "out_a": 8.0,
+                "out_b": 6.300000190734863,
+                "crossing_type": null,
+                "culvert_area_sqm": 4.682313442230225,
+                "culvert_depth_m": 1.920240044593811,
+                "coefficient_c": 0.03779999911785126,
+                "coefficient_y": 0.8700000047683716,
+                "coefficient_slope": -0.5,
+                "slope_rr": 0.008999999612569809,
+                "head_over_invert": 2.2250399589538574,
+                "comments": "",
+                "include": true,
+                "culvert_capacity": 9.978796751827035,
+                "crossing_capacity": 19.966097531717068
+            },
+            "shed": {
+                "uid": "72498",
+                "group_id": "75158",
+                "area_sqkm": 19.692527509295594,
+                "avg_slope_pct": 5.899276006604845,
+                "avg_cn": 66.4802489521147,
+                "max_fl": 9958.32421875,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2282.38574876159,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 2813.1129175663664,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 3680.2570811634782,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4399.531309538928,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 5389.594055633181,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 6125.125873237643,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 6916.281722342186,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 7863.787374571319,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 9292.34065794487,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 10507.530166391443,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": 1.158055242469295,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_72498_delineation8",
+                "filepath_vector": "scratch.gdb/shed_72498_delineation_dissolved8"
+            },
+            "analytics": [
+                {
+                    "frequency": "1",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 5.797259801854439,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 10.185285844829371,
+                        "crossing_peakflow_m3s": 10.185285844829371
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -0.20648909300233598,
+                        "crossing_overflow_m3s": 9.780811686887697
+                    }
+                },
+                {
+                    "frequency": "2",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 7.14530681061857,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 24.088545120432766,
+                        "crossing_peakflow_m3s": 24.088545120432766
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -14.10974836860573,
+                        "crossing_overflow_m3s": -4.122447588715698
+                    }
+                },
+                {
+                    "frequency": "5",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 9.347852986155235,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 56.02694428100117,
+                        "crossing_peakflow_m3s": 56.02694428100117
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -46.04814752917414,
+                        "crossing_overflow_m3s": -36.0608467492841
+                    }
+                },
+                {
+                    "frequency": "10",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 11.174809526228879,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 88.21216224343625,
+                        "crossing_peakflow_m3s": 88.21216224343625
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -78.23336549160922,
+                        "crossing_overflow_m3s": -68.24606471171919
+                    }
+                },
+                {
+                    "frequency": "25",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 13.689568901308279,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 137.74172613250914,
+                        "crossing_peakflow_m3s": 137.74172613250914
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -127.76292938068211,
+                        "crossing_overflow_m3s": -117.77562860079207
+                    }
+                },
+                {
+                    "frequency": "50",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 15.557819718023612,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 177.17442594104503,
+                        "crossing_peakflow_m3s": 177.17442594104503
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -167.19562918921798,
+                        "crossing_overflow_m3s": -157.20832840932798
+                    }
+                },
+                {
+                    "frequency": "100",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 17.56735557474915,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 221.34350478117034,
+                        "crossing_peakflow_m3s": 221.34350478117034
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -211.3647080293433,
+                        "crossing_overflow_m3s": -201.37740724945326
+                    }
+                },
+                {
+                    "frequency": "200",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 19.97401993141115,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 276.01002146528396,
+                        "crossing_peakflow_m3s": 276.01002146528396
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -266.03122471345694,
+                        "crossing_overflow_m3s": -256.0439239335669
+                    }
+                },
+                {
+                    "frequency": "500",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 23.60254527117997,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 361.03581592370125,
+                        "crossing_peakflow_m3s": 361.03581592370125
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -351.05701917187423,
+                        "crossing_overflow_m3s": -341.06971839198417
+                    }
+                },
+                {
+                    "frequency": "1000",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 26.689126622634266,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 435.1734312931351,
+                        "crossing_peakflow_m3s": 435.1734312931351
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -425.19463454130806,
+                        "crossing_overflow_m3s": -415.207333761418
+                    }
+                }
+            ],
+            "failure_event": null,
+            "include": true,
+            "validation_errors": {},
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": "72499",
+            "lat": 42.30765914916992,
+            "lng": -73.7044448852539,
+            "spatial_ref_code": 4326,
+            "group_id": "75158",
+            "naacc": {
+                "Naacc_Culvert_Id": "72499",
+                "Survey_Id": "75158",
+                "GIS_Latitude": 42.30765914916992,
+                "GIS_Longitude": -73.7044448852539,
+                "Number_Of_Culverts": 2,
+                "Material": "Concrete",
+                "Inlet_Type": "Projecting",
+                "Inlet_Structure_Type": "Box Culvert",
+                "Inlet_Width": 8.0,
+                "Inlet_Height": 6.300000190734863,
+                "Road_Fill_Height": 1.0,
+                "Slope_Percent": 1.0,
+                "Crossing_Structure_Length": 25.0,
+                "Outlet_Structure_Type": "Box Culvert",
+                "Outlet_Width": 8.0,
+                "Outlet_Height": 6.300000190734863,
+                "Crossing_Type": "Multiple Culvert",
+                "Road": "Old Post Road",
+                "Crossing_Comment": null
+            },
+            "capacity": {
+                "culv_mat": "Concrete",
+                "in_type": "Projecting",
+                "in_shape": "Box",
+                "in_a": 2.4384000301361084,
+                "in_b": 1.920240044593811,
+                "hw": 0.30480000376701355,
+                "slope": 1.0,
+                "length": 7.619999885559082,
+                "out_shape": "Box Culvert",
+                "out_a": 8.0,
+                "out_b": 6.300000190734863,
+                "crossing_type": null,
+                "culvert_area_sqm": 4.682313442230225,
+                "culvert_depth_m": 1.920240044593811,
+                "coefficient_c": 0.03779999911785126,
+                "coefficient_y": 0.8700000047683716,
+                "coefficient_slope": -0.5,
+                "slope_rr": 0.009999999776482582,
+                "head_over_invert": 2.2250399589538574,
+                "comments": "",
+                "include": true,
+                "culvert_capacity": 9.987300779890033,
+                "crossing_capacity": 19.966097531717068
+            },
+            "shed": {
+                "uid": "72499",
+                "group_id": "75158",
+                "area_sqkm": 19.692527509295594,
+                "avg_slope_pct": 5.899276006604845,
+                "avg_cn": 66.4802489521147,
+                "max_fl": 9958.32421875,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2282.38574876159,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 2813.1129175663664,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 3680.2570811634782,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4399.531309538928,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 5389.594055633181,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 6125.125873237643,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 6916.281722342186,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 7863.787374571319,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 9292.34065794487,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 10507.530166391443,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": 1.158055242469295,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_72499_delineation18",
+                "filepath_vector": "scratch.gdb/shed_72499_delineation_dissolved18"
+            },
+            "analytics": [
+                {
+                    "frequency": "1",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 5.797259801854439,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 10.185285844829371,
+                        "crossing_peakflow_m3s": 10.185285844829371
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -0.19798506493933843,
+                        "crossing_overflow_m3s": 9.780811686887697
+                    }
+                },
+                {
+                    "frequency": "2",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 7.14530681061857,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 24.088545120432766,
+                        "crossing_peakflow_m3s": 24.088545120432766
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -14.101244340542733,
+                        "crossing_overflow_m3s": -4.122447588715698
+                    }
+                },
+                {
+                    "frequency": "5",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 9.347852986155235,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 56.02694428100117,
+                        "crossing_peakflow_m3s": 56.02694428100117
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -46.03964350111114,
+                        "crossing_overflow_m3s": -36.0608467492841
+                    }
+                },
+                {
+                    "frequency": "10",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 11.174809526228879,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 88.21216224343625,
+                        "crossing_peakflow_m3s": 88.21216224343625
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -78.22486146354622,
+                        "crossing_overflow_m3s": -68.24606471171919
+                    }
+                },
+                {
+                    "frequency": "25",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 13.689568901308279,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 137.74172613250914,
+                        "crossing_peakflow_m3s": 137.74172613250914
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -127.75442535261911,
+                        "crossing_overflow_m3s": -117.77562860079207
+                    }
+                },
+                {
+                    "frequency": "50",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 15.557819718023612,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 177.17442594104503,
+                        "crossing_peakflow_m3s": 177.17442594104503
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -167.187125161155,
+                        "crossing_overflow_m3s": -157.20832840932798
+                    }
+                },
+                {
+                    "frequency": "100",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 17.56735557474915,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 221.34350478117034,
+                        "crossing_peakflow_m3s": 221.34350478117034
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -211.3562040012803,
+                        "crossing_overflow_m3s": -201.37740724945326
+                    }
+                },
+                {
+                    "frequency": "200",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 19.97401993141115,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 276.01002146528396,
+                        "crossing_peakflow_m3s": 276.01002146528396
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -266.02272068539395,
+                        "crossing_overflow_m3s": -256.0439239335669
+                    }
+                },
+                {
+                    "frequency": "500",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 23.60254527117997,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 361.03581592370125,
+                        "crossing_peakflow_m3s": 361.03581592370125
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -351.04851514381124,
+                        "crossing_overflow_m3s": -341.06971839198417
+                    }
+                },
+                {
+                    "frequency": "1000",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 26.689126622634266,
+                    "peakflow": {
+                        "time_of_concentration_hr": 1.158055242469295,
+                        "culvert_peakflow_m3s": 435.1734312931351,
+                        "crossing_peakflow_m3s": 435.1734312931351
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -425.1861305132451,
+                        "crossing_overflow_m3s": -415.207333761418
+                    }
+                }
+            ],
+            "failure_event": null,
+            "include": true,
+            "validation_errors": {},
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": "72500",
+            "lat": 42.348876953125,
+            "lng": -73.60420989990234,
+            "spatial_ref_code": 4326,
+            "group_id": "75159",
+            "naacc": {
+                "Naacc_Culvert_Id": "72500",
+                "Survey_Id": "75159",
+                "GIS_Latitude": 42.348876953125,
+                "GIS_Longitude": -73.60420989990234,
+                "Number_Of_Culverts": 1,
+                "Material": "Metal",
+                "Inlet_Type": "Projecting",
+                "Inlet_Structure_Type": "Round Culvert",
+                "Inlet_Width": 1.5,
+                "Inlet_Height": 1.2000000476837158,
+                "Road_Fill_Height": 1.5,
+                "Slope_Percent": 0.6000000238418579,
+                "Crossing_Structure_Length": 90.0,
+                "Outlet_Structure_Type": "Round Culvert",
+                "Outlet_Width": 3.0,
+                "Outlet_Height": 2.4000000953674316,
+                "Crossing_Type": "Culvert",
+                "Road": "Payn Avenue",
+                "Crossing_Comment": null
+            },
+            "capacity": {
+                "culv_mat": "Metal",
+                "in_type": "Projecting",
+                "in_shape": "Round",
+                "in_a": 0.45719999074935913,
+                "in_b": 1.2000000476837158,
+                "hw": 0.45719999074935913,
+                "slope": 0.6000000238418579,
+                "length": 27.43199920654297,
+                "out_shape": "Round Culvert",
+                "out_a": 3.0,
+                "out_b": 2.4000000953674316,
+                "crossing_type": null,
+                "culvert_area_sqm": 0.16417308151721954,
+                "culvert_depth_m": 0.45719999074935913,
+                "coefficient_c": 0.054999999701976776,
+                "coefficient_y": 0.5400000214576721,
+                "coefficient_slope": -0.5,
+                "slope_rr": 0.006000000052154064,
+                "head_over_invert": 0.9143999814987183,
+                "comments": "",
+                "include": true,
+                "culvert_capacity": 0.3161385247971824,
+                "crossing_capacity": 0.3161385247971824
+            },
+            "shed": {
+                "uid": "72500",
+                "group_id": "75159",
+                "area_sqkm": 0.017508294086663125,
+                "avg_slope_pct": 5.0,
+                "avg_cn": 53.00000000000001,
+                "max_fl": 320.71069335938,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2233.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 2754.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 3606.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4313.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 5285.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 6005.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 6785.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 7727.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 9162.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 10389.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": 0.08759660181543717,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_72500_delineation8",
+                "filepath_vector": "scratch.gdb/shed_72500_delineation_dissolved8"
+            },
+            "analytics": [
+                {
+                    "frequency": "1",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 5.67182,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.0024736365436864006,
+                        "crossing_peakflow_m3s": 0.0024736365436864006
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.31366488825349603,
+                        "crossing_overflow_m3s": 0.31366488825349603
+                    }
+                },
+                {
+                    "frequency": "2",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 6.99516,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.010669403000602656,
+                        "crossing_peakflow_m3s": 0.010669403000602656
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.30546912179657976,
+                        "crossing_overflow_m3s": 0.30546912179657976
+                    }
+                },
+                {
+                    "frequency": "5",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 9.15924,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.03555242008723472,
+                        "crossing_peakflow_m3s": 0.03555242008723472
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.2805861047099477,
+                        "crossing_overflow_m3s": 0.2805861047099477
+                    }
+                },
+                {
+                    "frequency": "10",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 10.95502,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.08652037738957137,
+                        "crossing_peakflow_m3s": 0.08652037738957137
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.22961814740761105,
+                        "crossing_overflow_m3s": 0.22961814740761105
+                    }
+                },
+                {
+                    "frequency": "25",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 13.4239,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.18525112021206516,
+                        "crossing_peakflow_m3s": 0.18525112021206516
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.13088740458511725,
+                        "crossing_overflow_m3s": 0.13088740458511725
+                    }
+                },
+                {
+                    "frequency": "50",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 15.2527,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.27246929788642277,
+                        "crossing_peakflow_m3s": 0.27246929788642277
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.04366922691075964,
+                        "crossing_overflow_m3s": 0.04366922691075964
+                    }
+                },
+                {
+                    "frequency": "100",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 17.233900000000002,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.37538498718992896,
+                        "crossing_peakflow_m3s": 0.37538498718992896
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -0.05924646239274656,
+                        "crossing_overflow_m3s": -0.05924646239274656
+                    }
+                },
+                {
+                    "frequency": "200",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 19.62658,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.507122898031789,
+                        "crossing_peakflow_m3s": 0.507122898031789
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -0.1909843732346066,
+                        "crossing_overflow_m3s": -0.1909843732346066
+                    }
+                },
+                {
+                    "frequency": "500",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 23.271480000000004,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.7169719895875658,
+                        "crossing_peakflow_m3s": 0.7169719895875658
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -0.4008334647903834,
+                        "crossing_overflow_m3s": -0.4008334647903834
+                    }
+                },
+                {
+                    "frequency": "1000",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 26.38806,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08759660181543717,
+                        "culvert_peakflow_m3s": 0.9014059623381183,
+                        "crossing_peakflow_m3s": 0.9014059623381183
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": -0.5852674375409359,
+                        "crossing_overflow_m3s": -0.5852674375409359
+                    }
+                }
+            ],
+            "failure_event": null,
+            "include": true,
+            "validation_errors": {},
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": "72501",
+            "lat": 42.29190444946289,
+            "lng": -73.68611907958984,
+            "spatial_ref_code": 4326,
+            "group_id": "75160",
+            "naacc": {
+                "Naacc_Culvert_Id": "72501",
+                "Survey_Id": "75160",
+                "GIS_Latitude": 42.29190444946289,
+                "GIS_Longitude": -73.68611907958984,
+                "Number_Of_Culverts": 1,
+                "Material": "Concrete",
+                "Inlet_Type": "Projecting",
+                "Inlet_Structure_Type": "Round Culvert",
+                "Inlet_Width": 2.200000047683716,
+                "Inlet_Height": 2.0,
+                "Road_Fill_Height": 4.0,
+                "Slope_Percent": 7.0,
+                "Crossing_Structure_Length": 40.0,
+                "Outlet_Structure_Type": "Round Culvert",
+                "Outlet_Width": 2.0,
+                "Outlet_Height": 2.0,
+                "Crossing_Type": "Culvert",
+                "Road": "Route 66",
+                "Crossing_Comment": null
+            },
+            "capacity": {
+                "culv_mat": "Concrete",
+                "in_type": "Projecting",
+                "in_shape": "Round",
+                "in_a": 0.6705600023269653,
+                "in_b": 2.0,
+                "hw": 1.2192000150680542,
+                "slope": 7.0,
+                "length": 12.192000389099121,
+                "out_shape": "Round Culvert",
+                "out_a": 2.0,
+                "out_b": 2.0,
+                "crossing_type": null,
+                "culvert_area_sqm": 0.3531545400619507,
+                "culvert_depth_m": 0.6705600023269653,
+                "coefficient_c": 0.03200000151991844,
+                "coefficient_y": 0.6899999976158142,
+                "coefficient_slope": -0.5,
+                "slope_rr": 0.07000000029802322,
+                "head_over_invert": 1.8897600173950195,
+                "comments": "",
+                "include": true,
+                "culvert_capacity": 1.3129152122885313,
+                "crossing_capacity": 1.3129152122885313
+            },
+            "shed": {
+                "uid": "72501",
+                "group_id": "75160",
+                "area_sqkm": 0.010005111007000573,
+                "avg_slope_pct": 4.0,
+                "avg_cn": 77.5,
+                "max_fl": 120.71067810059,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2353.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 2912.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 3828.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4587.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 5633.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 6411.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 7245.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 8227.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 9693.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 10929.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": 0.044981552982007254,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_72501_delineation8",
+                "filepath_vector": "scratch.gdb/shed_72501_delineation_dissolved8"
+            },
+            "analytics": [
+                {
+                    "frequency": "1",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 5.9766200000000005,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.1003909570870088,
+                        "crossing_peakflow_m3s": 0.1003909570870088
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 1.2125242552015225,
+                        "crossing_overflow_m3s": 1.2125242552015225
+                    }
+                },
+                {
+                    "frequency": "2",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 7.3964799999999995,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.15404065446812268,
+                        "crossing_peakflow_m3s": 0.15404065446812268
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 1.1588745578204085,
+                        "crossing_overflow_m3s": 1.1588745578204085
+                    }
+                },
+                {
+                    "frequency": "5",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 9.72312,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.24412961802330924,
+                        "crossing_peakflow_m3s": 0.24412961802330924
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 1.068785594265222,
+                        "crossing_overflow_m3s": 1.068785594265222
+                    }
+                },
+                {
+                    "frequency": "10",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 11.650979999999999,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.31932898955839023,
+                        "crossing_peakflow_m3s": 0.31932898955839023
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.9935862227301411,
+                        "crossing_overflow_m3s": 0.9935862227301411
+                    }
+                },
+                {
+                    "frequency": "25",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 14.30782,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.42315203837842247,
+                        "crossing_peakflow_m3s": 0.42315203837842247
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.8897631739101088,
+                        "crossing_overflow_m3s": 0.8897631739101088
+                    }
+                },
+                {
+                    "frequency": "50",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 16.283939999999998,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.510216121327613,
+                        "crossing_peakflow_m3s": 0.510216121327613
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.8026990909609183,
+                        "crossing_overflow_m3s": 0.8026990909609183
+                    }
+                },
+                {
+                    "frequency": "100",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 18.4023,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.6085140801622396,
+                        "crossing_peakflow_m3s": 0.6085140801622396
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.7044011321262916,
+                        "crossing_overflow_m3s": 0.7044011321262916
+                    }
+                },
+                {
+                    "frequency": "200",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 20.89658,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.7264909986421386,
+                        "crossing_peakflow_m3s": 0.7264909986421386
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.5864242136463926,
+                        "crossing_overflow_m3s": 0.5864242136463926
+                    }
+                },
+                {
+                    "frequency": "500",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 24.62022,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 0.9058849012716558,
+                        "crossing_peakflow_m3s": 0.9058849012716558
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.4070303110168755,
+                        "crossing_overflow_m3s": 0.4070303110168755
+                    }
+                },
+                {
+                    "frequency": "1000",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 27.75966,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.044981552982007254,
+                        "culvert_peakflow_m3s": 1.059330503237315,
+                        "crossing_peakflow_m3s": 1.059330503237315
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 0.2535847090512162,
+                        "crossing_overflow_m3s": 0.2535847090512162
+                    }
+                }
+            ],
+            "failure_event": null,
+            "include": true,
+            "validation_errors": {},
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": "72502",
+            "lat": 42.34757995605469,
+            "lng": -73.60489654541016,
+            "spatial_ref_code": 4326,
+            "group_id": "75161",
+            "naacc": {
+                "Naacc_Culvert_Id": "72502",
+                "Survey_Id": "75161",
+                "GIS_Latitude": 42.34757995605469,
+                "GIS_Longitude": -73.60489654541016,
+                "Number_Of_Culverts": 1,
+                "Material": "Concrete",
+                "Inlet_Type": "Headwall",
+                "Inlet_Structure_Type": "Box Culvert",
+                "Inlet_Width": 12.0,
+                "Inlet_Height": 4.5,
+                "Road_Fill_Height": 3.5,
+                "Slope_Percent": 0.30000001192092896,
+                "Crossing_Structure_Length": 39.0,
+                "Outlet_Structure_Type": "Box Culvert",
+                "Outlet_Width": 12.0,
+                "Outlet_Height": 4.5,
+                "Crossing_Type": "Culvert",
+                "Road": "Price Chopper Drive",
+                "Crossing_Comment": null
+            },
+            "capacity": {
+                "culv_mat": "Concrete",
+                "in_type": "Headwall",
+                "in_shape": "Box",
+                "in_a": 3.657599925994873,
+                "in_b": 1.3716000318527222,
+                "hw": 1.0667999982833862,
+                "slope": 0.30000001192092896,
+                "length": 11.887200355529785,
+                "out_shape": "Box Culvert",
+                "out_a": 12.0,
+                "out_b": 4.5,
+                "crossing_type": null,
+                "culvert_area_sqm": 5.016764163970947,
+                "culvert_depth_m": 1.3716000318527222,
+                "coefficient_c": 0.03779999911785126,
+                "coefficient_y": 0.8700000047683716,
+                "coefficient_slope": -0.5,
+                "slope_rr": 0.003000000026077032,
+                "head_over_invert": 2.4384000301361084,
+                "comments": "",
+                "include": true,
+                "culvert_capacity": 15.911875296613399,
+                "crossing_capacity": 15.911875296613399
+            },
+            "shed": {
+                "uid": "72502",
+                "group_id": "75161",
+                "area_sqkm": 0.010004757882473058,
+                "avg_slope_pct": 1.25,
+                "avg_cn": 49.0,
+                "max_fl": 150.0,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2233.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 2754.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 3606.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4313.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 5285.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 6005.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 6785.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 7727.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 9162.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 10389.0,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": 0.08320765361416523,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_72502_delineation8",
+                "filepath_vector": "scratch.gdb/shed_72502_delineation_dissolved8"
+            },
+            "analytics": [
+                {
+                    "frequency": "1",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 5.67182,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.00013918745515513337,
+                        "crossing_peakflow_m3s": 0.00013918745515513337
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.911736109158245,
+                        "crossing_overflow_m3s": 15.911736109158245
+                    }
+                },
+                {
+                    "frequency": "2",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 6.99516,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.0026171763084284,
+                        "crossing_peakflow_m3s": 0.0026171763084284
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.90925812030497,
+                        "crossing_overflow_m3s": 15.90925812030497
+                    }
+                },
+                {
+                    "frequency": "5",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 9.15924,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.01249185767342479,
+                        "crossing_peakflow_m3s": 0.01249185767342479
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.899383438939974,
+                        "crossing_overflow_m3s": 15.899383438939974
+                    }
+                },
+                {
+                    "frequency": "10",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 10.95502,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.027222614558506022,
+                        "crossing_peakflow_m3s": 0.027222614558506022
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.884652682054893,
+                        "crossing_overflow_m3s": 15.884652682054893
+                    }
+                },
+                {
+                    "frequency": "25",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 13.4239,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.07111352098945198,
+                        "crossing_peakflow_m3s": 0.07111352098945198
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.840761775623948,
+                        "crossing_overflow_m3s": 15.840761775623948
+                    }
+                },
+                {
+                    "frequency": "50",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 15.2527,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.11401063685680869,
+                        "crossing_peakflow_m3s": 0.11401063685680869
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.79786465975659,
+                        "crossing_overflow_m3s": 15.79786465975659
+                    }
+                },
+                {
+                    "frequency": "100",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 17.233900000000002,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.1673234890842722,
+                        "crossing_peakflow_m3s": 0.1673234890842722
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.744551807529128,
+                        "crossing_overflow_m3s": 15.744551807529128
+                    }
+                },
+                {
+                    "frequency": "200",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 19.62658,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.2380890024087448,
+                        "crossing_peakflow_m3s": 0.2380890024087448
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.673786294204653,
+                        "crossing_overflow_m3s": 15.673786294204653
+                    }
+                },
+                {
+                    "frequency": "500",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 23.271480000000004,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.35404248206390143,
+                        "crossing_peakflow_m3s": 0.35404248206390143
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.557832814549498,
+                        "crossing_overflow_m3s": 15.557832814549498
+                    }
+                },
+                {
+                    "frequency": "1000",
+                    "duration": "24hr",
+                    "avg_rainfall_cm": 26.38806,
+                    "peakflow": {
+                        "time_of_concentration_hr": 0.08320765361416523,
+                        "culvert_peakflow_m3s": 0.45771783124039256,
+                        "crossing_peakflow_m3s": 0.45771783124039256
+                    },
+                    "overflow": {
+                        "culvert_overflow_m3s": 15.454157465373006,
+                        "crossing_overflow_m3s": 15.454157465373006
+                    }
+                }
+            ],
+            "failure_event": null,
+            "include": true,
+            "validation_errors": {},
+            "notes": [],
+            "raw": null
+        },
+        {
+            "uid": null,
+            "lat": 42.2888298034668,
+            "lng": -73.6965560913086,
+            "spatial_ref_code": 4326,
+            "group_id": "75162",
+            "naacc": null,
+            "capacity": null,
+            "shed": null,
+            "analytics": [],
+            "failure_event": null,
+            "include": false,
+            "validation_errors": {
+                "Slope_Percent": [
+                    "Field may not be null."
+                ],
+                "Inlet_Structure_Type": [
+                    "Field may not be null."
+                ],
+                "Naacc_Culvert_Id": [
+                    "Field may not be null."
+                ],
+                "Material": [
+                    "Field may not be null."
+                ],
+                "Crossing_Structure_Length": [
+                    "Field may not be null."
+                ],
+                "Outlet_Structure_Type": [
+                    "Field may not be null."
+                ],
+                "Inlet_Width": [
+                    "Field may not be null."
+                ],
+                "Inlet_Type": [
+                    "Field may not be null."
+                ],
+                "Outlet_Width": [
+                    "Field may not be null."
+                ],
+                "Outlet_Height": [
+                    "Field may not be null."
+                ],
+                "Inlet_Height": [
+                    "Field may not be null."
+                ],
+                "in_a": [
+                    "must be a number (False)"
+                ],
+                "in_b": [
+                    "must be a number (False)"
+                ],
+                "hw": [
+                    "must be a number (True)"
+                ],
+                "length": [
+                    "must be a number (False)"
+                ]
+            },
+            "notes": [],
+            "raw": null
+        }
+    ]
+}
