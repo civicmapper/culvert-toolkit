@@ -413,6 +413,7 @@ class CulvertCapacityCore(WorkflowManager):
         # raster_flowdir_filepath,
         # raster_slope_filepath,
         # raster_curvenumber_filepath,
+        # precip_src_config_filepath,
         # output_points_filepath=None,
         # points_id_fieldname="Naacc_Culvert_Id",
         # points_group_fieldname="Survey_Id",
@@ -434,7 +435,8 @@ class CulvertCapacityCore(WorkflowManager):
     def load_points(self) -> Tuple[List[DrainItPoint], dict]:
         """workflow-specific approach to ETL of source point dataset. Handles
         Either the NAACC csv or a points geodataset that matches the NAACC
-        schema.
+        schema. Performs validation of the NAACC CSV and calculates capacity
+        of the culverts when valid.
         """
 
         p = Path(self.config.points_filepath)
@@ -635,7 +637,7 @@ class CulvertCapacityCore(WorkflowManager):
                             each_xing.capacity.crossing_capacity, xing_ra_item.peakflow.crossing_peakflow_m3s
                         )
 
-    def _points_to_featureclass(self):
+    def _export_culvert_featureclass(self) -> etl.Table:
         
         # Field maps. TODO: derive from dataclass field metadata
         shed_field_map = OrderedDict({
@@ -690,6 +692,7 @@ class CulvertCapacityCore(WorkflowManager):
 
         # unpack the rainfall frequency-based analytics
         t2 = deepcopy(t)
+
         for ff in frequency_fields:
             analytics_table = etl\
                 .cut(t2, ['oid', ff])\
@@ -699,32 +702,14 @@ class CulvertCapacityCore(WorkflowManager):
                 .rename(f'{ff}_oid', 'oid')
             t2 = etl.join(t2, analytics_table, 'oid')
             
-        # remove old fields
+        # clean-up fields
+        # all_analytics_fields = [f for f in analytics_field_map.keys()]
         t2 = etl.cutout(t2, *frequency_fields)
 
         # create a feature class from the table
+        self.gp.create_geodata_from_petl_table(t2, 'lng', 'lat', self.config.output_points_filepath)
 
-        # create a types lookup
-        field_types_lookup = {}
-        for h in etl.header(t2):
-            ftypes = [n for n in etl.typeset(t2, h) if n != 'NoneType']
-            if 'float' in ftypes:
-                field_types_lookup[h] = float
-            elif 'int' in ftypes:
-                field_types_lookup[h] = int
-            elif 'str' in ftypes:
-                field_types_lookup[h] = str
-            else:
-                field_types_lookup[h] = str
-
-        self.gp.create_geodata_from_petl_table(
-            t2, 
-            field_types_lookup, 
-            'lng', 'lat',
-            self.config.output_points_filepath
-        )
-
-        return self.config.output_points_filepath
+        return t2
 
     def run(self):
 
@@ -741,10 +726,17 @@ class CulvertCapacityCore(WorkflowManager):
             curve_number_raster=self.config.raster_curvenumber_filepath,
             precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
             out_shed_polygons=self.config.output_sheds_filepath,
-            out_shed_polygons_simplify=self.config.sheds_simplify
+            out_shed_polygons_simplify=self.config.sheds_simplify,
+            override_skip=True # will run regardless of validation
         )
-
+        # assigns values to associated crossings and calculates peakflow vs capacity
         self._analyze_all_points()
+        # exports the result as a feature class, where each feature is a culvert
+        culvert_table = self._export_culvert_featureclass()
+        # saves that feature class to the config
+        self.config.points_features = self.gp.geodata_as_dict(self.config.output_points_filepath)
+        # TODO: export a feature class rolled up to crossings.
+        # self._export_crossing_feature_class(culvert_table)
 
         # save the config
         if self.save_config_json_filepath:
@@ -754,12 +746,12 @@ class CulvertCapacityCore(WorkflowManager):
 
 
 '''
-* One output with 1:1 between input culvert and output culvert records.
-* One output that is crossing-based: one point per crossing. Sum capacities of culverts. One peak-flow; pick the first one in the group. One overflow calculation as a result.
-* Calc for every record first, independent of any grouping. Then use those results for the crossing-based calculations. At that point we can boil it down to a non-nested tabular format for pivoting.
 * Derived analytical outputs
+  * field that indicates which storm the  Max Return Period (yr) (it's design) ~~culvert fails on~~
   * layer showing peak flow (size) vs overflow (color)
   * simple tabular summary output for which ones go over
   * flow vs area vs capacity/overflow, to identify risks
-* field that indicates which storm the culvert fails on
+* Two point outputs
+  * One output with 1:1 between input culvert and output culvert records.
+  * One output that is crossing-based: one point per crossing.
 '''

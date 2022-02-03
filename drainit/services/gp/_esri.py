@@ -304,6 +304,7 @@ class GP:
         return out_data
 
     def geodata_as_dict(self, path_to_geodata):
+        """convert provider-formatted geodata to a Python dictionary"""
         if Path(path_to_geodata).exists:
             fs = FeatureSet(path_to_geodata)
             return json.loads(fs.JSON)
@@ -596,11 +597,11 @@ class GP:
     def create_geodata_from_petl_table(
         self,
         petl_table,
-        field_types_lookup,
         x_column,
         y_column,
         output_featureclass=None,
-        sr=4326
+        sr=4326,
+        field_types_lookup=None        
         ):
         """convert a PETL table to a feature class in a file geodatabase. 
         This handles type-casting to column types that work with Esri FGDB 
@@ -636,6 +637,19 @@ class GP:
         # x.dtype.names = tuple(names)
         # print(x)
         # NumPyArrayToFeatureClass(x, output_featureclass, (x_column, y_column), SpatialReference(sr))
+
+        if not field_types_lookup:
+            field_types_lookup = {}
+            for h in etl.header(petl_table):
+                ftypes = [n for n in etl.typeset(petl_table, h) if n != 'NoneType']
+                if 'float' in ftypes:
+                    field_types_lookup[h] = float
+                elif 'int' in ftypes:
+                    field_types_lookup[h] = int
+                elif 'str' in ftypes:
+                    field_types_lookup[h] = str
+                else:
+                    field_types_lookup[h] = str                    
 
         with EnvManager(overwriteOutput=True):
 

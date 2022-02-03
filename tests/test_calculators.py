@@ -232,6 +232,6 @@ class TestCapacityCalc:
 
         cc.config.output_points_filepath = str(tmp_path / 'outputs.gdb' / 'points')
         
-        cc._points_to_featureclass()
+        cc._export_culvert_featureclass()
 
         
