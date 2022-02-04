@@ -11,9 +11,8 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import json
 from statistics import mean
-from arcpy.arcobjects.arcobjects import Extent
 from tqdm import tqdm
-from tempfile import mkdtemp
+from dataclasses import fields
 
 # third party tools
 import petl as etl
@@ -23,7 +22,7 @@ import pandas as pd
 
 # ArcGIS imports
 # this import enables the Esri Spatially-Enabled DataFrame extension to Pandas DataFrames
-from arcgis.features import GeoAccessor, GeoSeriesAccessor 
+# from arcgis.features import GeoAccessor, GeoSeriesAccessor 
 
 # ArcPy imports
 from arcpy import EnvManager, env
@@ -51,17 +50,14 @@ from arcpy.da import SearchCursor, InsertCursor, NumPyArrayToFeatureClass
 from arcpy.management import (
     CreateFileGDB,
     Delete,
-    SelectLayerByAttribute,
     GetCount,
-    Clip,
     Dissolve,
-    Copy,
     CopyFeatures,
-    CreateFeatureclass,
     AddFields,
     BuildRasterAttributeTable,
     MinimumBoundingGeometry,
-    Merge
+    Merge,
+    CalculateFields
 )
 from arcpy import (
     GetCount_management, 
@@ -1314,7 +1310,8 @@ class GP:
         curve_number_raster: str,
         out_shed_polygon: str,
         rainfall_rasters: tuple = None,
-        out_catchment_polygons_simplify: bool = False
+        out_catchment_polygons_simplify: bool = False,
+        save_featureset: bool = False
         # rainfall_unit_conversion_factor = 0.1,
         ) -> Shed:
         """perform delineation one point and analysis on the watershed
@@ -1358,12 +1355,11 @@ class GP:
         
         ## ---------------------------------------------------------------------
         # ANALYSIS
-        
-        
-        ## ---------------------------------------------------------------------
-        # calculate area of catchment
 
-        self.msg("converting catchment from raster and calculating area")
+        ## ---------------------------------------------------------------------
+        # convert raster to polygon
+        
+        self.msg("converting catchment")
         
         #ZonalGeometryAsTable(catchment_areas,"Value","output_table") # crashes like a mfer
         #cp = self.so("catchmentpolygons","timestamp","fgdb")
@@ -1388,6 +1384,11 @@ class GP:
             dissolve_field="gridcode",
             multi_part="MULTI_PART"
         )
+
+        ## ---------------------------------------------------------------------
+        # calculate area of catchment
+
+        self.msg("calculating area")
 
         # get and sum the areas for all records 
         # (there should only be one at this point, but...)
@@ -1456,6 +1457,8 @@ class GP:
         
         ## ---------------------------------------------------------------------
         # calculate average slope
+
+        self.msg("calculating average slope")
         
         
         table_slope_avg = self.so("shed_{0}_slope_avg".format(shed.uid))
@@ -1516,16 +1519,16 @@ class GP:
 
             rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
 
-            rainfall_units = "inches"
+            # rainfall_units = "inches"
 
             if len(rainfall_stats['features']) > 0:
                 # there shouldn't be multiple polygon features here, but this 
                 # willhandle edge cases:
                 means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
                 avg_rainfall = mean(means)
-                # NOAA Atlas 14 precip values are in 1000ths/inch, converted to inches here
-                # use Pint
-                avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
+                # NOAA Atlas 14 precip values are in 1000ths/inch, 
+                # converted to inches using Pint:
+                # avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
             else:
                 avg_rainfall = None
 
@@ -1534,12 +1537,48 @@ class GP:
                 Rainfall(
                     freq=rr['freq'], 
                     dur='24hr', 
-                    value=avg_rainfall,
-                    units=rainfall_units
+                    value=avg_rainfall
+                    # units=rainfall_units
                 )
             )
             
         shed.avg_rainfall = sorted(rainfalls, key=lambda x: x.freq)
+
+        #-----------------------------------------------------------------------
+        # add all derived properties to the vector file output
+        self.msg('saving delineation features')
+
+        with EnvManager(overwriteOutput=True):
+            
+            # spec the fields to add
+            fields_to_add = [
+                ['area_sqkm', 'FLOAT', shed.area_sqkm],
+                ['avg_slope_pct', 'FLOAT', shed.avg_slope_pct],
+                ['avg_cn', 'FLOAT', shed.avg_cn],
+                ['max_fl', 'FLOAT', shed.max_fl]
+            ]
+            # we flatten the rainfall array into table columns
+            for r in shed.avg_rainfall:
+                fields_to_add.append([
+                    f'avg_rain_{r.freq}y_{r.dur}', 'FLOAT', r.value
+                ])
+
+            # add the fields
+            AddFields_management(
+                shed.filepath_vector,
+                [[f[0], f[1]] for f in fields_to_add]
+            )
+            # add the values to the fields
+            CalculateFields(
+                in_table=shed.filepath_vector,
+                expression_type="PYTHON3",
+                fields=[[f[0], f[2]] for f in fields_to_add]
+            )
+
+        #-----------------------------------------------------------------------
+        # add the shed feature(s) to the shed model instance
+        if save_featureset:
+            shed.shed_geom = json.loads(FeatureSet(shed.filepath_vector).JSON)
 
         return shed
 

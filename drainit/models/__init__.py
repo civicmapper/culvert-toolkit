@@ -50,16 +50,18 @@ def cast_to_numeric_fields(data, dataclass_model, **kwargs):
 
 @dataclass
 class RainfallRaster:
-    """store a reference on disk to a NOAA Rainfall raster.
-    `path` is used for the raster filepath. Optionally, supply a constant 
-    value via `const`, which will be used in place of a raster
+    """Store a reference on disk to a NOAA Rainfall raster. NOAA Rainfall data 
+    comes as 1000ths of an inch.
+    TODO: Optionally, supply a constant value via `const`, which will be used 
+    in place of a raster.
+    
     """
 
     path: Optional[str] = None
     freq: int = None
     ext: str = None
     const: Optional[float] = None
-    units: Optional[str] = "1000ths of inches"
+    units: Optional[str] = "inches / 1000"
 
 RainfallRasterSchema = class_schema(RainfallRaster)
 
@@ -87,14 +89,15 @@ RainfallRasterConfigSchema = class_schema(RainfallRasterConfig)
 
 @dataclass
 class Rainfall:
-    """rainfall amounts stored by storm frequency and duration interval
+    """Rainfall amounts stored by storm frequency and duration interval.
+    NOAA Rainfall data comes as 1000ths of an inch.
     """
 
     freq: str = None
     dur: str = None
     value: float = None
     valtyp: Optional[str] = "mean"
-    units: Optional[str] = "inches"
+    units: Optional[str] = "inches / 1000"
 
 
 @dataclass
@@ -151,7 +154,6 @@ class NaaccCulvert:
 
     # TODO: eventually include the date/time capture from the NAACC model here 
     # so that we can filter multiple surveys for a single location.
-
 
     @pre_load
     def cast_numeric_fields(self, data, **kwargs):
@@ -264,8 +266,14 @@ class DrainItPoint:
 
 
     def derive_rainfall_analytics(self):
-        """Derive an initial calculator results object using the geographically-derived 
-        data from the shed.
+        """Derive an initial calculator results object using the 
+        geographically-derived data from the shed.
+
+        # NOTE: !!!
+        # NOAA Atlas 14 precip values are in 1000ths/inch, converted to 
+        # centimeters **here** using Pint
+        # TODO: put the unit conversion somewhere else
+
         """
         if not self.shed:
             return
@@ -275,7 +283,7 @@ class DrainItPoint:
             self.analytics.append(Analytics(
                 duration=r.dur,
                 frequency=r.freq,
-                avg_rainfall_cm=units.Quantity(r.value / 1000, r.units).m_as('cm')
+                avg_rainfall_cm=units.Quantity(f'{r.value} {r.units}').m_as('cm')
             ))
     
     def calculate_summary_analytics(self):

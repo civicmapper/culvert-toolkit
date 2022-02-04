@@ -89,13 +89,17 @@ class TestCapacityCalc:
         # serialize the precip src config object as a dictionary
         precip_src_config = models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config)
 
+        # create a temp output workspace for saving the sheds
+        workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_shed')        
+
         shed = cc.gp._delineate_and_analyze_one_catchment(
                 point_geodata=point_geodata,
                 pour_point_field=cc.config.points_id_fieldname,
                 flow_direction_raster=cc.config.raster_flowdir_filepath,
                 slope_raster=cc.config.raster_slope_filepath,
                 curve_number_raster=cc.config.raster_curvenumber_filepath,
-                out_shed_polygon=None,
+                out_shed_polygon=cc.config.output_sheds_filepath,
                 rainfall_rasters=precip_src_config['rasters']
         )
 
@@ -103,45 +107,6 @@ class TestCapacityCalc:
         # pp(shed)
         output_config_filepath = Path(tmp_path) / 'drainit_config.json'
         cc.save_config(str(output_config_filepath))        
-
-        assert Path(shed.filepath_raster).exists
-        assert Path(shed.filepath_vector).exists
-
-        assert shed.avg_cn is not None
-        assert shed.avg_slope_pct is not None
-        assert shed.max_fl is not None
-        assert shed.area_sqkm is not None
-
-    @pytest.mark.skip(reason="doesn't test anything different than previous function")
-    def test_delineate_and_analyze_one_catchment_bad(self, all_sample_inputs):
-        """run one "bad" point through the single delineate/analyze function.
-        As long as it has geometry, this should still pass!
-        """
-
-        # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
-        cc = workflows.CulvertCapacityCore(**kw)
-        cc.load_points()
-
-        # get a single passing test point from the test data
-        test_point = cc.config.points[0]
-        point_geodata = cc.gp.create_geodata_from_points([test_point], as_dict=False)
-        # serialize the precip src config object as a dictionary
-        precip_src_config = models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config)
-
-        shed = cc.gp._delineate_and_analyze_one_catchment(
-                point_geodata=point_geodata,
-                pour_point_field=cc.config.points_id_fieldname,
-                flow_direction_raster=cc.config.raster_flowdir_filepath,
-                slope_raster=cc.config.raster_slope_filepath,
-                curve_number_raster=cc.config.raster_curvenumber_filepath,
-                out_shed_polygon=None,
-                rainfall_rasters=precip_src_config['rasters'],
-                out_catchment_polygons_simplify=cc.config.sheds_simplify
-        )
-
-        # print(cc.config)
-        # pp(shed)
 
         assert Path(shed.filepath_raster).exists
         assert Path(shed.filepath_vector).exists
@@ -163,7 +128,10 @@ class TestCapacityCalc:
         cc.load_points()
 
         # for testing, set a temp output path for the shed polygons
-        cc.config.output_sheds_filepath = cc.gp.so("test_delineations")
+        # cc.config.output_sheds_filepath = cc.gp.so("test_delineations")
+        # create a temp output workspace for saving the sheds
+        workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_delineations')            
 
         cc.config.points = cc.gp.delineation_and_analysis_in_parallel(
             points=cc.config.points,
