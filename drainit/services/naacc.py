@@ -612,23 +612,6 @@ class NaaccEtl:
         # print(etl.vis.see(bad2))
         
         # clean_table = etl.replaceall(hydrated_table, "", None)
-
-
-        # TODO: determine if we need to still incorporate the old barrier ID 
-        # generation method:
-        # Assign the Barrier ID, after all the unmodelable rows are removed
-        # UPDATED Jan 2018 - in case watershed name is longer than 3 characters, the ID still needs only 3
-        # FieldData = FieldData.assign(BarrierID = [str(i+1) + ws_name[:3].upper() for i in range(len(FieldData))])
-
-        # TODO: determine if the aim of this legacy code is needed now:
-        # Re-assign the number of culverts for each crossing location based on how many culverts were kept
-        # for SI in FieldData.loc[FieldData['Flags']>1]['Survey_ID'].unique():
-        #     NC = FieldData.loc[FieldData['Survey_ID'] == SI]['Survey_ID'].count() # Number of culverts we will model at site
-        #     ONC = FieldData.loc[FieldData['Survey_ID'] == SI]['Flags'].max() # Number culverts noted at site
-        #     if NC <> ONC:
-        #         FieldData.loc[FieldData['Survey_ID'] == SI, 'Modeling_notes'] = "Not all culverts modeled at crossing. Started with " + str(ONC)
-        #         print "Not all culverts modeled at Survey ID " + str(SI) + " . Started with " + str(ONC) + " but kept " + str(NC)
-        #     FieldData.loc[FieldData['Survey_ID'] == SI, 'Flags'] = NC
         
         
         # optionally save the table to a CSV file
@@ -688,23 +671,38 @@ class NaaccEtl:
                     ve = rve
                 kwargs['validation_errors'] = ve
             
+            # load the NAACC fields into the NAACC model
             try:
                 naacc = self.naacc_culvert_schema.load(data=r, partial=True)
                 kwargs['naacc'] = naacc
-                
             except ValidationError as e:
                 # print("schema error | NAACC | Survey/Culvert {0}/{1}: {2}".format(r["Survey_Id"], r["Naacc_Culvert_Id"], e))
                 kwargs['include'] = False
 
+            # NOTE: in all cases, we want to load whatever we get and derive
+            # from NAACC to the data model. Sometimes, certain fields may be 
+            # empty. In order to take advantage of serialization mechanisms we 
+            # already have without getting hung up on validation, we empty the 
+            # dict of any keys with None values:
+            capacity_fields = [f.name for f in fields(Capacity)]
+            c = {k:v for k,v in r.items() if v is not None and k in capacity_fields}
+            
+            # once loaded via the serializer, those None values will be
+            # replaced with the defaults spec'd in the models (usually None)
+
             try:
-                capacity = self.capacity_schema.load(data=r, partial=True)
-                # calculatue capacity here
+                capacity = self.capacity_schema.load(data=c, partial=True)
+                # calculate capacity here
                 capacity.calculate()
-                kwargs['capacity'] = capacity
-                
-            except ValidationError as e:
+                kwargs['capacity'] = capacity                
+            except:
                 # print("schema error | CAPACITY | Survey/Culvert {0}/{1}: {2}".format(r["Survey_Id"], r["Naacc_Culvert_Id"], e))
                 kwargs['include'] = False
+                try:
+                    kwargs['capacity'] = self.capacity_schema.load(data=c, partial=True)
+                except:
+                    pass
+
             
             p = DrainItPoint(**kwargs)
             points.append(p)

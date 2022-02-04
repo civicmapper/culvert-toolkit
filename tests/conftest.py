@@ -100,21 +100,21 @@ def all_sample_inputs(
     return kwargs
 
 @pytest.fixture
-def sample_geoprocd_config(tmp_path, all_sample_inputs):
+def sample_completed_delineation_config(tmp_path, all_sample_inputs):
 
     shutil.copyfile(
-        TEST_DATA_DIR / 'config_geoprocd.json',
-        tmp_path / 'config_geoprocd.json'
+        TEST_DATA_DIR / 'config_completed_delineation.json',
+        tmp_path / 'config_completed_delineation.json'
     )
 
-    return tmp_path / 'config_geoprocd.json'
+    return tmp_path / 'config_completed_delineation.json'
 
 @pytest.fixture
 def sample_completed_capacity_config(tmp_path):
 
     shutil.copyfile(
-        TEST_DATA_DIR / 'config_capacity_completed.json',
-        tmp_path / 'config_capacity_completed.json'
+        TEST_DATA_DIR / 'config_completed_analytics.json',
+        tmp_path / 'config_completed_analytics.json'
     )
 
-    return tmp_path / 'config_capacity_completed.json'    
+    return tmp_path / 'config_completed_analytics.json'    

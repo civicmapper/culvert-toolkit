@@ -58,7 +58,7 @@ class TestRainfallETL:
 
 class TestNaaccETL:
 
-    def test_naacc_data_ingest(self, tmp_path):
+    def test_naacc_data_ingest_from_csv(self, tmp_path):
         d = tmp_path
         # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\drainit')
         results = workflows.NaaccDataIngest(
@@ -82,4 +82,17 @@ class TestNaaccETL:
         assert len(f) == 8
 
         # capacity calculated for 5 records
+
+    # def test_naacc_data_ingest_for_capacitycalculator(self, tmp_path):
+
+    #     models.WorkflowConfig()
+
+    #     ccc = workflows.CulvertCapacityCore(
+    #         points_filepath=
+    #         points_id_fieldname=
+    #         points_group_fieldname=
+    #     )
+    #     ccc.load_points()
+
+    #     return
 

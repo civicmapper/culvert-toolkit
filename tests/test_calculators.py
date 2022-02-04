@@ -173,7 +173,8 @@ class TestCapacityCalc:
             curve_number_raster=cc.config.raster_curvenumber_filepath,
             precip_src_config=models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config),
             out_shed_polygons=cc.config.output_sheds_filepath,
-            out_shed_polygons_simplify=cc.config.sheds_simplify
+            out_shed_polygons_simplify=cc.config.sheds_simplify,
+            override_skip=True
         )
         
         # pp(cc.config)
@@ -185,15 +186,18 @@ class TestCapacityCalc:
 
         assert output_config_filepath.exists()
 
-        good_points = [p for p in cc.config.points if p.shed is not None]
-        assert len(good_points) == 5
-        
-        bad_points = [p for p in cc.config.points if p.shed is None]
-        assert len(bad_points) == 3
+        have_sheds = [p for p in cc.config.points if p.shed is not None]
+        assert len(have_sheds) == 8
 
-    def test_analytics(self, sample_geoprocd_config, tmp_path):
+        # good_points = [p for p in cc.config.points if p.include == True]
+        # assert len(good_points) == 5
         
-        cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_geoprocd_config))
+        # bad_points = [p for p in cc.config.points if p.include == False]
+        # assert len(bad_points) == 3
+
+    def test_analytics(self, sample_completed_delineation_config, tmp_path):
+        
+        cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_completed_delineation_config))
 
         # run the calculation
         cc._analyze_all_points()
@@ -209,6 +213,8 @@ class TestCapacityCalc:
                 assert ri.overflow.culvert_overflow_m3s is not None
                 assert ri.peakflow.crossing_peakflow_m3s is not None
                 assert ri.overflow.crossing_overflow_m3s is not None
+            if pt.include:
+                assert pt.capacity.max_return_period is not None
 
         # for select points
         # crossings:
@@ -223,14 +229,13 @@ class TestCapacityCalc:
         with open(output_config_filepath, 'w') as fp:
             json.dump(asdict(cc.config), fp)
 
-
     def test_export(self, tmp_path, sample_completed_capacity_config):
 
         cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_completed_capacity_config))
 
-        cc.gp.create_workspace(tmp_path, 'outputs')
+        workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
 
-        cc.config.output_points_filepath = str(tmp_path / 'outputs.gdb' / 'points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'points')
         
         cc._export_culvert_featureclass()
 

@@ -5,8 +5,6 @@ from marshmallow import EXCLUDE
 from marshmallow_dataclass import class_schema
 import pint
 
-# from ..models import Capacity
-
 units = pint.UnitRegistry()
 
 
@@ -57,6 +55,11 @@ def calc_culvert_capacity(
         return None
 
 
+def req_field(): 
+    """shortcut to create a marshmallow-dataclass required field
+    """
+    return field(metadata=dict(required=True))
+
 @dataclass
 class Capacity:
     """Model for culvert capacity. Includes parameters both crosswalked and 
@@ -69,17 +72,17 @@ class Capacity:
     # These are the short names for the subset of fields
     # needed to calculate capacity
 
-    culv_mat: str = None
-    in_type: str = None
-    in_shape: str = None
-    in_a: float = None
-    in_b: float = None
-    hw: float = None
-    slope: float = None
-    length: float = None
-    out_shape: str = None
-    out_a: float = None
-    out_b: float = None
+    culv_mat: Optional[str] = None
+    in_type: Optional[str] = None
+    in_shape: Optional[str] = None
+    in_a: Optional[float] = None
+    in_b: Optional[float] = None
+    hw: Optional[float] = None
+    slope: Optional[float] = None
+    length: Optional[float] = None
+    out_shape: Optional[str] = None
+    out_a: Optional[float] = None
+    out_b: Optional[float] = None
     crossing_type: Optional[str] = None
         
     #flags: int = 1
@@ -88,36 +91,40 @@ class Capacity:
     # derived attributes
 
     # culvert area (square meters)
-    culvert_area_sqm: float = None
+    culvert_area_sqm: Optional[float] = None
     # culvert depth (meters)
-    culvert_depth_m: float = None
+    culvert_depth_m: Optional[float] = None
     # coefficients based on shape and material from FHWA engineering pub HIF12026, appendix A
-    coefficient_c: float = 0.04
-    coefficient_y: float = 0.7
+    coefficient_c: Optional[float] = 0.04
+    coefficient_y: Optional[float] = 0.7
     # slope coefficient from FHWA engineering pub HIF12026, appendix A
-    coefficient_slope: float = -0.5
+    coefficient_slope: Optional[float] = -0.5
     # slope as rise/run
-    slope_rr: float = None
+    slope_rr: Optional[float] = None
     #  head over invert by adding dist from road to top of culvert to D 
-    head_over_invert: float = None
+    head_over_invert: Optional[float] = None
 
     # comment field
-    comments: str = None
+    comments: Optional[str] = None
     # include flag
-    include: bool = True
+    include: Optional[bool] = True
 
     # ---------------------------------
     ## analytics    
 
     # culvert capacity, in cubic meters / second (m^3/s)
-    culvert_capacity: float = None
+    culvert_capacity: Optional[float] = None
+    
     # crossing capacity, in cubic meters / second (m^3/s)
     # this will be the same as culvert_capacity unless
     # this point is part of a group of >= 2 culvert,
     # in which case it will be the sum of all capacities
     # in the group
-    crossing_capacity: float = None
-        
+    crossing_capacity: Optional[float] = None
+    
+    # max return period / storm frequency that the 
+    max_return_period: Optional[float] = None 
+
     class Meta:
         unknown = EXCLUDE
     
@@ -128,7 +135,7 @@ class Capacity:
             head_over_invert=self.head_over_invert, 
             culvert_depth_m=self.culvert_depth_m, 
             slope_rr=self.slope_rr, 
-            coefficient_slope=self.coefficient_slope, 
+            coefficient_slope=self.coefficient_slope,
             coefficient_y=self.coefficient_y,
             coefficient_c=self.coefficient_c, 
             si_conv_factor=si_conv_factor

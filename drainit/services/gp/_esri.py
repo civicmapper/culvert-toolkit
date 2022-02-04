@@ -203,7 +203,7 @@ class GP:
         if not out_folder_path.exists():
             out_folder_path.mkdir(parents=True)
         CreateFileGDB(str(out_folder_path), out_name)
-        return out_folder_path / out_name
+        return out_folder_path / f'{out_name}.gdb'
 
     def clean(self, val):
         """post-process empty values ("") from ArcPy geoprocessing tools.
@@ -359,7 +359,7 @@ class GP:
             # if df[col].dtype not in ["str", "float"]:
             #     print(col, '/', df[col].dtype)
             if df[col].dtype == 'object' or df[col].dtype == 'O':
-                print(col)
+                # print(col)
                 df[col] = df[col].astype("str")
             df[col].replace({pd.NA:None})
         # Return modified df
@@ -702,10 +702,10 @@ class GP:
                     r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
                     cursor.insertRow(r)
 
-        print("temp_feature_class", int(GetCount(temp_feature_class).getOutput(0)))
+        # print("temp_feature_class", int(GetCount(temp_feature_class).getOutput(0)))
         if output_featureclass:
             CopyFeatures(temp_feature_class, output_featureclass)
-            print("output_featureclass", int(GetCount(output_featureclass).getOutput(0)))
+            # print("output_featureclass", int(GetCount(output_featureclass).getOutput(0)))
 
         # Create a FeatureSet object and load in_memory feature class JSON as dict
         feature_set = FeatureSet(temp_feature_class)
@@ -828,6 +828,7 @@ class GP:
             naacc_etl = NaaccEtl(wkid=spatial_ref_code)
             # assign the PETL table to the object
             naacc_etl.table = raw_table
+            # print(etl.vis.lookall(raw_table))
             # run the DrainItPoint generation method for NAACC data
             naacc_etl.generate_points_from_table()
             # assign the list
@@ -1332,7 +1333,7 @@ class GP:
         )        
 
         self.msg("--------------------------------")
-        self.msg("analyzing point {0}".format(shed.uid))
+        self.msg("analyzing point {0} | group {1}".format(shed.uid, shed.group_id))
 
 
         # we can get a tabular look at what's in the layer like this:
@@ -1603,8 +1604,8 @@ class GP:
         if out_shed_polygons:
             Merge(shed_geodata, out_shed_polygons)
 
-        # return all updated Point objects and a separate list of sheds.
-        return points#, sheds
+        # return all updated Point objects, which includes nested shed data
+        return points
 
     def centroid_of_feature_envelope(self, in_features, project_as=4326) -> Dict:
         """given features, calculate the envelope, and return

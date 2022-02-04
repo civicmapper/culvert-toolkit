@@ -1,12 +1,123 @@
 {
+    "work_dir": null,
+    "raster_dem_filepath": null,
+    "output_points_filepath": null,
+    "area_conv_factor": 9.290304e-08,
+    "sheds_simplify": false,
+    "raster_flowdir_filepath": "landscape/dem_filled_flowdir.tif",
+    "raster_curvenumber_filepath": "landscape/curveno.tif",
+    "precip_src_config": {
+        "root": "rainfall",
+        "rasters": [
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne1000yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 1000,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne100yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 100,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne10yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 10,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne1yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 1,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne200yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 200,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne25yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 25,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne2yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 2,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne500yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 500,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne50yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 50,
+                "const": null
+            },
+            {
+                "ext": ".tif",
+                "path": "rainfall/ne5yr24ha.asc.tif",
+                "units": "1000ths of inches",
+                "freq": 5,
+                "const": null
+            }
+        ]
+    },
+    "raster_slope_filepath": "landscape/dem_filled_slope.tif",
+    "precip_noaa_csv_filepath": null,
+    "points_spatial_ref_code": 4326,
+    "raster_watershed_filepath": null,
+    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points",
     "points": [
         {
-            "raw": null,
-            "include": false,
             "lng": -73.60004425048828,
-            "notes": [],
-            "spatial_ref_code": 4326,
-            "shed": null,
+            "capacity": {
+                "hw": -1.0,
+                "coefficient_slope": -0.5,
+                "coefficient_c": 0.03999999910593033,
+                "culvert_depth_m": null,
+                "culv_mat": null,
+                "in_shape": null,
+                "out_a": null,
+                "max_return_period": null,
+                "out_shape": null,
+                "culvert_capacity": null,
+                "coefficient_y": 0.699999988079071,
+                "in_type": null,
+                "include": false,
+                "out_b": null,
+                "culvert_area_sqm": null,
+                "crossing_capacity": null,
+                "in_a": null,
+                "head_over_invert": null,
+                "crossing_type": null,
+                "slope_rr": null,
+                "in_b": null,
+                "length": null,
+                "slope": null,
+                "comments": "Long hike in, off gated driveway"
+            },
+            "uid": null,
+            "naacc": null,
+            "analytics": [],
             "validation_errors": {
                 "Slope_Percent": [
                     "Field may not be null."
@@ -54,20 +165,149 @@
                     "must be a number (False)"
                 ]
             },
+            "notes": [],
+            "include": false,
+            "group_id": "66697",
+            "shed": {
+                "inlet_geom": null,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": null,
+                "avg_slope_pct": 8.977816901408444,
+                "filepath_vector": "scratch.gdb/shed_None_delineation_dissolved3",
+                "avg_rainfall": [
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.4812813380281704,
+                        "freq": "1"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 3.111565492957752,
+                        "freq": "2"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 4.142012323943663,
+                        "freq": "5"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 4.996416549295786,
+                        "freq": "10"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.173036267605636,
+                        "freq": "25"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 7.059747535211269,
+                        "freq": "50"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 7.9870704225352185,
+                        "freq": "100"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 9.02592007042254,
+                        "freq": "200"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 10.512227464788758,
+                        "freq": "500"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 11.72676584507043,
+                        "freq": "1000"
+                    }
+                ],
+                "filepath_raster": "scratch.gdb/shed_None_delineation3",
+                "area_sqkm": 7.103314913878783,
+                "group_id": "66697",
+                "avg_cn": 53.52957746478884,
+                "max_fl": 5016.2944335938
+            },
+            "spatial_ref_code": 4326,
             "lat": 42.16342544555664,
-            "uid": null,
-            "analytics": [],
-            "capacity": null,
-            "naacc": null,
-            "group_id": "66697"
+            "raw": null
         },
         {
-            "raw": null,
-            "include": false,
             "lng": -73.54853820800781,
-            "notes": [],
-            "spatial_ref_code": 4326,
-            "shed": null,
+            "capacity": {
+                "hw": 0.0,
+                "coefficient_slope": -0.5,
+                "coefficient_c": 0.03999999910593033,
+                "culvert_depth_m": null,
+                "culv_mat": "Combination",
+                "in_shape": "Box",
+                "out_a": 64.5,
+                "max_return_period": null,
+                "out_shape": "Box/Bridge with Abutments",
+                "culvert_capacity": null,
+                "coefficient_y": 0.699999988079071,
+                "in_type": "Wingwall and Headwall",
+                "include": false,
+                "out_b": 8.0,
+                "culvert_area_sqm": null,
+                "crossing_capacity": null,
+                "in_a": 64.5,
+                "head_over_invert": null,
+                "crossing_type": null,
+                "slope_rr": null,
+                "in_b": 6.800000190734863,
+                "length": 35.0,
+                "slope": -1.0,
+                "comments": null
+            },
+            "uid": "64662",
+            "naacc": {
+                "GIS_Longitude": -73.54853820800781,
+                "Outlet_Structure_Type": "Box/Bridge with Abutments",
+                "Inlet_Width": 64.5,
+                "GIS_Latitude": 42.102073669433594,
+                "Outlet_Height": 8.0,
+                "Crossing_Type": "Bridge",
+                "Inlet_Type": "Headwall and Wingwalls",
+                "Material": "Combination",
+                "Slope_Percent": -1.0,
+                "Inlet_Height": 6.800000190734863,
+                "Crossing_Structure_Length": 35.0,
+                "Inlet_Structure_Type": "Box/Bridge with Abutments",
+                "Number_Of_Culverts": 1,
+                "Road_Fill_Height": 0.0,
+                "Naacc_Culvert_Id": "64662",
+                "Survey_Id": "66742",
+                "Crossing_Comment": null,
+                "Outlet_Width": 64.5,
+                "Road": "County Route 7a"
+            },
+            "analytics": [],
             "validation_errors": {
                 "in_shape": [
                     "Wrong bridge type (Box)"
@@ -76,750 +316,849 @@
                     "Bridge wider than 20 ft (64.5 ft)"
                 ]
             },
+            "notes": [],
+            "include": false,
+            "group_id": "66742",
+            "shed": {
+                "inlet_geom": null,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": "64662",
+                "avg_slope_pct": 16.824062028412225,
+                "filepath_vector": "scratch.gdb/shed_64662_delineation_dissolved3",
+                "avg_rainfall": [
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.5446758599156887,
+                        "freq": "1"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 3.226563667585972,
+                        "freq": "2"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 4.340944632356784,
+                        "freq": "5"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 5.265160586980277,
+                        "freq": "10"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.537934537128585,
+                        "freq": "25"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 7.481532445230777,
+                        "freq": "50"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 8.49983228391531,
+                        "freq": "100"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 9.727579851173463,
+                        "freq": "200"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 11.593021127127091,
+                        "freq": "500"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 13.186155123068081,
+                        "freq": "1000"
+                    }
+                ],
+                "filepath_raster": "scratch.gdb/shed_64662_delineation3",
+                "area_sqkm": 48.062292021414116,
+                "group_id": "66742",
+                "avg_cn": 68.64688334118377,
+                "max_fl": 16088.845703125
+            },
+            "spatial_ref_code": 4326,
             "lat": 42.102073669433594,
-            "uid": "64662",
-            "analytics": [],
-            "capacity": null,
-            "naacc": {
-                "Crossing_Structure_Length": 35.0,
-                "Slope_Percent": -1.0,
-                "Road": "County Route 7a",
-                "Inlet_Type": "Headwall and Wingwalls",
-                "GIS_Longitude": -73.54853820800781,
-                "Naacc_Culvert_Id": "64662",
-                "Outlet_Height": 8.0,
-                "Inlet_Structure_Type": "Box/Bridge with Abutments",
-                "Material": "Combination",
-                "Number_Of_Culverts": 1,
-                "GIS_Latitude": 42.102073669433594,
-                "Crossing_Comment": null,
-                "Inlet_Height": 6.800000190734863,
-                "Road_Fill_Height": 0.0,
-                "Crossing_Type": "Bridge",
-                "Inlet_Width": 64.5,
-                "Survey_Id": "66742",
-                "Outlet_Structure_Type": "Box/Bridge with Abutments",
-                "Outlet_Width": 64.5
-            },
-            "group_id": "66742"
+            "raw": null
         },
         {
-            "raw": null,
-            "include": true,
             "lng": -73.7044448852539,
-            "notes": [],
-            "spatial_ref_code": 4326,
-            "shed": {
-                "filepath_vector": "scratch.gdb/shed_72498_delineation_dissolved8",
-                "shed_geom": null,
-                "max_fl": 9958.32421875,
-                "avg_cn": 66.4802489521147,
-                "tc_hr": null,
-                "area_sqkm": 19.692527509295594,
-                "inlet_geom": null,
-                "avg_slope_pct": 5.899276006604845,
-                "avg_rainfall": [
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 2282.38574876159,
-                        "freq": "1"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 2813.1129175663664,
-                        "freq": "2"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 3680.2570811634782,
-                        "freq": "5"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 4399.531309538928,
-                        "freq": "10"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 5389.594055633181,
-                        "freq": "25"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 6125.125873237643,
-                        "freq": "50"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 6916.281722342186,
-                        "freq": "100"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 7863.787374571319,
-                        "freq": "200"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 9292.34065794487,
-                        "freq": "500"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 10507.530166391443,
-                        "freq": "1000"
-                    }
-                ],
-                "filepath_raster": "scratch.gdb/shed_72498_delineation8",
-                "uid": "72498",
-                "group_id": "75158"
-            },
-            "validation_errors": {},
-            "lat": 42.30765914916992,
-            "uid": "72498",
-            "analytics": [],
             "capacity": {
-                "out_b": 6.300000190734863,
-                "culv_mat": "Concrete",
+                "hw": 0.30480000376701355,
+                "coefficient_slope": -0.5,
                 "coefficient_c": 0.03779999911785126,
-                "slope_rr": 0.008999999612569809,
-                "head_over_invert": 2.2250399589538574,
+                "culvert_depth_m": 1.920240044593811,
+                "culv_mat": "Concrete",
+                "in_shape": "Box",
+                "out_a": 8.0,
+                "max_return_period": null,
+                "out_shape": "Box Culvert",
                 "culvert_capacity": 9.978796751827035,
-                "in_type": "Projecting",
-                "length": 7.619999885559082,
-                "in_a": 2.4384000301361084,
-                "culvert_area_sqm": 4.682313442230225,
                 "coefficient_y": 0.8700000047683716,
-                "out_shape": "Box Culvert",
-                "in_shape": "Box",
-                "out_a": 8.0,
+                "in_type": "Projecting",
                 "include": true,
-                "coefficient_slope": -0.5,
-                "crossing_type": null,
-                "comments": "",
-                "in_b": 1.920240044593811,
-                "slope": 0.8999999761581421,
-                "culvert_depth_m": 1.920240044593811,
-                "hw": 0.30480000376701355
-            },
-            "naacc": {
-                "Crossing_Structure_Length": 25.0,
-                "Slope_Percent": 0.8999999761581421,
-                "Road": "Old Post Road",
-                "Inlet_Type": "Projecting",
-                "GIS_Longitude": -73.7044448852539,
-                "Naacc_Culvert_Id": "72498",
-                "Outlet_Height": 6.300000190734863,
-                "Inlet_Structure_Type": "Box Culvert",
-                "Material": "Concrete",
-                "Number_Of_Culverts": 2,
-                "GIS_Latitude": 42.30765914916992,
-                "Crossing_Comment": null,
-                "Inlet_Height": 6.300000190734863,
-                "Road_Fill_Height": 1.0,
-                "Crossing_Type": "Multiple Culvert",
-                "Inlet_Width": 8.0,
-                "Survey_Id": "75158",
-                "Outlet_Structure_Type": "Box Culvert",
-                "Outlet_Width": 8.0
-            },
-            "group_id": "75158"
-        },
-        {
-            "raw": null,
-            "include": true,
-            "lng": -73.7044448852539,
-            "notes": [],
-            "spatial_ref_code": 4326,
-            "shed": {
-                "filepath_vector": "scratch.gdb/shed_72499_delineation_dissolved18",
-                "shed_geom": null,
-                "max_fl": 9958.32421875,
-                "avg_cn": 66.4802489521147,
-                "tc_hr": null,
-                "area_sqkm": 19.692527509295594,
-                "inlet_geom": null,
-                "avg_slope_pct": 5.899276006604845,
-                "avg_rainfall": [
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 2282.38574876159,
-                        "freq": "1"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 2813.1129175663664,
-                        "freq": "2"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 3680.2570811634782,
-                        "freq": "5"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 4399.531309538928,
-                        "freq": "10"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 5389.594055633181,
-                        "freq": "25"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 6125.125873237643,
-                        "freq": "50"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 6916.281722342186,
-                        "freq": "100"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 7863.787374571319,
-                        "freq": "200"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 9292.34065794487,
-                        "freq": "500"
-                    },
-                    {
-                        "units": "inches",
-                        "valtyp": "mean",
-                        "dur": "24hr",
-                        "value": 10507.530166391443,
-                        "freq": "1000"
-                    }
-                ],
-                "filepath_raster": "scratch.gdb/shed_72499_delineation18",
-                "uid": "72499",
-                "group_id": "75158"
-            },
-            "validation_errors": {},
-            "lat": 42.30765914916992,
-            "uid": "72499",
-            "analytics": [],
-            "capacity": {
                 "out_b": 6.300000190734863,
-                "culv_mat": "Concrete",
-                "coefficient_c": 0.03779999911785126,
-                "slope_rr": 0.009999999776482582,
-                "head_over_invert": 2.2250399589538574,
-                "culvert_capacity": 9.987300779890033,
-                "in_type": "Projecting",
-                "length": 7.619999885559082,
-                "in_a": 2.4384000301361084,
                 "culvert_area_sqm": 4.682313442230225,
-                "coefficient_y": 0.8700000047683716,
-                "out_shape": "Box Culvert",
-                "in_shape": "Box",
-                "out_a": 8.0,
-                "include": true,
-                "coefficient_slope": -0.5,
+                "crossing_capacity": null,
+                "in_a": 2.4384000301361084,
+                "head_over_invert": 2.2250399589538574,
                 "crossing_type": null,
-                "comments": "",
+                "slope_rr": 0.008999999612569809,
                 "in_b": 1.920240044593811,
-                "slope": 1.0,
-                "culvert_depth_m": 1.920240044593811,
-                "hw": 0.30480000376701355
+                "length": 7.619999885559082,
+                "slope": 0.8999999761581421,
+                "comments": ""
             },
+            "uid": "72498",
             "naacc": {
-                "Crossing_Structure_Length": 25.0,
-                "Slope_Percent": 1.0,
-                "Road": "Old Post Road",
-                "Inlet_Type": "Projecting",
                 "GIS_Longitude": -73.7044448852539,
-                "Naacc_Culvert_Id": "72499",
-                "Outlet_Height": 6.300000190734863,
-                "Inlet_Structure_Type": "Box Culvert",
-                "Material": "Concrete",
-                "Number_Of_Culverts": 2,
-                "GIS_Latitude": 42.30765914916992,
-                "Crossing_Comment": null,
-                "Inlet_Height": 6.300000190734863,
-                "Road_Fill_Height": 1.0,
-                "Crossing_Type": "Multiple Culvert",
-                "Inlet_Width": 8.0,
-                "Survey_Id": "75158",
                 "Outlet_Structure_Type": "Box Culvert",
-                "Outlet_Width": 8.0
+                "Inlet_Width": 8.0,
+                "GIS_Latitude": 42.30765914916992,
+                "Outlet_Height": 6.300000190734863,
+                "Crossing_Type": "Multiple Culvert",
+                "Inlet_Type": "Projecting",
+                "Material": "Concrete",
+                "Slope_Percent": 0.8999999761581421,
+                "Inlet_Height": 6.300000190734863,
+                "Crossing_Structure_Length": 25.0,
+                "Inlet_Structure_Type": "Box Culvert",
+                "Number_Of_Culverts": 2,
+                "Road_Fill_Height": 1.0,
+                "Naacc_Culvert_Id": "72498",
+                "Survey_Id": "75158",
+                "Crossing_Comment": null,
+                "Outlet_Width": 8.0,
+                "Road": "Old Post Road"
             },
-            "group_id": "75158"
-        },
-        {
-            "raw": null,
-            "include": true,
-            "lng": -73.60420989990234,
+            "analytics": [],
+            "validation_errors": {},
             "notes": [],
-            "spatial_ref_code": 4326,
+            "include": true,
+            "group_id": "75158",
             "shed": {
-                "filepath_vector": "scratch.gdb/shed_72500_delineation_dissolved8",
-                "shed_geom": null,
-                "max_fl": 320.71069335938,
-                "avg_cn": 53.00000000000001,
-                "tc_hr": null,
-                "area_sqkm": 0.017508294086663125,
                 "inlet_geom": null,
-                "avg_slope_pct": 5.0,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": "72498",
+                "avg_slope_pct": 5.899276006604845,
+                "filepath_vector": "scratch.gdb/shed_72498_delineation_dissolved5",
                 "avg_rainfall": [
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 2233.0,
+                        "value": 2.28238574876159,
                         "freq": "1"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 2754.0,
+                        "value": 2.8131129175663663,
                         "freq": "2"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 3606.0,
+                        "value": 3.6802570811634783,
                         "freq": "5"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 4313.0,
+                        "value": 4.399531309538928,
                         "freq": "10"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 5285.0,
+                        "value": 5.3895940556331805,
                         "freq": "25"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 6005.0,
+                        "value": 6.125125873237643,
                         "freq": "50"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 6785.0,
+                        "value": 6.916281722342186,
                         "freq": "100"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 7727.0,
+                        "value": 7.863787374571318,
                         "freq": "200"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 9162.0,
+                        "value": 9.29234065794487,
                         "freq": "500"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 10389.0,
+                        "value": 10.507530166391444,
                         "freq": "1000"
                     }
                 ],
-                "filepath_raster": "scratch.gdb/shed_72500_delineation8",
-                "uid": "72500",
-                "group_id": "75159"
+                "filepath_raster": "scratch.gdb/shed_72498_delineation5",
+                "area_sqkm": 19.692527509295594,
+                "group_id": "75158",
+                "avg_cn": 66.4802489521147,
+                "max_fl": 9958.32421875
             },
-            "validation_errors": {},
-            "lat": 42.348876953125,
-            "uid": "72500",
-            "analytics": [],
+            "spatial_ref_code": 4326,
+            "lat": 42.30765914916992,
+            "raw": null
+        },
+        {
+            "lng": -73.7044448852539,
             "capacity": {
-                "out_b": 2.4000000953674316,
-                "culv_mat": "Metal",
-                "coefficient_c": 0.054999999701976776,
-                "slope_rr": 0.006000000052154064,
-                "head_over_invert": 0.9143999814987183,
-                "culvert_capacity": 0.3161385247971824,
+                "hw": 0.30480000376701355,
+                "coefficient_slope": -0.5,
+                "coefficient_c": 0.03779999911785126,
+                "culvert_depth_m": 1.920240044593811,
+                "culv_mat": "Concrete",
+                "in_shape": "Box",
+                "out_a": 8.0,
+                "max_return_period": null,
+                "out_shape": "Box Culvert",
+                "culvert_capacity": 9.987300779890033,
+                "coefficient_y": 0.8700000047683716,
                 "in_type": "Projecting",
-                "length": 27.43199920654297,
-                "in_a": 0.45719999074935913,
-                "culvert_area_sqm": 0.16417308151721954,
-                "coefficient_y": 0.5400000214576721,
-                "out_shape": "Round Culvert",
+                "include": true,
+                "out_b": 6.300000190734863,
+                "culvert_area_sqm": 4.682313442230225,
+                "crossing_capacity": null,
+                "in_a": 2.4384000301361084,
+                "head_over_invert": 2.2250399589538574,
+                "crossing_type": null,
+                "slope_rr": 0.009999999776482582,
+                "in_b": 1.920240044593811,
+                "length": 7.619999885559082,
+                "slope": 1.0,
+                "comments": ""
+            },
+            "uid": "72499",
+            "naacc": {
+                "GIS_Longitude": -73.7044448852539,
+                "Outlet_Structure_Type": "Box Culvert",
+                "Inlet_Width": 8.0,
+                "GIS_Latitude": 42.30765914916992,
+                "Outlet_Height": 6.300000190734863,
+                "Crossing_Type": "Multiple Culvert",
+                "Inlet_Type": "Projecting",
+                "Material": "Concrete",
+                "Slope_Percent": 1.0,
+                "Inlet_Height": 6.300000190734863,
+                "Crossing_Structure_Length": 25.0,
+                "Inlet_Structure_Type": "Box Culvert",
+                "Number_Of_Culverts": 2,
+                "Road_Fill_Height": 1.0,
+                "Naacc_Culvert_Id": "72499",
+                "Survey_Id": "75158",
+                "Crossing_Comment": null,
+                "Outlet_Width": 8.0,
+                "Road": "Old Post Road"
+            },
+            "analytics": [],
+            "validation_errors": {},
+            "notes": [],
+            "include": true,
+            "group_id": "75158",
+            "shed": {
+                "inlet_geom": null,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": "72499",
+                "avg_slope_pct": 5.899276006604845,
+                "filepath_vector": "scratch.gdb/shed_72499_delineation_dissolved5",
+                "avg_rainfall": [
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.28238574876159,
+                        "freq": "1"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.8131129175663663,
+                        "freq": "2"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 3.6802570811634783,
+                        "freq": "5"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 4.399531309538928,
+                        "freq": "10"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 5.3895940556331805,
+                        "freq": "25"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.125125873237643,
+                        "freq": "50"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.916281722342186,
+                        "freq": "100"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 7.863787374571318,
+                        "freq": "200"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 9.29234065794487,
+                        "freq": "500"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 10.507530166391444,
+                        "freq": "1000"
+                    }
+                ],
+                "filepath_raster": "scratch.gdb/shed_72499_delineation5",
+                "area_sqkm": 19.692527509295594,
+                "group_id": "75158",
+                "avg_cn": 66.4802489521147,
+                "max_fl": 9958.32421875
+            },
+            "spatial_ref_code": 4326,
+            "lat": 42.30765914916992,
+            "raw": null
+        },
+        {
+            "lng": -73.60420989990234,
+            "capacity": {
+                "hw": 0.45719999074935913,
+                "coefficient_slope": -0.5,
+                "coefficient_c": 0.054999999701976776,
+                "culvert_depth_m": 0.45719999074935913,
+                "culv_mat": "Metal",
                 "in_shape": "Round",
                 "out_a": 3.0,
+                "max_return_period": null,
+                "out_shape": "Round Culvert",
+                "culvert_capacity": 0.3161385247971824,
+                "coefficient_y": 0.5400000214576721,
+                "in_type": "Projecting",
                 "include": true,
-                "coefficient_slope": -0.5,
+                "out_b": 2.4000000953674316,
+                "culvert_area_sqm": 0.16417308151721954,
+                "crossing_capacity": null,
+                "in_a": 0.45719999074935913,
+                "head_over_invert": 0.9143999814987183,
                 "crossing_type": null,
-                "comments": "",
+                "slope_rr": 0.006000000052154064,
                 "in_b": 1.2000000476837158,
+                "length": 27.43199920654297,
                 "slope": 0.6000000238418579,
-                "culvert_depth_m": 0.45719999074935913,
-                "hw": 0.45719999074935913
+                "comments": ""
             },
+            "uid": "72500",
             "naacc": {
-                "Crossing_Structure_Length": 90.0,
-                "Slope_Percent": 0.6000000238418579,
-                "Road": "Payn Avenue",
-                "Inlet_Type": "Projecting",
                 "GIS_Longitude": -73.60420989990234,
-                "Naacc_Culvert_Id": "72500",
-                "Outlet_Height": 2.4000000953674316,
-                "Inlet_Structure_Type": "Round Culvert",
-                "Material": "Metal",
-                "Number_Of_Culverts": 1,
-                "GIS_Latitude": 42.348876953125,
-                "Crossing_Comment": null,
-                "Inlet_Height": 1.2000000476837158,
-                "Road_Fill_Height": 1.5,
-                "Crossing_Type": "Culvert",
-                "Inlet_Width": 1.5,
-                "Survey_Id": "75159",
                 "Outlet_Structure_Type": "Round Culvert",
-                "Outlet_Width": 3.0
+                "Inlet_Width": 1.5,
+                "GIS_Latitude": 42.348876953125,
+                "Outlet_Height": 2.4000000953674316,
+                "Crossing_Type": "Culvert",
+                "Inlet_Type": "Projecting",
+                "Material": "Metal",
+                "Slope_Percent": 0.6000000238418579,
+                "Inlet_Height": 1.2000000476837158,
+                "Crossing_Structure_Length": 90.0,
+                "Inlet_Structure_Type": "Round Culvert",
+                "Number_Of_Culverts": 1,
+                "Road_Fill_Height": 1.5,
+                "Naacc_Culvert_Id": "72500",
+                "Survey_Id": "75159",
+                "Crossing_Comment": null,
+                "Outlet_Width": 3.0,
+                "Road": "Payn Avenue"
             },
-            "group_id": "75159"
-        },
-        {
-            "raw": null,
-            "include": true,
-            "lng": -73.68611907958984,
+            "analytics": [],
+            "validation_errors": {},
             "notes": [],
-            "spatial_ref_code": 4326,
+            "include": true,
+            "group_id": "75159",
             "shed": {
-                "filepath_vector": "scratch.gdb/shed_72501_delineation_dissolved8",
-                "shed_geom": null,
-                "max_fl": 120.71067810059,
-                "avg_cn": 77.5,
-                "tc_hr": null,
-                "area_sqkm": 0.010005111007000573,
                 "inlet_geom": null,
-                "avg_slope_pct": 4.0,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": "72500",
+                "avg_slope_pct": 5.0,
+                "filepath_vector": "scratch.gdb/shed_72500_delineation_dissolved4",
                 "avg_rainfall": [
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 2353.0,
+                        "value": 2.233,
                         "freq": "1"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 2912.0,
+                        "value": 2.754,
                         "freq": "2"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 3828.0,
+                        "value": 3.606,
                         "freq": "5"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 4587.0,
+                        "value": 4.313,
                         "freq": "10"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 5633.0,
+                        "value": 5.285,
                         "freq": "25"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 6411.0,
+                        "value": 6.005,
                         "freq": "50"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 7245.0,
+                        "value": 6.785,
                         "freq": "100"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 8227.0,
+                        "value": 7.727,
                         "freq": "200"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 9693.0,
+                        "value": 9.162,
                         "freq": "500"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 10929.0,
+                        "value": 10.389,
                         "freq": "1000"
                     }
                 ],
-                "filepath_raster": "scratch.gdb/shed_72501_delineation8",
-                "uid": "72501",
-                "group_id": "75160"
+                "filepath_raster": "scratch.gdb/shed_72500_delineation4",
+                "area_sqkm": 0.017508294086663125,
+                "group_id": "75159",
+                "avg_cn": 53.00000000000001,
+                "max_fl": 320.71069335938
             },
-            "validation_errors": {},
-            "lat": 42.29190444946289,
-            "uid": "72501",
-            "analytics": [],
+            "spatial_ref_code": 4326,
+            "lat": 42.348876953125,
+            "raw": null
+        },
+        {
+            "lng": -73.68611907958984,
             "capacity": {
-                "out_b": 2.0,
-                "culv_mat": "Concrete",
+                "hw": 1.2192000150680542,
+                "coefficient_slope": -0.5,
                 "coefficient_c": 0.03200000151991844,
-                "slope_rr": 0.07000000029802322,
-                "head_over_invert": 1.8897600173950195,
-                "culvert_capacity": 1.3129152122885313,
-                "in_type": "Projecting",
-                "length": 12.192000389099121,
-                "in_a": 0.6705600023269653,
-                "culvert_area_sqm": 0.3531545400619507,
-                "coefficient_y": 0.6899999976158142,
-                "out_shape": "Round Culvert",
+                "culvert_depth_m": 0.6705600023269653,
+                "culv_mat": "Concrete",
                 "in_shape": "Round",
                 "out_a": 2.0,
+                "max_return_period": null,
+                "out_shape": "Round Culvert",
+                "culvert_capacity": 1.3129152122885313,
+                "coefficient_y": 0.6899999976158142,
+                "in_type": "Projecting",
                 "include": true,
-                "coefficient_slope": -0.5,
+                "out_b": 2.0,
+                "culvert_area_sqm": 0.3531545400619507,
+                "crossing_capacity": null,
+                "in_a": 0.6705600023269653,
+                "head_over_invert": 1.8897600173950195,
                 "crossing_type": null,
-                "comments": "",
+                "slope_rr": 0.07000000029802322,
                 "in_b": 2.0,
+                "length": 12.192000389099121,
                 "slope": 7.0,
-                "culvert_depth_m": 0.6705600023269653,
-                "hw": 1.2192000150680542
+                "comments": ""
             },
+            "uid": "72501",
             "naacc": {
-                "Crossing_Structure_Length": 40.0,
-                "Slope_Percent": 7.0,
-                "Road": "Route 66",
-                "Inlet_Type": "Projecting",
                 "GIS_Longitude": -73.68611907958984,
-                "Naacc_Culvert_Id": "72501",
-                "Outlet_Height": 2.0,
-                "Inlet_Structure_Type": "Round Culvert",
-                "Material": "Concrete",
-                "Number_Of_Culverts": 1,
-                "GIS_Latitude": 42.29190444946289,
-                "Crossing_Comment": null,
-                "Inlet_Height": 2.0,
-                "Road_Fill_Height": 4.0,
-                "Crossing_Type": "Culvert",
-                "Inlet_Width": 2.200000047683716,
-                "Survey_Id": "75160",
                 "Outlet_Structure_Type": "Round Culvert",
-                "Outlet_Width": 2.0
+                "Inlet_Width": 2.200000047683716,
+                "GIS_Latitude": 42.29190444946289,
+                "Outlet_Height": 2.0,
+                "Crossing_Type": "Culvert",
+                "Inlet_Type": "Projecting",
+                "Material": "Concrete",
+                "Slope_Percent": 7.0,
+                "Inlet_Height": 2.0,
+                "Crossing_Structure_Length": 40.0,
+                "Inlet_Structure_Type": "Round Culvert",
+                "Number_Of_Culverts": 1,
+                "Road_Fill_Height": 4.0,
+                "Naacc_Culvert_Id": "72501",
+                "Survey_Id": "75160",
+                "Crossing_Comment": null,
+                "Outlet_Width": 2.0,
+                "Road": "Route 66"
             },
-            "group_id": "75160"
-        },
-        {
-            "raw": null,
-            "include": true,
-            "lng": -73.60489654541016,
+            "analytics": [],
+            "validation_errors": {},
             "notes": [],
-            "spatial_ref_code": 4326,
+            "include": true,
+            "group_id": "75160",
             "shed": {
-                "filepath_vector": "scratch.gdb/shed_72502_delineation_dissolved8",
-                "shed_geom": null,
-                "max_fl": 150.0,
-                "avg_cn": 49.0,
-                "tc_hr": null,
-                "area_sqkm": 0.010004757882473058,
                 "inlet_geom": null,
-                "avg_slope_pct": 1.25,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": "72501",
+                "avg_slope_pct": 4.0,
+                "filepath_vector": "scratch.gdb/shed_72501_delineation_dissolved4",
                 "avg_rainfall": [
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 2233.0,
+                        "value": 2.353,
                         "freq": "1"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 2754.0,
+                        "value": 2.912,
                         "freq": "2"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 3606.0,
+                        "value": 3.828,
                         "freq": "5"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 4313.0,
+                        "value": 4.587,
                         "freq": "10"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 5285.0,
+                        "value": 5.633,
                         "freq": "25"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 6005.0,
+                        "value": 6.411,
                         "freq": "50"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 6785.0,
+                        "value": 7.245,
                         "freq": "100"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 7727.0,
+                        "value": 8.227,
                         "freq": "200"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 9162.0,
+                        "value": 9.693,
                         "freq": "500"
                     },
                     {
-                        "units": "inches",
                         "valtyp": "mean",
+                        "units": "inches",
                         "dur": "24hr",
-                        "value": 10389.0,
+                        "value": 10.929,
                         "freq": "1000"
                     }
                 ],
-                "filepath_raster": "scratch.gdb/shed_72502_delineation8",
-                "uid": "72502",
-                "group_id": "75161"
+                "filepath_raster": "scratch.gdb/shed_72501_delineation4",
+                "area_sqkm": 0.010005111007000573,
+                "group_id": "75160",
+                "avg_cn": 77.5,
+                "max_fl": 120.71067810059
             },
-            "validation_errors": {},
-            "lat": 42.34757995605469,
-            "uid": "72502",
-            "analytics": [],
-            "capacity": {
-                "out_b": 4.5,
-                "culv_mat": "Concrete",
-                "coefficient_c": 0.03779999911785126,
-                "slope_rr": 0.003000000026077032,
-                "head_over_invert": 2.4384000301361084,
-                "culvert_capacity": 15.911875296613399,
-                "in_type": "Headwall",
-                "length": 11.887200355529785,
-                "in_a": 3.657599925994873,
-                "culvert_area_sqm": 5.016764163970947,
-                "coefficient_y": 0.8700000047683716,
-                "out_shape": "Box Culvert",
-                "in_shape": "Box",
-                "out_a": 12.0,
-                "include": true,
-                "coefficient_slope": -0.5,
-                "crossing_type": null,
-                "comments": "",
-                "in_b": 1.3716000318527222,
-                "slope": 0.30000001192092896,
-                "culvert_depth_m": 1.3716000318527222,
-                "hw": 1.0667999982833862
-            },
-            "naacc": {
-                "Crossing_Structure_Length": 39.0,
-                "Slope_Percent": 0.30000001192092896,
-                "Road": "Price Chopper Drive",
-                "Inlet_Type": "Headwall",
-                "GIS_Longitude": -73.60489654541016,
-                "Naacc_Culvert_Id": "72502",
-                "Outlet_Height": 4.5,
-                "Inlet_Structure_Type": "Box Culvert",
-                "Material": "Concrete",
-                "Number_Of_Culverts": 1,
-                "GIS_Latitude": 42.34757995605469,
-                "Crossing_Comment": null,
-                "Inlet_Height": 4.5,
-                "Road_Fill_Height": 3.5,
-                "Crossing_Type": "Culvert",
-                "Inlet_Width": 12.0,
-                "Survey_Id": "75161",
-                "Outlet_Structure_Type": "Box Culvert",
-                "Outlet_Width": 12.0
-            },
-            "group_id": "75161"
+            "spatial_ref_code": 4326,
+            "lat": 42.29190444946289,
+            "raw": null
         },
         {
-            "raw": null,
-            "include": false,
-            "lng": -73.6965560913086,
+            "lng": -73.60489654541016,
+            "capacity": {
+                "hw": 1.0667999982833862,
+                "coefficient_slope": -0.5,
+                "coefficient_c": 0.03779999911785126,
+                "culvert_depth_m": 1.3716000318527222,
+                "culv_mat": "Concrete",
+                "in_shape": "Box",
+                "out_a": 12.0,
+                "max_return_period": null,
+                "out_shape": "Box Culvert",
+                "culvert_capacity": 15.911875296613399,
+                "coefficient_y": 0.8700000047683716,
+                "in_type": "Headwall",
+                "include": true,
+                "out_b": 4.5,
+                "culvert_area_sqm": 5.016764163970947,
+                "crossing_capacity": null,
+                "in_a": 3.657599925994873,
+                "head_over_invert": 2.4384000301361084,
+                "crossing_type": null,
+                "slope_rr": 0.003000000026077032,
+                "in_b": 1.3716000318527222,
+                "length": 11.887200355529785,
+                "slope": 0.30000001192092896,
+                "comments": ""
+            },
+            "uid": "72502",
+            "naacc": {
+                "GIS_Longitude": -73.60489654541016,
+                "Outlet_Structure_Type": "Box Culvert",
+                "Inlet_Width": 12.0,
+                "GIS_Latitude": 42.34757995605469,
+                "Outlet_Height": 4.5,
+                "Crossing_Type": "Culvert",
+                "Inlet_Type": "Headwall",
+                "Material": "Concrete",
+                "Slope_Percent": 0.30000001192092896,
+                "Inlet_Height": 4.5,
+                "Crossing_Structure_Length": 39.0,
+                "Inlet_Structure_Type": "Box Culvert",
+                "Number_Of_Culverts": 1,
+                "Road_Fill_Height": 3.5,
+                "Naacc_Culvert_Id": "72502",
+                "Survey_Id": "75161",
+                "Crossing_Comment": null,
+                "Outlet_Width": 12.0,
+                "Road": "Price Chopper Drive"
+            },
+            "analytics": [],
+            "validation_errors": {},
             "notes": [],
+            "include": true,
+            "group_id": "75161",
+            "shed": {
+                "inlet_geom": null,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": "72502",
+                "avg_slope_pct": 1.25,
+                "filepath_vector": "scratch.gdb/shed_72502_delineation_dissolved3",
+                "avg_rainfall": [
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.233,
+                        "freq": "1"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.754,
+                        "freq": "2"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 3.606,
+                        "freq": "5"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 4.313,
+                        "freq": "10"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 5.285,
+                        "freq": "25"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.005,
+                        "freq": "50"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.785,
+                        "freq": "100"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 7.727,
+                        "freq": "200"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 9.162,
+                        "freq": "500"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 10.389,
+                        "freq": "1000"
+                    }
+                ],
+                "filepath_raster": "scratch.gdb/shed_72502_delineation3",
+                "area_sqkm": 0.010004757882473058,
+                "group_id": "75161",
+                "avg_cn": 49.0,
+                "max_fl": 150.0
+            },
             "spatial_ref_code": 4326,
-            "shed": null,
+            "lat": 42.34757995605469,
+            "raw": null
+        },
+        {
+            "lng": -73.6965560913086,
+            "capacity": {
+                "hw": -1.0,
+                "coefficient_slope": -0.5,
+                "coefficient_c": 0.03999999910593033,
+                "culvert_depth_m": null,
+                "culv_mat": null,
+                "in_shape": null,
+                "out_a": null,
+                "max_return_period": null,
+                "out_shape": null,
+                "culvert_capacity": null,
+                "coefficient_y": 0.699999988079071,
+                "in_type": null,
+                "include": false,
+                "out_b": null,
+                "culvert_area_sqm": null,
+                "crossing_capacity": null,
+                "in_a": null,
+                "head_over_invert": null,
+                "crossing_type": null,
+                "slope_rr": null,
+                "in_b": null,
+                "length": null,
+                "slope": null,
+                "comments": "possibly no crossing."
+            },
+            "uid": null,
+            "naacc": null,
+            "analytics": [],
             "validation_errors": {
                 "Slope_Percent": [
                     "Field may not be null."
@@ -867,15 +1206,104 @@
                     "must be a number (False)"
                 ]
             },
+            "notes": [],
+            "include": false,
+            "group_id": "75162",
+            "shed": {
+                "inlet_geom": null,
+                "tc_hr": null,
+                "shed_geom": null,
+                "uid": null,
+                "avg_slope_pct": 3.0,
+                "filepath_vector": "scratch.gdb/shed_None_delineation_dissolved4",
+                "avg_rainfall": [
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.385,
+                        "freq": "1"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 2.946,
+                        "freq": "2"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 3.862,
+                        "freq": "5"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 4.622,
+                        "freq": "10"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 5.668,
+                        "freq": "25"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 6.444,
+                        "freq": "50"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 7.28,
+                        "freq": "100"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 8.278,
+                        "freq": "200"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 9.784,
+                        "freq": "500"
+                    },
+                    {
+                        "valtyp": "mean",
+                        "units": "inches",
+                        "dur": "24hr",
+                        "value": 11.063,
+                        "freq": "1000"
+                    }
+                ],
+                "filepath_raster": "scratch.gdb/shed_None_delineation4",
+                "area_sqkm": 0.0025012903749902335,
+                "group_id": "75162",
+                "avg_cn": 73.0,
+                "max_fl": 0.0
+            },
+            "spatial_ref_code": 4326,
             "lat": 42.2888298034668,
-            "uid": null,
-            "analytics": [],
-            "capacity": null,
-            "naacc": null,
-            "group_id": "75162"
+            "raw": null
         }
     ],
-    "output_sheds_filepath": "scratch.gdb/test_delineations8",
+    "leng_conv_factor": 1.0,
+    "all_sheds_raster": null,
+    "points_group_fieldname": null,
+    "all_sheds_vector": null,
+    "points_id_fieldname": null,
     "points_features": {
         "displayFieldName": "",
         "fieldAliases": {
@@ -2563,77 +2991,6 @@
             }
         ]
     },
-    "precip_noaa_csv_filepath": null,
-    "raster_flowdir_filepath": "landscape/dem_filled_flowdir.tif",
-    "work_dir": null,
-    "precip_src_config": {
-        "root": "rainfall",
-        "rasters": [
-            {
-                "path": "rainfall/ne1000yr24ha.asc.tif",
-                "freq": 1000,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne100yr24ha.asc.tif",
-                "freq": 100,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne10yr24ha.asc.tif",
-                "freq": 10,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne1yr24ha.asc.tif",
-                "freq": 1,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne200yr24ha.asc.tif",
-                "freq": 200,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne25yr24ha.asc.tif",
-                "freq": 25,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne2yr24ha.asc.tif",
-                "freq": 2,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne500yr24ha.asc.tif",
-                "freq": 500,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne50yr24ha.asc.tif",
-                "freq": 50,
-                "ext": ".tif"
-            },
-            {
-                "path": "rainfall/ne5yr24ha.asc.tif",
-                "freq": 5,
-                "ext": ".tif"
-            }
-        ]
-    },
-    "precip_src_config_filepath": null,
-    "raster_slope_filepath": "landscape/dem_filled_slope.tif",
-    "all_sheds_vector": null,
-    "raster_curvenumber_filepath": "landscape/curveno.tif",
-    "points_id_fieldname": null,
-    "points_spatial_ref_code": 4326,
-    "leng_conv_factor": 1.0,
-    "output_points_filepath": null,
-    "points_group_fieldname": null,
-    "all_sheds_raster": null,
-    "raster_dem_filepath": null,
-    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points",
-    "sheds_simplify": false,
-    "raster_watershed_filepath": null,
-    "area_conv_factor": 9.290304e-08
+    "output_sheds_filepath": "scratch.gdb/test_delineations3",
+    "precip_src_config_filepath": null
 }

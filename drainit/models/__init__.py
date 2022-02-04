@@ -5,11 +5,13 @@ from dataclasses import dataclass, field, asdict
 from marshmallow import Schema, fields, EXCLUDE, pre_load
 from marshmallow_dataclass import class_schema
 
+from drainit.calculators import capacity
+
 units = pint.UnitRegistry()
 
 from ..calculators.runoff import Runoff, time_of_concentration_calculator
 from ..calculators.capacity import Capacity
-from ..calculators.overflow import Overflow
+from ..calculators.overflow import Overflow, max_return_calculator
 
 
 # ------------------------------------------------------------------------------
@@ -251,8 +253,6 @@ class DrainItPoint:
     # Rainfall frequency-based analytical results for the point:
     # runoff (peak-flow) and overflow (peak-flow vs capacity)
     analytics: Optional[List[Analytics]] = field(default_factory=list)
-    # the analytics rainfall
-    failure_event: Optional[str] = None
 
     # flags, errors, and notes
     include: bool = True
@@ -277,7 +277,20 @@ class DrainItPoint:
                 frequency=r.freq,
                 avg_rainfall_cm=units.Quantity(r.value / 1000, r.units).m_as('cm')
             ))
-
+    
+    def calculate_summary_analytics(self):
+        """derive additional analytics once all others are calculated
+        """
+        if self.capacity and self.analytics:
+            freqs = []
+            ovfs = []
+            for r in self.analytics:
+                freqs.append(r.frequency)
+                if r.overflow:
+                    ovfs.append(r.overflow.crossing_overflow_m3s)
+                else:
+                    ovfs.append(None)
+            self.capacity.max_return_period = max_return_calculator(ovfs, freqs)
 
 DrainItPointSchema = class_schema(DrainItPoint)
 

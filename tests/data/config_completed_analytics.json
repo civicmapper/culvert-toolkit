@@ -1777,7 +1777,7 @@
     "leng_conv_factor": 1.0,
     "sheds_simplify": false,
     "output_points_filepath": null,
-    "output_sheds_filepath": "scratch.gdb/test_delineations8",
+    "output_sheds_filepath": "scratch.gdb/test_delineations3",
     "all_sheds_raster": null,
     "all_sheds_vector": null,
     "points": [
@@ -1788,10 +1788,118 @@
             "spatial_ref_code": 4326,
             "group_id": "66697",
             "naacc": null,
-            "capacity": null,
-            "shed": null,
+            "capacity": {
+                "culv_mat": null,
+                "in_type": null,
+                "in_shape": null,
+                "in_a": null,
+                "in_b": null,
+                "hw": -1.0,
+                "slope": null,
+                "length": null,
+                "out_shape": null,
+                "out_a": null,
+                "out_b": null,
+                "crossing_type": null,
+                "culvert_area_sqm": null,
+                "culvert_depth_m": null,
+                "coefficient_c": 0.03999999910593033,
+                "coefficient_y": 0.699999988079071,
+                "coefficient_slope": -0.5,
+                "slope_rr": null,
+                "head_over_invert": null,
+                "comments": "Long hike in, off gated driveway",
+                "include": false,
+                "culvert_capacity": null,
+                "crossing_capacity": null,
+                "max_return_period": null
+            },
+            "shed": {
+                "uid": null,
+                "group_id": "66697",
+                "area_sqkm": 7.103314913878783,
+                "avg_slope_pct": 8.977816901408444,
+                "avg_cn": 53.52957746478884,
+                "max_fl": 5016.2944335938,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2.4812813380281704,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 3.111565492957752,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 4.142012323943663,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4.996416549295786,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 6.173036267605636,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 7.059747535211269,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 7.9870704225352185,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 9.02592007042254,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 10.512227464788758,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 11.72676584507043,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": null,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_None_delineation3",
+                "filepath_vector": "scratch.gdb/shed_None_delineation_dissolved3"
+            },
             "analytics": [],
-            "failure_event": null,
             "include": false,
             "validation_errors": {
                 "Slope_Percent": [
@@ -1870,10 +1978,118 @@
                 "Road": "County Route 7a",
                 "Crossing_Comment": null
             },
-            "capacity": null,
-            "shed": null,
+            "capacity": {
+                "culv_mat": "Combination",
+                "in_type": "Wingwall and Headwall",
+                "in_shape": "Box",
+                "in_a": 64.5,
+                "in_b": 6.800000190734863,
+                "hw": 0.0,
+                "slope": -1.0,
+                "length": 35.0,
+                "out_shape": "Box/Bridge with Abutments",
+                "out_a": 64.5,
+                "out_b": 8.0,
+                "crossing_type": null,
+                "culvert_area_sqm": null,
+                "culvert_depth_m": null,
+                "coefficient_c": 0.03999999910593033,
+                "coefficient_y": 0.699999988079071,
+                "coefficient_slope": -0.5,
+                "slope_rr": null,
+                "head_over_invert": null,
+                "comments": null,
+                "include": false,
+                "culvert_capacity": null,
+                "crossing_capacity": null,
+                "max_return_period": null
+            },
+            "shed": {
+                "uid": "64662",
+                "group_id": "66742",
+                "area_sqkm": 48.062292021414116,
+                "avg_slope_pct": 16.824062028412225,
+                "avg_cn": 68.64688334118377,
+                "max_fl": 16088.845703125,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2.5446758599156887,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 3.226563667585972,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 4.340944632356784,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 5.265160586980277,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 6.537934537128585,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 7.481532445230777,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 8.49983228391531,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 9.727579851173463,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 11.593021127127091,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 13.186155123068081,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": null,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_64662_delineation3",
+                "filepath_vector": "scratch.gdb/shed_64662_delineation_dissolved3"
+            },
             "analytics": [],
-            "failure_event": null,
             "include": false,
             "validation_errors": {
                 "in_shape": [
@@ -1936,7 +2152,8 @@
                 "comments": "",
                 "include": true,
                 "culvert_capacity": 9.978796751827035,
-                "crossing_capacity": 19.966097531717068
+                "crossing_capacity": 19.966097531717068,
+                "max_return_period": "500"
             },
             "shed": {
                 "uid": "72498",
@@ -1949,70 +2166,70 @@
                     {
                         "freq": "1",
                         "dur": "24hr",
-                        "value": 2282.38574876159,
+                        "value": 2.28238574876159,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "2",
                         "dur": "24hr",
-                        "value": 2813.1129175663664,
+                        "value": 2.8131129175663663,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "5",
                         "dur": "24hr",
-                        "value": 3680.2570811634782,
+                        "value": 3.6802570811634783,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "10",
                         "dur": "24hr",
-                        "value": 4399.531309538928,
+                        "value": 4.399531309538928,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "25",
                         "dur": "24hr",
-                        "value": 5389.594055633181,
+                        "value": 5.3895940556331805,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "50",
                         "dur": "24hr",
-                        "value": 6125.125873237643,
+                        "value": 6.125125873237643,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "100",
                         "dur": "24hr",
-                        "value": 6916.281722342186,
+                        "value": 6.916281722342186,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "200",
                         "dur": "24hr",
-                        "value": 7863.787374571319,
+                        "value": 7.863787374571318,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "500",
                         "dur": "24hr",
-                        "value": 9292.34065794487,
+                        "value": 9.29234065794487,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "1000",
                         "dur": "24hr",
-                        "value": 10507.530166391443,
+                        "value": 10.507530166391444,
                         "valtyp": "mean",
                         "units": "inches"
                     }
@@ -2020,152 +2237,151 @@
                 "tc_hr": 1.158055242469295,
                 "inlet_geom": null,
                 "shed_geom": null,
-                "filepath_raster": "scratch.gdb/shed_72498_delineation8",
-                "filepath_vector": "scratch.gdb/shed_72498_delineation_dissolved8"
+                "filepath_raster": "scratch.gdb/shed_72498_delineation5",
+                "filepath_vector": "scratch.gdb/shed_72498_delineation_dissolved5"
             },
             "analytics": [
                 {
                     "frequency": "1",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 5.797259801854439,
+                    "avg_rainfall_cm": 0.005797259801854439,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 10.185285844829371,
-                        "crossing_peakflow_m3s": 10.185285844829371
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -0.20648909300233598,
-                        "crossing_overflow_m3s": 9.780811686887697
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "2",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 7.14530681061857,
+                    "avg_rainfall_cm": 0.00714530681061857,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 24.088545120432766,
-                        "crossing_peakflow_m3s": 24.088545120432766
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -14.10974836860573,
-                        "crossing_overflow_m3s": -4.122447588715698
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "5",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 9.347852986155235,
+                    "avg_rainfall_cm": 0.009347852986155236,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 56.02694428100117,
-                        "crossing_peakflow_m3s": 56.02694428100117
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -46.04814752917414,
-                        "crossing_overflow_m3s": -36.0608467492841
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "10",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 11.174809526228879,
+                    "avg_rainfall_cm": 0.011174809526228877,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 88.21216224343625,
-                        "crossing_peakflow_m3s": 88.21216224343625
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -78.23336549160922,
-                        "crossing_overflow_m3s": -68.24606471171919
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "25",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 13.689568901308279,
+                    "avg_rainfall_cm": 0.013689568901308279,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 137.74172613250914,
-                        "crossing_peakflow_m3s": 137.74172613250914
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -127.76292938068211,
-                        "crossing_overflow_m3s": -117.77562860079207
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "50",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 15.557819718023612,
+                    "avg_rainfall_cm": 0.015557819718023613,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 177.17442594104503,
-                        "crossing_peakflow_m3s": 177.17442594104503
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -167.19562918921798,
-                        "crossing_overflow_m3s": -157.20832840932798
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "100",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 17.56735557474915,
+                    "avg_rainfall_cm": 0.01756735557474915,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 221.34350478117034,
-                        "crossing_peakflow_m3s": 221.34350478117034
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -211.3647080293433,
-                        "crossing_overflow_m3s": -201.37740724945326
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "200",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 19.97401993141115,
+                    "avg_rainfall_cm": 0.019974019931411152,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 276.01002146528396,
-                        "crossing_peakflow_m3s": 276.01002146528396
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -266.03122471345694,
-                        "crossing_overflow_m3s": -256.0439239335669
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "500",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 23.60254527117997,
+                    "avg_rainfall_cm": 0.02360254527117997,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 361.03581592370125,
-                        "crossing_peakflow_m3s": 361.03581592370125
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -351.05701917187423,
-                        "crossing_overflow_m3s": -341.06971839198417
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "1000",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 26.689126622634266,
+                    "avg_rainfall_cm": 0.026689126622634268,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 435.1734312931351,
-                        "crossing_peakflow_m3s": 435.1734312931351
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -425.19463454130806,
-                        "crossing_overflow_m3s": -415.207333761418
+                        "culvert_overflow_m3s": 10008.978796751828,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 }
             ],
-            "failure_event": null,
             "include": true,
             "validation_errors": {},
             "notes": [],
@@ -2221,7 +2437,8 @@
                 "comments": "",
                 "include": true,
                 "culvert_capacity": 9.987300779890033,
-                "crossing_capacity": 19.966097531717068
+                "crossing_capacity": 19.966097531717068,
+                "max_return_period": "500"
             },
             "shed": {
                 "uid": "72499",
@@ -2234,70 +2451,70 @@
                     {
                         "freq": "1",
                         "dur": "24hr",
-                        "value": 2282.38574876159,
+                        "value": 2.28238574876159,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "2",
                         "dur": "24hr",
-                        "value": 2813.1129175663664,
+                        "value": 2.8131129175663663,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "5",
                         "dur": "24hr",
-                        "value": 3680.2570811634782,
+                        "value": 3.6802570811634783,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "10",
                         "dur": "24hr",
-                        "value": 4399.531309538928,
+                        "value": 4.399531309538928,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "25",
                         "dur": "24hr",
-                        "value": 5389.594055633181,
+                        "value": 5.3895940556331805,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "50",
                         "dur": "24hr",
-                        "value": 6125.125873237643,
+                        "value": 6.125125873237643,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "100",
                         "dur": "24hr",
-                        "value": 6916.281722342186,
+                        "value": 6.916281722342186,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "200",
                         "dur": "24hr",
-                        "value": 7863.787374571319,
+                        "value": 7.863787374571318,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "500",
                         "dur": "24hr",
-                        "value": 9292.34065794487,
+                        "value": 9.29234065794487,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "1000",
                         "dur": "24hr",
-                        "value": 10507.530166391443,
+                        "value": 10.507530166391444,
                         "valtyp": "mean",
                         "units": "inches"
                     }
@@ -2305,152 +2522,151 @@
                 "tc_hr": 1.158055242469295,
                 "inlet_geom": null,
                 "shed_geom": null,
-                "filepath_raster": "scratch.gdb/shed_72499_delineation18",
-                "filepath_vector": "scratch.gdb/shed_72499_delineation_dissolved18"
+                "filepath_raster": "scratch.gdb/shed_72499_delineation5",
+                "filepath_vector": "scratch.gdb/shed_72499_delineation_dissolved5"
             },
             "analytics": [
                 {
                     "frequency": "1",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 5.797259801854439,
+                    "avg_rainfall_cm": 0.005797259801854439,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 10.185285844829371,
-                        "crossing_peakflow_m3s": 10.185285844829371
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -0.19798506493933843,
-                        "crossing_overflow_m3s": 9.780811686887697
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "2",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 7.14530681061857,
+                    "avg_rainfall_cm": 0.00714530681061857,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 24.088545120432766,
-                        "crossing_peakflow_m3s": 24.088545120432766
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -14.101244340542733,
-                        "crossing_overflow_m3s": -4.122447588715698
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "5",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 9.347852986155235,
+                    "avg_rainfall_cm": 0.009347852986155236,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 56.02694428100117,
-                        "crossing_peakflow_m3s": 56.02694428100117
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -46.03964350111114,
-                        "crossing_overflow_m3s": -36.0608467492841
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "10",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 11.174809526228879,
+                    "avg_rainfall_cm": 0.011174809526228877,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 88.21216224343625,
-                        "crossing_peakflow_m3s": 88.21216224343625
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -78.22486146354622,
-                        "crossing_overflow_m3s": -68.24606471171919
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "25",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 13.689568901308279,
+                    "avg_rainfall_cm": 0.013689568901308279,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 137.74172613250914,
-                        "crossing_peakflow_m3s": 137.74172613250914
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -127.75442535261911,
-                        "crossing_overflow_m3s": -117.77562860079207
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "50",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 15.557819718023612,
+                    "avg_rainfall_cm": 0.015557819718023613,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 177.17442594104503,
-                        "crossing_peakflow_m3s": 177.17442594104503
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -167.187125161155,
-                        "crossing_overflow_m3s": -157.20832840932798
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "100",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 17.56735557474915,
+                    "avg_rainfall_cm": 0.01756735557474915,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 221.34350478117034,
-                        "crossing_peakflow_m3s": 221.34350478117034
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -211.3562040012803,
-                        "crossing_overflow_m3s": -201.37740724945326
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "200",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 19.97401993141115,
+                    "avg_rainfall_cm": 0.019974019931411152,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 276.01002146528396,
-                        "crossing_peakflow_m3s": 276.01002146528396
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -266.02272068539395,
-                        "crossing_overflow_m3s": -256.0439239335669
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "500",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 23.60254527117997,
+                    "avg_rainfall_cm": 0.02360254527117997,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 361.03581592370125,
-                        "crossing_peakflow_m3s": 361.03581592370125
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -351.04851514381124,
-                        "crossing_overflow_m3s": -341.06971839198417
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 },
                 {
                     "frequency": "1000",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 26.689126622634266,
+                    "avg_rainfall_cm": 0.026689126622634268,
                     "peakflow": {
                         "time_of_concentration_hr": 1.158055242469295,
-                        "culvert_peakflow_m3s": 435.1734312931351,
-                        "crossing_peakflow_m3s": 435.1734312931351
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -425.1861305132451,
-                        "crossing_overflow_m3s": -415.207333761418
+                        "culvert_overflow_m3s": 10008.98730077989,
+                        "crossing_overflow_m3s": 10018.966097531717
                     }
                 }
             ],
-            "failure_event": null,
             "include": true,
             "validation_errors": {},
             "notes": [],
@@ -2506,7 +2722,8 @@
                 "comments": "",
                 "include": true,
                 "culvert_capacity": 0.3161385247971824,
-                "crossing_capacity": 0.3161385247971824
+                "crossing_capacity": 0.3161385247971824,
+                "max_return_period": "500"
             },
             "shed": {
                 "uid": "72500",
@@ -2519,70 +2736,70 @@
                     {
                         "freq": "1",
                         "dur": "24hr",
-                        "value": 2233.0,
+                        "value": 2.233,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "2",
                         "dur": "24hr",
-                        "value": 2754.0,
+                        "value": 2.754,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "5",
                         "dur": "24hr",
-                        "value": 3606.0,
+                        "value": 3.606,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "10",
                         "dur": "24hr",
-                        "value": 4313.0,
+                        "value": 4.313,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "25",
                         "dur": "24hr",
-                        "value": 5285.0,
+                        "value": 5.285,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "50",
                         "dur": "24hr",
-                        "value": 6005.0,
+                        "value": 6.005,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "100",
                         "dur": "24hr",
-                        "value": 6785.0,
+                        "value": 6.785,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "200",
                         "dur": "24hr",
-                        "value": 7727.0,
+                        "value": 7.727,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "500",
                         "dur": "24hr",
-                        "value": 9162.0,
+                        "value": 9.162,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "1000",
                         "dur": "24hr",
-                        "value": 10389.0,
+                        "value": 10.389,
                         "valtyp": "mean",
                         "units": "inches"
                     }
@@ -2590,152 +2807,151 @@
                 "tc_hr": 0.08759660181543717,
                 "inlet_geom": null,
                 "shed_geom": null,
-                "filepath_raster": "scratch.gdb/shed_72500_delineation8",
-                "filepath_vector": "scratch.gdb/shed_72500_delineation_dissolved8"
+                "filepath_raster": "scratch.gdb/shed_72500_delineation4",
+                "filepath_vector": "scratch.gdb/shed_72500_delineation_dissolved4"
             },
             "analytics": [
                 {
                     "frequency": "1",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 5.67182,
+                    "avg_rainfall_cm": 0.00567182,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.0024736365436864006,
-                        "crossing_peakflow_m3s": 0.0024736365436864006
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.31366488825349603,
-                        "crossing_overflow_m3s": 0.31366488825349603
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "2",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 6.99516,
+                    "avg_rainfall_cm": 0.00699516,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.010669403000602656,
-                        "crossing_peakflow_m3s": 0.010669403000602656
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.30546912179657976,
-                        "crossing_overflow_m3s": 0.30546912179657976
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "5",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 9.15924,
+                    "avg_rainfall_cm": 0.009159239999999999,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.03555242008723472,
-                        "crossing_peakflow_m3s": 0.03555242008723472
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.2805861047099477,
-                        "crossing_overflow_m3s": 0.2805861047099477
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "10",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 10.95502,
+                    "avg_rainfall_cm": 0.01095502,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.08652037738957137,
-                        "crossing_peakflow_m3s": 0.08652037738957137
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.22961814740761105,
-                        "crossing_overflow_m3s": 0.22961814740761105
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "25",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 13.4239,
+                    "avg_rainfall_cm": 0.013423899999999999,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.18525112021206516,
-                        "crossing_peakflow_m3s": 0.18525112021206516
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.13088740458511725,
-                        "crossing_overflow_m3s": 0.13088740458511725
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "50",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 15.2527,
+                    "avg_rainfall_cm": 0.0152527,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.27246929788642277,
-                        "crossing_peakflow_m3s": 0.27246929788642277
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.04366922691075964,
-                        "crossing_overflow_m3s": 0.04366922691075964
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "100",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 17.233900000000002,
+                    "avg_rainfall_cm": 0.0172339,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.37538498718992896,
-                        "crossing_peakflow_m3s": 0.37538498718992896
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -0.05924646239274656,
-                        "crossing_overflow_m3s": -0.05924646239274656
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "200",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 19.62658,
+                    "avg_rainfall_cm": 0.01962658,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.507122898031789,
-                        "crossing_peakflow_m3s": 0.507122898031789
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -0.1909843732346066,
-                        "crossing_overflow_m3s": -0.1909843732346066
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "500",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 23.271480000000004,
+                    "avg_rainfall_cm": 0.02327148,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.7169719895875658,
-                        "crossing_peakflow_m3s": 0.7169719895875658
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -0.4008334647903834,
-                        "crossing_overflow_m3s": -0.4008334647903834
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 },
                 {
                     "frequency": "1000",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 26.38806,
+                    "avg_rainfall_cm": 0.026388059999999998,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08759660181543717,
-                        "culvert_peakflow_m3s": 0.9014059623381183,
-                        "crossing_peakflow_m3s": 0.9014059623381183
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": -0.5852674375409359,
-                        "crossing_overflow_m3s": -0.5852674375409359
+                        "culvert_overflow_m3s": 9999.316138524797,
+                        "crossing_overflow_m3s": 9999.316138524797
                     }
                 }
             ],
-            "failure_event": null,
             "include": true,
             "validation_errors": {},
             "notes": [],
@@ -2791,7 +3007,8 @@
                 "comments": "",
                 "include": true,
                 "culvert_capacity": 1.3129152122885313,
-                "crossing_capacity": 1.3129152122885313
+                "crossing_capacity": 1.3129152122885313,
+                "max_return_period": "500"
             },
             "shed": {
                 "uid": "72501",
@@ -2804,70 +3021,70 @@
                     {
                         "freq": "1",
                         "dur": "24hr",
-                        "value": 2353.0,
+                        "value": 2.353,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "2",
                         "dur": "24hr",
-                        "value": 2912.0,
+                        "value": 2.912,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "5",
                         "dur": "24hr",
-                        "value": 3828.0,
+                        "value": 3.828,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "10",
                         "dur": "24hr",
-                        "value": 4587.0,
+                        "value": 4.587,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "25",
                         "dur": "24hr",
-                        "value": 5633.0,
+                        "value": 5.633,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "50",
                         "dur": "24hr",
-                        "value": 6411.0,
+                        "value": 6.411,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "100",
                         "dur": "24hr",
-                        "value": 7245.0,
+                        "value": 7.245,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "200",
                         "dur": "24hr",
-                        "value": 8227.0,
+                        "value": 8.227,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "500",
                         "dur": "24hr",
-                        "value": 9693.0,
+                        "value": 9.693,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "1000",
                         "dur": "24hr",
-                        "value": 10929.0,
+                        "value": 10.929,
                         "valtyp": "mean",
                         "units": "inches"
                     }
@@ -2875,152 +3092,151 @@
                 "tc_hr": 0.044981552982007254,
                 "inlet_geom": null,
                 "shed_geom": null,
-                "filepath_raster": "scratch.gdb/shed_72501_delineation8",
-                "filepath_vector": "scratch.gdb/shed_72501_delineation_dissolved8"
+                "filepath_raster": "scratch.gdb/shed_72501_delineation4",
+                "filepath_vector": "scratch.gdb/shed_72501_delineation_dissolved4"
             },
             "analytics": [
                 {
                     "frequency": "1",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 5.9766200000000005,
+                    "avg_rainfall_cm": 0.00597662,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.1003909570870088,
-                        "crossing_peakflow_m3s": 0.1003909570870088
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 1.2125242552015225,
-                        "crossing_overflow_m3s": 1.2125242552015225
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "2",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 7.3964799999999995,
+                    "avg_rainfall_cm": 0.00739648,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.15404065446812268,
-                        "crossing_peakflow_m3s": 0.15404065446812268
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 1.1588745578204085,
-                        "crossing_overflow_m3s": 1.1588745578204085
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "5",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 9.72312,
+                    "avg_rainfall_cm": 0.00972312,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.24412961802330924,
-                        "crossing_peakflow_m3s": 0.24412961802330924
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 1.068785594265222,
-                        "crossing_overflow_m3s": 1.068785594265222
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "10",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 11.650979999999999,
+                    "avg_rainfall_cm": 0.01165098,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.31932898955839023,
-                        "crossing_peakflow_m3s": 0.31932898955839023
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.9935862227301411,
-                        "crossing_overflow_m3s": 0.9935862227301411
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "25",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 14.30782,
+                    "avg_rainfall_cm": 0.01430782,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.42315203837842247,
-                        "crossing_peakflow_m3s": 0.42315203837842247
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.8897631739101088,
-                        "crossing_overflow_m3s": 0.8897631739101088
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "50",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 16.283939999999998,
+                    "avg_rainfall_cm": 0.016283939999999997,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.510216121327613,
-                        "crossing_peakflow_m3s": 0.510216121327613
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.8026990909609183,
-                        "crossing_overflow_m3s": 0.8026990909609183
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "100",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 18.4023,
+                    "avg_rainfall_cm": 0.0184023,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.6085140801622396,
-                        "crossing_peakflow_m3s": 0.6085140801622396
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.7044011321262916,
-                        "crossing_overflow_m3s": 0.7044011321262916
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "200",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 20.89658,
+                    "avg_rainfall_cm": 0.02089658,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.7264909986421386,
-                        "crossing_peakflow_m3s": 0.7264909986421386
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.5864242136463926,
-                        "crossing_overflow_m3s": 0.5864242136463926
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "500",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 24.62022,
+                    "avg_rainfall_cm": 0.02462022,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 0.9058849012716558,
-                        "crossing_peakflow_m3s": 0.9058849012716558
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.4070303110168755,
-                        "crossing_overflow_m3s": 0.4070303110168755
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 },
                 {
                     "frequency": "1000",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 27.75966,
+                    "avg_rainfall_cm": 0.02775966,
                     "peakflow": {
                         "time_of_concentration_hr": 0.044981552982007254,
-                        "culvert_peakflow_m3s": 1.059330503237315,
-                        "crossing_peakflow_m3s": 1.059330503237315
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 0.2535847090512162,
-                        "crossing_overflow_m3s": 0.2535847090512162
+                        "culvert_overflow_m3s": 10000.31291521229,
+                        "crossing_overflow_m3s": 10000.31291521229
                     }
                 }
             ],
-            "failure_event": null,
             "include": true,
             "validation_errors": {},
             "notes": [],
@@ -3076,7 +3292,8 @@
                 "comments": "",
                 "include": true,
                 "culvert_capacity": 15.911875296613399,
-                "crossing_capacity": 15.911875296613399
+                "crossing_capacity": 15.911875296613399,
+                "max_return_period": "500"
             },
             "shed": {
                 "uid": "72502",
@@ -3089,70 +3306,70 @@
                     {
                         "freq": "1",
                         "dur": "24hr",
-                        "value": 2233.0,
+                        "value": 2.233,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "2",
                         "dur": "24hr",
-                        "value": 2754.0,
+                        "value": 2.754,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "5",
                         "dur": "24hr",
-                        "value": 3606.0,
+                        "value": 3.606,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "10",
                         "dur": "24hr",
-                        "value": 4313.0,
+                        "value": 4.313,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "25",
                         "dur": "24hr",
-                        "value": 5285.0,
+                        "value": 5.285,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "50",
                         "dur": "24hr",
-                        "value": 6005.0,
+                        "value": 6.005,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "100",
                         "dur": "24hr",
-                        "value": 6785.0,
+                        "value": 6.785,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "200",
                         "dur": "24hr",
-                        "value": 7727.0,
+                        "value": 7.727,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "500",
                         "dur": "24hr",
-                        "value": 9162.0,
+                        "value": 9.162,
                         "valtyp": "mean",
                         "units": "inches"
                     },
                     {
                         "freq": "1000",
                         "dur": "24hr",
-                        "value": 10389.0,
+                        "value": 10.389,
                         "valtyp": "mean",
                         "units": "inches"
                     }
@@ -3160,152 +3377,151 @@
                 "tc_hr": 0.08320765361416523,
                 "inlet_geom": null,
                 "shed_geom": null,
-                "filepath_raster": "scratch.gdb/shed_72502_delineation8",
-                "filepath_vector": "scratch.gdb/shed_72502_delineation_dissolved8"
+                "filepath_raster": "scratch.gdb/shed_72502_delineation3",
+                "filepath_vector": "scratch.gdb/shed_72502_delineation_dissolved3"
             },
             "analytics": [
                 {
                     "frequency": "1",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 5.67182,
+                    "avg_rainfall_cm": 0.00567182,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.00013918745515513337,
-                        "crossing_peakflow_m3s": 0.00013918745515513337
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.911736109158245,
-                        "crossing_overflow_m3s": 15.911736109158245
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "2",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 6.99516,
+                    "avg_rainfall_cm": 0.00699516,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.0026171763084284,
-                        "crossing_peakflow_m3s": 0.0026171763084284
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.90925812030497,
-                        "crossing_overflow_m3s": 15.90925812030497
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "5",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 9.15924,
+                    "avg_rainfall_cm": 0.009159239999999999,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.01249185767342479,
-                        "crossing_peakflow_m3s": 0.01249185767342479
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.899383438939974,
-                        "crossing_overflow_m3s": 15.899383438939974
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "10",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 10.95502,
+                    "avg_rainfall_cm": 0.01095502,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.027222614558506022,
-                        "crossing_peakflow_m3s": 0.027222614558506022
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.884652682054893,
-                        "crossing_overflow_m3s": 15.884652682054893
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "25",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 13.4239,
+                    "avg_rainfall_cm": 0.013423899999999999,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.07111352098945198,
-                        "crossing_peakflow_m3s": 0.07111352098945198
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.840761775623948,
-                        "crossing_overflow_m3s": 15.840761775623948
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "50",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 15.2527,
+                    "avg_rainfall_cm": 0.0152527,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.11401063685680869,
-                        "crossing_peakflow_m3s": 0.11401063685680869
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.79786465975659,
-                        "crossing_overflow_m3s": 15.79786465975659
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "100",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 17.233900000000002,
+                    "avg_rainfall_cm": 0.0172339,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.1673234890842722,
-                        "crossing_peakflow_m3s": 0.1673234890842722
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.744551807529128,
-                        "crossing_overflow_m3s": 15.744551807529128
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "200",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 19.62658,
+                    "avg_rainfall_cm": 0.01962658,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.2380890024087448,
-                        "crossing_peakflow_m3s": 0.2380890024087448
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.673786294204653,
-                        "crossing_overflow_m3s": 15.673786294204653
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "500",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 23.271480000000004,
+                    "avg_rainfall_cm": 0.02327148,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.35404248206390143,
-                        "crossing_peakflow_m3s": 0.35404248206390143
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.557832814549498,
-                        "crossing_overflow_m3s": 15.557832814549498
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 },
                 {
                     "frequency": "1000",
                     "duration": "24hr",
-                    "avg_rainfall_cm": 26.38806,
+                    "avg_rainfall_cm": 0.026388059999999998,
                     "peakflow": {
                         "time_of_concentration_hr": 0.08320765361416523,
-                        "culvert_peakflow_m3s": 0.45771783124039256,
-                        "crossing_peakflow_m3s": 0.45771783124039256
+                        "culvert_peakflow_m3s": -9999,
+                        "crossing_peakflow_m3s": -9999
                     },
                     "overflow": {
-                        "culvert_overflow_m3s": 15.454157465373006,
-                        "crossing_overflow_m3s": 15.454157465373006
+                        "culvert_overflow_m3s": 10014.911875296613,
+                        "crossing_overflow_m3s": 10014.911875296613
                     }
                 }
             ],
-            "failure_event": null,
             "include": true,
             "validation_errors": {},
             "notes": [],
@@ -3318,10 +3534,118 @@
             "spatial_ref_code": 4326,
             "group_id": "75162",
             "naacc": null,
-            "capacity": null,
-            "shed": null,
+            "capacity": {
+                "culv_mat": null,
+                "in_type": null,
+                "in_shape": null,
+                "in_a": null,
+                "in_b": null,
+                "hw": -1.0,
+                "slope": null,
+                "length": null,
+                "out_shape": null,
+                "out_a": null,
+                "out_b": null,
+                "crossing_type": null,
+                "culvert_area_sqm": null,
+                "culvert_depth_m": null,
+                "coefficient_c": 0.03999999910593033,
+                "coefficient_y": 0.699999988079071,
+                "coefficient_slope": -0.5,
+                "slope_rr": null,
+                "head_over_invert": null,
+                "comments": "possibly no crossing.",
+                "include": false,
+                "culvert_capacity": null,
+                "crossing_capacity": null,
+                "max_return_period": null
+            },
+            "shed": {
+                "uid": null,
+                "group_id": "75162",
+                "area_sqkm": 0.0025012903749902335,
+                "avg_slope_pct": 3.0,
+                "avg_cn": 73.0,
+                "max_fl": 0.0,
+                "avg_rainfall": [
+                    {
+                        "freq": "1",
+                        "dur": "24hr",
+                        "value": 2.385,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "2",
+                        "dur": "24hr",
+                        "value": 2.946,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "5",
+                        "dur": "24hr",
+                        "value": 3.862,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "10",
+                        "dur": "24hr",
+                        "value": 4.622,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "25",
+                        "dur": "24hr",
+                        "value": 5.668,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "50",
+                        "dur": "24hr",
+                        "value": 6.444,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "100",
+                        "dur": "24hr",
+                        "value": 7.28,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "200",
+                        "dur": "24hr",
+                        "value": 8.278,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "500",
+                        "dur": "24hr",
+                        "value": 9.784,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    },
+                    {
+                        "freq": "1000",
+                        "dur": "24hr",
+                        "value": 11.063,
+                        "valtyp": "mean",
+                        "units": "inches"
+                    }
+                ],
+                "tc_hr": null,
+                "inlet_geom": null,
+                "shed_geom": null,
+                "filepath_raster": "scratch.gdb/shed_None_delineation4",
+                "filepath_vector": "scratch.gdb/shed_None_delineation_dissolved4"
+            },
             "analytics": [],
-            "failure_event": null,
             "include": false,
             "validation_errors": {
                 "Slope_Percent": [
