@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 import pytest
 # models from project
-from drainit import models
+from src.drainit import models
 
 # Test Data on disk
 TEST_DATA_DIR = Path(path.dirname(path.abspath(__file__))) / "data"

@@ -3,8 +3,8 @@ from ...settings import USE_ESRI
 
 if USE_ESRI:
     try:
-        import arcpy
-        from ._esri import *
+        # import arcpy
+        from ._esri import GP
         echo("ArcPy available.")
     except ModuleNotFoundError:
         echo("ArcPy not available. Falling back to WhiteboxTools and GeoPandas")

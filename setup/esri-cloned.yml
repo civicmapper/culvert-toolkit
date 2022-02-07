@@ -1,4 +1,4 @@
-name: drainit-for-arcgispro28
+name: drainit-for-arcgispro
 channels:
   - esri
   - conda-forge
@@ -12,3 +12,4 @@ dependencies:
   - pytest
   - requests  
   - tqdm
+  - black

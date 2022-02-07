@@ -6,7 +6,7 @@ WIP
 
 """
 # import click
-# from workflows import RainfallDataGetter
+# from drainit.workflows import RainfallDataGetter
 
 # click.command()
 # click.option('--name', default="rainfall_rasters_config.json")

@@ -9,7 +9,6 @@ import pint
 import petl as etl
 from marshmallow import ValidationError
 
-from . import validate_petl_record_w_schema, convert_value_via_xwalk
 from ..models import (
     NaaccCulvertSchema,
     DrainItPoint
@@ -20,6 +19,7 @@ from ..calculators.capacity import (
     calc_culvert_capacity,
     capacity_numeric_fields
 )
+from ..utils import validate_petl_record_w_schema, convert_value_via_xwalk
 from .naacc_config import (
     NAACC_HEADER_LOOKUP, 
     NAACC_INLET_SHAPE_CROSSWALK, 
@@ -37,7 +37,7 @@ class NaaccEtl:
         naacc_petl_table=None,
         output_path=None,
         lookup_naac_inlet_shape=NAACC_INLET_SHAPE_CROSSWALK,
-        lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK,        
+        lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK,
         wkid=4326
         ) ->  None :
 

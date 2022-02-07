@@ -5,13 +5,11 @@ from dataclasses import dataclass, field, asdict
 from marshmallow import Schema, fields, EXCLUDE, pre_load
 from marshmallow_dataclass import class_schema
 
-from drainit.calculators import capacity
-
 units = pint.UnitRegistry()
 
-from ..calculators.runoff import Runoff, time_of_concentration_calculator
-from ..calculators.capacity import Capacity
-from ..calculators.overflow import Overflow, max_return_calculator
+from .calculators.runoff import Runoff, time_of_concentration_calculator
+from .calculators.capacity import Capacity
+from .calculators.overflow import Overflow, max_return_calculator
 
 
 # ------------------------------------------------------------------------------

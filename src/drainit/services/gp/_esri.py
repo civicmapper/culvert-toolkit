@@ -1610,7 +1610,7 @@ class GP:
         # ]
         
         # for each Point in the input points list
-        for point in tqdm(points):
+        for point in points:
 
             # if point is marked as not include and override_skip is false,
             # skip this iteration.
@@ -1625,6 +1625,8 @@ class GP:
             # delineate a catchment/basin/watershed ("shed") and derive 
             # some data from that, storing it in a Shed object.
             shed = self._delineate_and_analyze_one_catchment(
+                uid=point.uid,
+                group_id=point.group_id,
                 point_geodata=point_geodata,
                 pour_point_field=pour_point_field,
                 flow_direction_raster=flow_direction_raster,

@@ -9,10 +9,10 @@ import petl as etl
 
 from .conftest import TEST_DATA_DIR
 
-from drainit import workflows
-from drainit import models
-from drainit import utils
-from drainit.calculators import (
+from src.drainit import workflows
+from src.drainit import models
+from src.drainit import utils
+from src.drainit.calculators import (
     runoff, 
     capacity, 
     overflow

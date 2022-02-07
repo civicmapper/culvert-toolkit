@@ -7,10 +7,10 @@ import petl as etl
 
 from .conftest import TEST_DATA_DIR
 
-from drainit import workflows
-from drainit import models
-from drainit import utils
-from drainit.calculators import (
+from src.drainit import workflows
+from src.drainit import models
+from src.drainit import utils
+from src.drainit.calculators import (
     runoff, 
     capacity, 
     overflow
@@ -60,7 +60,7 @@ class TestNaaccETL:
 
     def test_naacc_data_ingest_from_csv(self, tmp_path):
         d = tmp_path
-        # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\drainit')
+        # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\src.drainit')
         results = workflows.NaaccDataIngest(
             naacc_csv=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
             output_folder=str(d),

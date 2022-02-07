@@ -1,4 +1,4 @@
-name: drainit-for-arcgispro28-standalone
+name: drainit-for-arcgispro-standalone
 channels:
   - esri
   - conda-forge
@@ -14,3 +14,4 @@ dependencies:
   - requests  
   - tqdm
   - whitebox
+  - black
