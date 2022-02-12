@@ -1,16 +1,14 @@
-from typing import List, Optional
-import json
+from typing import List, Optional, Union
 import pint
-from dataclasses import dataclass, field, asdict
-from marshmallow import Schema, fields, EXCLUDE, pre_load
+from dataclasses import dataclass, field, asdict, fields
+from marshmallow import EXCLUDE, pre_load
 from marshmallow_dataclass import class_schema
-
-units = pint.UnitRegistry()
 
 from .calculators.runoff import Runoff, time_of_concentration_calculator
 from .calculators.capacity import Capacity
 from .calculators.overflow import Overflow, max_return_calculator
 
+units = pint.UnitRegistry()
 
 # ------------------------------------------------------------------------------
 # HELPERS
@@ -23,16 +21,58 @@ def req_field():
 def cast_to_numeric_fields(data, dataclass_model, **kwargs):
     """when loading or validating, attempt to cast numbers from strings based on the model field types."""
     numeric_fields = {k: v.type for k, v in dataclass_model.__dataclass_fields__.items() if v.type in [int, float]}
+    # for each numeric field name and type
     for fld, typ in numeric_fields.items():
+        # if the field is present in the data being serialized:
         if fld in data.keys():
+            # if the value (data) being serialized isn't of the type spec'd in the
+            # dataclasse, and the data isn't empty:
             if not isinstance(data[fld], typ) and data[fld] is not None:
                 #print(data[fld], type(data[fld]), isinstance(data[fld], typ), type(data[fld]) is not None)
+                # try to cast the value to the spec'd data type
                 try:
                     data[fld] = typ(data[fld])
+                # If it can't be cast to the numeric type, then leave it.
+                # The record will fail validation.
                 except ValueError as e:
                     #print(e, fld, data[fld])
                     pass
     return data
+
+def cast_fields(data, dataclass_model, **kwargs):
+    """when loading or validating, attempt to cast values to their spec'd types."""
+    ftypes = {}
+    # create a lookup of fields grouped by type
+    for d in [dict(n=f.name, t=f.type) for f in fields(dataclass_model)]:
+        ftypes.setdefault(d['t'], []).append(d['n'])
+    # handle any of the fields are not type (like a Union)
+    for k in [t for t in ftypes.keys() if type(t) is not type]:
+        # filter out the NoneTypes
+        types = [x for x in k.__args__ if x != type(None)]
+        # get the first type spec'd
+        if len(types) > 0:
+            # replace the item in ftypes
+            t = types[0]
+            v = ftypes.pop(k)
+            ftypes[t] = v
+
+    for ftype, flds in ftypes.items():
+        for fld in flds:
+            # if the field is present in the data being serialized:
+            if fld in data.keys():
+                # if the value (data) being serialized isn't of the type spec'd in the
+                # dataclasse, and the data isn't empty:
+                if not isinstance(data[fld], ftype) and data[fld] is not None:
+                    #print(data[fld], type(data[fld]), isinstance(data[fld], typ), type(data[fld]) is not None)
+                    # try to cast the value to the spec'd data type
+                    try:
+                        data[fld] = ftype(data[fld])
+                    # If it can't be cast to the numeric type, then leave it.
+                    # The record will fail validation.
+                    except ValueError as e:
+                        #print(e, fld, data[fld])
+                        pass
+    return data    
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -125,8 +165,8 @@ class NaaccCulvert:
     modeling
     """
 
-    Naacc_Culvert_Id: str = req_field() # 'field_short': 'NAACC_ID'
-    Survey_Id: str = req_field() # 'field_short': 'Survey_ID'
+    Naacc_Culvert_Id: Union[str, int] = req_field() # 'field_short': 'NAACC_ID'
+    Survey_Id: Union[str, int] = req_field() # 'field_short': 'Survey_ID'
 
     GIS_Latitude: float = req_field() # 'field_short': 'Lat'
     GIS_Longitude: float = req_field() # 'field_short': 'Long'
@@ -153,10 +193,13 @@ class NaaccCulvert:
     # TODO: eventually include the date/time capture from the NAACC model here 
     # so that we can filter multiple surveys for a single location.
 
+    # @pre_load
+    # def cast_numeric_fields(self, data, **kwargs):
+    #     """when loading or validating, attempt to cast numbers from strings before checking."""
+    #     return cast_to_numeric_fields(data, NaaccCulvert, **kwargs)
     @pre_load
-    def cast_numeric_fields(self, data, **kwargs):
-        """when loading or validating, attempt to cast numbers from strings before checking."""
-        return cast_to_numeric_fields(data, NaaccCulvert, **kwargs)
+    def cast_fields(self, data, **kwargs):
+        return cast_fields(data, NaaccCulvert, **kwargs)
     
     class Meta:
         unknown = EXCLUDE
@@ -387,18 +430,22 @@ WorkflowConfigSchema = class_schema(WorkflowConfig)
 # workflow 03
 # input_watershed_raster
 
-class PeakFlow01Schema(Schema):
+@dataclass
+class PeakFlow:
+# class PeakFlow01Schema(Schema):
 
-    points_filepath = fields.Str(required=True) # inlets
+    points_filepath: str
     # points_features = fields.Dict()
-    points_id_fieldname = fields.Str(required=True) # pour_point_field
-    raster_curvenumber_filepath = fields.Str(required=True) # cn_raster
-    precip_src_config_filepath = fields.Str(required=True) # precip_data
-    raster_dem_filepath = fields.Str(required=True)
-    basins_in_series = fields.Bool(default=True)
+    points_id_fieldname: str
+    raster_curvenumber_filepath: str
+    precip_src_config_filepath: str
+    raster_dem_filepath: str
+    basins_in_series: bool
 
-    output_points_filepath = fields.Str(required=True) # output
-    output_basins_filepath = fields.Str() # output_catchments
+    output_points_filepath: str
+    output_basins_filepath: Optional[str]
 
     class Meta:
         unknown = EXCLUDE
+
+PeakFlow01Schema = class_schema(PeakFlow)

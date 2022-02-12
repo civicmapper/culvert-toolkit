@@ -1,6 +1,6 @@
 from collections.abc import Mapping, Iterable
 from dataclasses import is_dataclass, fields
-from functools import wraps
+from functools import partial, wraps
 
 def fxio(preprocess=None, postprocess=None):
     """https://stackoverflow.com/q/55564330
@@ -84,6 +84,7 @@ def validate_petl_record_w_schema(row, schema):
     :rtype: list
     """
     r = {i[0]: i[1] for i in zip(row.flds, row)}
+    # d = schema.load(r, partial=True)
     errors = schema.validate(r)
     if errors:
         return errors
@@ -109,3 +110,15 @@ def convert_value_via_xwalk(k, crosswalk, preserve_non_matches=True, no_match_va
             return k
         else:
             return no_match_value
+
+def get_type(typ, fallback=str):
+    """gets the definitive type of the thing, handling Unions types by returning
+    the first possible type that isn't NoneType.
+    """
+    if type(typ) is not type:
+        types = [t for t in typ.__args__ if t != type(None)]
+        if len(types) > 0:
+            return types[0]
+        else: 
+            return fallback
+    return typ

@@ -33,6 +33,7 @@ from .services.gp import GP
 from .services.noaa import retrieve_noaa_rainfall_rasters, retrieve_noaa_rainfall_pf_est
 from .services.naacc import NaaccEtl
 from .config import FREQUENCIES
+from .utils import get_type
 
 # ------------------------------------------------------------------------------
 # Workflow Base Class
@@ -140,12 +141,10 @@ class WorkflowManager:
 
 
 class NaaccDataIngest(WorkflowManager):
-    """read in and validate a NAACC compliant CSV, save to a Geodatabase.
-    Include any/all fields required for modeling!
-    """
+
     def __init__(
         self, 
-        naacc_csv,
+        naacc_src_table,
         output_folder,
         output_workspace,
         output_fc_name,
@@ -154,20 +153,23 @@ class NaaccDataIngest(WorkflowManager):
         naacc_y="GIS_Latitude",
         **kwargs
         ):
-        """Read and validate a NAACC compliant CSV, and save to a Geodatabase.
+        """read in, validate, and extend a NAACC compliant source table, saving
+        the output to a geodata format (e.g., feature class in a geodatabase)
 
         Args:
-            naac_csv ([type]): The path to the NAACC CSV
+            naacc_src_table ([type]): The path to the NAACC CSV
             output_folder: the path to the folder where outputs will be saved
             output_workspace ([type]): the path to the output workspace for geodata.
             output_fc_name ([type]): name of output files (feature class or shapefile, also used for the csv)
             crs_wkid (int, optional): the WKID of the coordinates in the NAACC CSV. Defaults to 4326.
+            naacc_x
+            naacc_y
         """
         super().__init__(**kwargs)
         self.output_folder = Path(output_folder)
         self.output_workspace = Path(output_workspace)
         self.output_fc_name = output_fc_name
-        self.naacc_csv = naacc_csv
+        self.naacc_src_table = naacc_src_table
 
         self.crs_wkid = crs_wkid
         self.naacc_x = naacc_x
@@ -195,22 +197,46 @@ class NaaccDataIngest(WorkflowManager):
         # set the file name of the output csv (will be used to derive subset tables as well)
         output_csv = self.output_folder / str(self.output_fc_name + ".csv")
 
-        # extract the NAACC-compliant CSV to a PETL table, validating all fields *and* calculating
+        # detect the input type.
+        dt = self.gp.detect_data_type(self.naacc_src_table)
+        # self.gp._msg(f"data type detected: {dt}")
+        # handle different input types
+        # CSVs end up here:
+        if dt == 'TextFile':
+            naacc = NaaccEtl(
+                naacc_csv_file=self.naacc_src_table,
+                output_path=output_csv,
+                wkid=self.crs_wkid
+            )
+        # anything else ends up here:
+        else:
+            t, fs, wkid = self.gp.create_petl_table_from_geodata(self.naacc_src_table, include_geom=True)
+            self.crs_wkid = wkid
+
+            # the lat/lon fields will have been derived from the input geodata's
+            # geometry field instead of a table column; reset those params
+            # TODO: handle from kwargs
+            self.naacc_x = "x"
+            self.naacc_y = "y"
+            naacc = NaaccEtl(
+                naacc_petl_table=t,
+                output_path=output_csv,
+                wkid=self.crs_wkid,
+            )
+
+        # extract the NAACC-compliant table to a PETL table, validating all fields *and* calculating
         # culvert capacity on-the-fly
-        naacc = NaaccEtl(
-            naacc_csv_file=self.naacc_csv,
-            output_path=output_csv,
-            wkid=4326
-        )
-        naacc.read_naacc_csv_to_petl()
+
+
+        naacc.validate_extend_hydrate_naacc_table()
         self.naacc_table = naacc.table
         
         # specify which fields we'll carry over to the geodata using existing models
         # TODO: make this work within the GP provider's context; use a flattened 
         # DrainItPoint object to derive fields
         field_types_lookup = {}
-        field_types_lookup.update({f.name: f.type for f in fields(NaaccCulvert)})
-        field_types_lookup.update({f.name: f.type for f in fields(capacity.Capacity)})
+        field_types_lookup.update({f.name: get_type(f.type) for f in fields(NaaccCulvert)})
+        field_types_lookup.update({f.name: get_type(f.type) for f in fields(capacity.Capacity)})
         field_types_lookup.update({'validation_errors': str, 'include': str})
         
         # save the PETL-ified NAACC table to a geodata table (default: Esri FGDB feature class)
@@ -220,7 +246,7 @@ class NaaccDataIngest(WorkflowManager):
             x_column=self.naacc_x, 
             y_column=self.naacc_y,
             output_featureclass=str(self.output_points_filepath),
-            sr=self.crs_wkid
+            crs_wkid=self.crs_wkid
         )
 
         with open(self.output_folder / str(self.output_fc_name + ".json"), 'w') as fp:
@@ -234,7 +260,7 @@ class NaaccDataIngest(WorkflowManager):
         in a geoprocessing-library-agnostic way
         """
         if Path(self.output_points_filepath).exists:
-            d = self.gp.geodata_as_dict(self.output_points_filepath)
+            d = self.gp.create_dicts_from_geodata(self.output_points_filepath)
             return d['features']
         else: return {}
 
@@ -281,7 +307,7 @@ class RainfallDataGetter(WorkflowManager):
 
     def _run(self):
         # from a method in the GP module, get the centroid of the aoi
-        coords = self.gp.centroid_of_feature_envelope(self.aoi_geo)
+        coords = self.gp.get_centroid_of_feature_envelope(self.aoi_geo)
         # pass it to retrieve_noaa_rainfall_pf_est, which will give us the region
         r = retrieve_noaa_rainfall_pf_est(lat=coords['lat'], lon=coords['lon'])
         # pass the region to this function, which gets the rasters
@@ -344,7 +370,7 @@ class PeakFlowCore(WorkflowManager):
         self.gp = GP(self.config)
     
     def load_points(self):
-        self.gp.extract_points_from_geodata()
+        self.gp.create_point_objects_from_geodata()
         pass
     
     def run_core_workflow(self):
@@ -389,7 +415,7 @@ class PeakFlow01(PeakFlowCore):
         self.gp.load_points()
 
         # derive the rasters from input DEM and save refs
-        derived_rasters = self.gp.derive_from_dem(self.config.raster_dem_filepath)
+        derived_rasters = self.gp.derive_analysis_rasters_from_dem(self.config.raster_dem_filepath)
         self.config.raster_flowdir_filepath = derived_rasters['flow_direction_raster']
         self.config.raster_slope_filepath = derived_rasters['slope_raster']
 
@@ -503,7 +529,7 @@ class CulvertCapacityCore(WorkflowManager):
         # geojson), load it into a Python representation of that data in a 
         # geo-format (e.g., geojson or geoservices json (Esri)), ETL the table
         # else:
-        points, points_features, points_spatial_ref_code = self.gp.extract_points_from_geodata(
+        points, points_features, points_spatial_ref_code = self.gp.create_point_objects_from_geodata(
             points_filepath=self.config.points_filepath,
             uid_field=self.config.points_id_fieldname,
             group_id_field=self.config.points_group_fieldname,
@@ -694,7 +720,7 @@ class CulvertCapacityCore(WorkflowManager):
         # exports the result as a feature class, where each feature is a culvert
         culvert_table = self._export_culvert_featureclass()
         # saves that feature class to the config
-        self.config.points_features = self.gp.geodata_as_dict(self.config.output_points_filepath)
+        self.config.points_features = self.gp.create_dicts_from_geodata(self.config.output_points_filepath)
         # TODO: export a feature class rolled up to crossings.
         # self._export_crossing_feature_class(culvert_table)
 

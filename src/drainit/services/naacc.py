@@ -64,8 +64,8 @@ class NaaccEtl:
 
     # ------------------------------------------------------------------------------
     # NAACC ETL HELPER FUNCTIONS
-
-    def _xwalk_naac_to_capacity(self, row):
+    
+    def _xwalk_naacc_to_capacity(self, row):
         """crosswalk values from the NAACC fields to Capacity fields, type-casting
         numeric fields from strings along the way if necessary
 
@@ -76,7 +76,7 @@ class NaaccEtl:
         """
         
         r = OrderedDict({i[0]: i[1] for i in zip(row.flds, row)})
-        
+        # print(capacity_numeric_fields)
         for n_field, cap_field in NAACC_HEADER_LOOKUP.items():
             # for numeric fields, cast values to the specified python type based on the lookup above
             if cap_field in capacity_numeric_fields.keys():
@@ -88,7 +88,7 @@ class NaaccEtl:
             # otherwise just copy them over
             else:
                 r[cap_field] = r[n_field]
-            
+        # print({k:v for k,v in r.items() if k in capacity_numeric_fields})
         return tuple(r.values())
 
     def _culvert_geometry_tests(self, row):
@@ -136,6 +136,7 @@ class NaaccEtl:
 
         # Check 3: bad geometry
         culvert_geometry_fields = ["in_a", "in_b", "hw", "length"]
+
         # check if all values in culvert_geometry_fields are floats:
         culvert_geometry_fields_are_floats = [isinstance(r[f], float) for f in culvert_geometry_fields]
         # check if any values in culvert_geometry_fields are < 0:
@@ -155,8 +156,9 @@ class NaaccEtl:
             # validation_errors.append("Required culvert geometry is missing: {0}".format([f for f,v in zip(culvert_geometry_fields, culvert_geometry_fields_are_floats) if not v]))
         elif any(culvert_geometry_fields_are_lt0):
             r["include"] = False
-            for f,v in zip(culvert_geometry_fields, culvert_geometry_fields_are_lt0):
-                validation_errors.setdefault(f, []).append("must be a greater than zero ({0})".format(v))
+            for f, v in zip(culvert_geometry_fields, culvert_geometry_fields_are_lt0):
+                if v:
+                    validation_errors.setdefault(f, []).append("must be a greater than zero ({0})".format(v))
             # validation_errors.append("Required culvert geometry is negative: {0}".format([f for f,v in zip(culvert_geometry_fields, culvert_geometry_fields_are_gt0) if not v]))
         else:
             pass
@@ -444,20 +446,19 @@ class NaaccEtl:
         lookup_naac_inlet_shape=NAACC_INLET_SHAPE_CROSSWALK,
         lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK
         ):
-
-        # ----------------------------------------------------------------------------
-        # Derive params used for capacity & overflow calculations
-        #
-        # This will extend the table with Capacity fields, cross-walk from NAACC to Capacity
-        # model, and apply validation steps for shapes, materials, and dimensions 
-        # spec'd by Cornell Culvert 2.1.
-        #
-        # Add fields from the Capacity model to the table and crosswalk to generic fields and values.
-        # * add capacity fields
-        # * copy values from naacc fields / convert values using lookups
-        # * set include/exclude based on capacity field values
-        #
-        # TODO: move everything below to a separate capacity-focused "extend and hyrdate" function
+        """
+        Derive params used for capacity & overflow calculations
+        
+        This will extend the table with Capacity fields, cross-walk from NAACC to Capacity
+        model, and apply validation steps for shapes, materials, and dimensions 
+        spec'd by Cornell Culvert 2.1.
+        
+        Add fields from the Capacity model to the table and crosswalk to generic fields and values.
+        * add capacity fields
+        * copy values from naacc fields / convert values using lookups
+        * set include/exclude based on capacity field values
+        
+        """
 
         # extend the table with fields from the Capacity model
         extended_table = etl\
@@ -468,13 +469,12 @@ class NaaccEtl:
             )
         # get the new header
         extended_table_header = list(etl.header(extended_table))
-
         # hydrate the table: copy values from the NAACC fields to the Capacity fields,
         # crosswalk values, and derive parameters required for calculating capacity
         hydrated_table = etl\
             .rowmap(
                 extended_table,
-                self._xwalk_naac_to_capacity, 
+                self._xwalk_naacc_to_capacity, 
                 header=extended_table_header, 
                 failonerror=True
             )\
@@ -532,7 +532,7 @@ class NaaccEtl:
     # ------------------------------------------------------------------------------
     # NAACC ETL FUNCTIONS
 
-    def read_naacc_csv_to_petl(
+    def validate_extend_hydrate_naacc_table(
         self, 
         naacc_csv_file=None,
         naacc_petl_table=None,
@@ -541,7 +541,8 @@ class NaaccEtl:
         lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK,
         wkid=4326
         ) -> List[DrainItPoint]:
-        """performs ETL of a raw NAACC table to a PETL Table Object ~~appropriate Drain-It models.~~
+        """performs ETL of a raw NAACC table to a PETL Table Object that has been
+        extended with fields used by the calculators.
 
         :param naacc_csv_file: (as string or Path object) to the naacc-conforming culvert data csv
         :type naacc_csv_file: str, Path
@@ -592,12 +593,16 @@ class NaaccEtl:
         validated_table = etl\
             .replaceall(raw_table, "", None)\
             .addfield(
-                'validation_errors', 
+                'validation_errors',
                 lambda rec: validate_petl_record_w_schema(rec, self.naacc_culvert_schema)
             )
 
         bad = etl.selectnotnone(validated_table, 'validation_errors')
-        print("{0} rows did not pass initial validation against the NAACC schema".format(etl.nrows(bad)))
+        bad_ct = etl.nrows(bad)
+        if bad_ct > 0:
+            print("{0} rows did not pass initial validation against the NAACC schema".format(bad_ct))
+        else:
+            print("All rows passed initial validation against the NAACC schema")
         # print(etl.vis.see(bad))
 
         
@@ -608,7 +613,9 @@ class NaaccEtl:
         )
 
         bad2 = etl.selectnotnone(hydrated_table, 'validation_errors')
-        print("{0} input points did not pass secondary validation (capacity)".format(etl.nrows(bad2) - etl.nrows(bad)))
+        bad2_ct = etl.nrows(bad2) - bad_ct
+        print("{0} input points did not pass secondary validation (capacity)".format(bad2_ct))
+
         # print(etl.vis.see(bad2))
         
         # clean_table = etl.replaceall(hydrated_table, "", None)

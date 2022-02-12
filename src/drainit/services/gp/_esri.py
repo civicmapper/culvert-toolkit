@@ -99,7 +99,7 @@ class GP:
     # --------------------------------------------------------------------------
     # Workflow utility functions
 
-    def msg(self, text, arc_status=None, set_progressor_label=False):
+    def _msg(self, text, arc_status=None, set_progressor_label=False):
         """
         output messages through Click.echo (cross-platform shell printing) 
         and the ArcPy GP messaging interface and progress bars
@@ -116,7 +116,7 @@ class GP:
         if set_progressor_label:
             SetProgressorLabel(text)
 
-    def so(self, prefix, suffix="unique", where="fgdb"):
+    def _so(self, prefix, suffix="unique", where="fgdb"):
         """complete path generator for Scratch Output (for use with ArcPy GP tools)
 
         Generates a string represnting a complete and unique file path, which is
@@ -184,138 +184,13 @@ class GP:
         # print(p)
         return p
 
-    def create_workspace(self, out_folder_path: Path, out_name: str) -> Path:
-        """wrapper around arcpy.management.CreateFileGDB that
-        will also create the parent directory/directories if they
-        don't exist
-
-        Args:
-            out_folder_path ([type]): [description]
-            out_name ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        if not out_folder_path.exists():
-            out_folder_path.mkdir(parents=True)
-        CreateFileGDB(str(out_folder_path), out_name)
-        return out_folder_path / f'{out_name}.gdb'
-
-    def clean(self, val):
+    def _clean(self, val):
         """post-process empty values ("") from ArcPy geoprocessing tools.
         """
         if val in ["", None]:
             return 0
         else:
             return val
-
-    def geodata_to_csv(self, feature_class, out_csv):
-        """Convert an Esri Feature Class to a CSV file.
-
-        Convert an Esri Feature Class to a CSV file. Requires ArcPy.
-
-        :param feature_class: path to feature class (file geodatabase or shapefile) on disk
-        :type feature_class: str
-        :param out_csv: path to output csv
-        :type out_csv: str
-        :return: path to output csv
-        :rtype: str
-        """
-
-        p = Path(out_csv)
-        self.msg("Converting feature class @ {0} to CSV table @ {1}".format(feature_class, out_csv))
-        TableToTable(feature_class, str(p.parent), str(p.name))
-
-        return out_csv
-
-    def geodata_to_petl_table(
-        self,
-        feature_class, 
-        include_geom=False,
-        return_featureset=True
-        ):
-        """Convert an Esri Feature Class to a PETL table object. Optionally,
-        return the FeatureSet used to create the PETL table.
-
-        Convert an Esri Feature Class to a PETL table object.
-
-        :param feature_class: [description]
-        :type feature_class: [type]
-        :param include_geom: [description], defaults to False
-        :param include_geom: bool, optional
-        :param return_featureset: return Esri FeatureSet, defaults to False
-        :param return_featureset: bool, optional        
-        :return: tuple containing an PETL Table object and FeatureSet
-        :rtype: Tuple(petl.Table, FeatureSet)
-        """
-        # print("Reading {0} into a PETL table object".format(feature_class))
-        
-        feature_set = FeatureSet(feature_class)
-        # convert the FeatureSet object to a python dictionary
-        fs = json.loads(feature_set.JSON)
-
-        # describe the feature class
-        described_fc = Describe(feature_class)
-        # get a list of field objects
-        field_objs = described_fc.fields
-
-        # make a list of fields that doesn't include the Object ID field
-        #all_fields = [f for f in field_objs if f.name != described_fc.OIDFieldName]
-        # make a list of field names, excluding geometry and the OID field
-        attr_fields = [f.name for f in field_objs if f.type not in ['Geometry', 'Shape']]
-        # then add 'geometry' to that list, since it will be present in the features in the FeatureSet
-        attr_fields.append('geometry')
-        
-        table = etl\
-            .fromdicts(fs['features'])\
-            .unpackdict('attributes')\
-            .cut(*attr_fields)
-
-        if return_featureset:
-            return table, feature_set
-        else:
-            return table, None
-
-    def join_to_copy(self, in_data, out_data, join_table, in_field, join_field):
-        """given an input feature class, make a copy, then execute a join on that copy.
-        Return the copy.
-        """
-        self.msg(in_data)
-        self.msg(out_data)
-        self.msg(join_table)
-        self.msg(in_field)
-        self.msg(join_field)
-        # copy the inlets file
-        CopyFeatures_management(
-            in_features=in_data, 
-            out_feature_class=out_data
-        )
-        # join the table to the copied file
-        JoinField_management(
-            in_data=out_data, 
-            in_field=in_field, 
-            join_table=join_table, 
-            join_field=join_field
-        )
-        return out_data
-
-    def geodata_as_dict(self, path_to_geodata):
-        """convert provider-formatted geodata to a Python dictionary"""
-        if Path(path_to_geodata).exists:
-            fs = FeatureSet(path_to_geodata)
-            return json.loads(fs.JSON)
-        else:
-            return {}
-
-    def feature_count(self, path_to_geodata):
-        fs = FeatureSet(path_to_geodata)
-        return GetCount(fs)
-        # d = json.loads(fs.JSON)
-    
-    def fallback_to_json_str(self, v):
-        if isinstance(v, dict) or isinstance(v, list):
-            return json.dumps(v)#[:254]
-        return v
 
     # --------------------------------------------------------------------------
     # Provider-specific utilities
@@ -324,7 +199,7 @@ class GP:
         """loads a csv into the ArcMap scratch geodatabase. Use for temporary files only.
         Output: path to the imported csv
         """
-        t = self.so("csv","random","fgdb")
+        t = self._so("csv","random","fgdb")
         TableToTable(
             in_rows=csv, 
             out_path=os.path.dirname(t), 
@@ -361,214 +236,137 @@ class GP:
         # Return modified df
         return df
 
+    def _fallback_to_json_str(self, v):
+        if isinstance(v, dict) or isinstance(v, list):
+            return json.dumps(v)#[:254]
+        return v
+
+    def _join_to_copy(self, in_data, out_data, join_table, in_field, join_field):
+        """given an input feature class, make a copy, then execute a join on that copy.
+        Return the copy.
+        """
+        self._msg(in_data)
+        self._msg(out_data)
+        self._msg(join_table)
+        self._msg(in_field)
+        self._msg(join_field)
+        # copy the inlets file
+        CopyFeatures_management(
+            in_features=in_data, 
+            out_feature_class=out_data
+        )
+        # join the table to the copied file
+        JoinField_management(
+            in_data=out_data, 
+            in_field=in_field, 
+            join_table=join_table, 
+            join_field=join_field
+        )
+        return out_data
+
     # --------------------------------------------------------------------------
-    # Pre-Processing for supporting raster   
-    # DEM, Slope, Curve Number
+    # public Workspace and ETL methods
 
-    def prep_cn_raster(self, 
-        dem,
-        curve_number_raster,
-        out_cn_raster=None,
-        out_coor_system=None
-        ):
-        """
-        Clip, reproject, and resample the curve number raster to match the DEM.
-        Ensure everything utilizes the DEM as the snap raster.
-        The result is returned in a dictionary referencing an ArcPy Raster object
-        for the file gdb location of the processed curve number raster.
-        
-        For any given study area, this will only need to be run once.
-        """
-        
-        # make the DEM an ArcPy Raster object, so we can get the raster properties
-        if not isinstance(dem,Raster):
-            dem = Raster(dem)
-        
-        self.msg("Clipping...")
-        # clip the curve number raster, since it is likely for a broader study area
-        clipped_cn = self.so("cn_clipped")
-        Clip_management(
-            in_raster=curve_number_raster,
-            out_raster=clipped_cn,
-            in_template_dataset=dem,
-            clipping_geometry="NONE",
-            maintain_clipping_extent="NO_MAINTAIN_EXTENT"
-        )
-        
-        # set the snap raster for subsequent operations
-        env.snapRaster = dem
-        
-        # reproject and resample he curve number raster to match the dem
-        if not out_cn_raster:
-            prepped_cn = self.so("cn_prepped")
-        else:
-            prepped_cn = out_cn_raster
-        self.msg("Projecting and Resampling...")
-        ProjectRaster_management(
-            in_raster=clipped_cn,
-            out_raster=prepped_cn,
-            out_coor_system=out_coor_system,
-            resampling_type="NEAREST",
-            cell_size=dem.meanCellWidth
-        )
-        
-        return {
-            "curve_number_raster": Raster(prepped_cn)
-        } 
+    def create_workspace(self, out_folder_path: Path, out_name: str) -> Path:
+        """wrapper around arcpy.management.CreateFileGDB that
+        will also create the parent directory/directories if they
+        don't exist
 
-    def build_cn_raster(self, 
-        landcover_raster,
-        lookup_csv,
-        soils_polygon,
-        soils_hydrogroup_field="SOIL_HYDRO",
-        reference_raster=None,
-        out_cn_raster=None
-        ):
-        """Build a curve number raster from landcover raster, soils polygon, and a crosswalk between 
-        landcover classes, soil hydro groups, and curve numbers.
-
-        :param lookup_csv: [description]
-        :type lookup_csv: [type]
-        :param landcover_raster: [description]
-        :type landcover_raster: [type]
-        :param soils_polygon: polygon containing soils with a hydro classification. 
-        :type soils_polygon: [type]
-        :param soils_hydrogroup_field: [description], defaults to "SOIL_HYDRO" (from the NCRS soils dataset)
-        :type soils_hydrogroup_field: str, optional
-        :param out_cn_raster: [description]
-        :type out_cn_raster: [type]    
-        """
-
-        # GP Environment ----------------------------
-        self.msg("Setting up GP Environment...")
-        # if reference_raster is provided, we use it to set the GP environment for 
-        # subsequent raster operations
-        if reference_raster: 
-            if not isinstance(reference_raster,Raster):
-                # read in the reference raster as a Raster object.
-                reference_raster = Raster(reference_raster)
-        else:
-            reference_raster = Raster(landcover_raster)
-
-        # set the snap raster, cell size, and extent, and coordinate system for subsequent operations
-        env.snapRaster = reference_raster
-        env.cellSize = reference_raster.meanCellWidth
-        env.extent = reference_raster
-        env.outputCoordinateSystem = reference_raster
-        
-        cs = env.outputCoordinateSystem.exportToString()
-
-        # SOILS -------------------------------------
-        
-        self.msg("Processing Soils...")
-        # read the soils polygon into a raster, get list(set()) of all cell values from the landcover raster
-        soils_raster_path = self.so("soils_raster")
-        PolygonToRaster(soils_polygon, soils_hydrogroup_field, soils_raster_path, "CELL_CENTER")
-        soils_raster = Raster(soils_raster_path)
-
-        # use the raster attribute table to build a lookup of raster values to soil hydro codes
-        # from the polygon (that were stored in the raster attribute table after conversion)
-        if not soils_raster.hasRAT:
-            self.msg("Soils raster does not have an attribute table. Building...", "warning")
-            BuildRasterAttributeTable_management(soils_raster, "Overwrite")
-        # build a 2D array from the RAT
-        fields = ["Value", soils_hydrogroup_field]
-        rows = [fields]
-        # soils_raster_table = MakeTableView_management(soils_raster_path)
-        with SearchCursor(soils_raster_path, fields) as sc:
-            for row in sc:
-                rows.append([row[0], row[1]])
-        # turn that into a dictionary, where the key==soil hydro text and value==the raster cell value
-        lookup_from_soils = {v: k for k, v in etl.records(rows)}
-        # also capture a list of just the values, used to iterate conditionals later
-        soil_values = [v['Value'] for v in etl.records(rows)]
-
-        # LANDCOVER ---------------------------------
-        self.msg("Processing Landcover...")
-        if not isinstance(landcover_raster, Raster):
-            # read in the reference raster as a Raster object.
-            landcover_raster = Raster(landcover_raster)
-        landcover_values = []
-        with SearchCursor(landcover_raster, ["Value"]) as sc:
-            for row in sc:
-                landcover_values.append(row[0])
-
-        # LOOKUP TABLE ------------------------------
-        self.msg("Processing Lookup Table...")
-        # read the lookup csv, clean it up, and use the lookups from above to limit it to just
-        # those values in the rasters
-        t = etl\
-            .fromcsv(lookup_csv)\
-            .convert('utc', int)\
-            .convert('cn', int)\
-            .select('soil', lambda v: v in lookup_from_soils.keys())\
-            .convert('soil', lookup_from_soils)\
-            .select('utc', lambda v: v in landcover_values)
-        
-        # This gets us a table where we the landcover class (as a number) corresponding to the 
-        # correct value in the converted soil raster, with the corresponding curve number.
-
-        # DETERMINE CURVE NUMBERS -------------------
-        self.msg("Assigning Curve Numbers...")
-        # Use that to reassign cell values using conditional map algebra operations
-        cn_rasters = []
-        for rec in etl.records(t):
-            cn_raster_component = Con((landcover_raster == rec.utc) & (soils_raster == rec.soil), rec.cn, 0)
-            cn_rasters.append(cn_raster_component)
-
-        cn_raster = CellStatistics(cn_rasters, "MAXIMUM")
-
-        # REPROJECT THE RESULTS -------------------
-        self.msg("Reprojecting and saving the results....")
-        if not out_cn_raster:
-            out_cn_raster = self.so("cn_raster","random","fgdb")
-
-        ProjectRaster_management(
-            in_raster=cn_raster,
-            out_raster=out_cn_raster,
-            out_coor_system=cs,
-            resampling_type="NEAREST",
-            cell_size=env.cellSize
-        )
-        
-        # cn_raster.save(out_cn_raster)
-        return out_cn_raster
-
-    def derive_from_dem(self, dem, force_flow="NORMAL"):
-        """derive slope and flow direction from a DEM.
-        Results are returned in a dictionary that contains references to
-        ArcPy Raster objects stored in the "fgdb" (temporary) workspace
+        Args:
+            out_folder_path ([type]): [description]
+            out_name ([type]): [description]
 
         Returns:
-            {
-                "flow_direction_raster": Raster(flow_direction_raster),
-                "slope_raster": Raster(slope_raster),
-            }
-
+            [type]: [description]
         """
-        from arcpy import env
-        
-        # set the snap raster for subsequent operations
-        env.snapRaster = dem
-        
-        # calculate flow direction for the whole DEM
-        flow_direction_raster = self.so("flowdir","random","fgdb")
-        flowdir = FlowDirection(in_surface_raster=dem, force_flow=force_flow)
-        flowdir.save(flow_direction_raster)
-        
-        # calculate slope for the whole DEM
-        slope = Slope(in_raster=dem, output_measurement="PERCENT_RISE", method="PLANAR")
-        slope_raster = self.so("slope","random","fgdb")
-        slope.save(slope_raster)
+        if not out_folder_path.exists():
+            out_folder_path.mkdir(parents=True)
+        CreateFileGDB(str(out_folder_path), out_name)
+        return out_folder_path / f'{out_name}.gdb'
 
-        return {
-            "flow_direction_raster": flow_direction_raster,
-            "slope_raster": slope_raster,
-        }
+    def detect_data_type(self, filepath:str):
+        return Describe(filepath).dataType
 
-    # --------------------------------------------------------------------------
-    # ETL for input point datasets
-    # extract, transform, and load the input points
+    def create_csv_from_geodata(self, feature_class, out_csv) -> str:
+        """Convert an Esri Feature Class to a CSV file.
+
+        Convert an Esri Feature Class to a CSV file. Requires ArcPy.
+
+        :param feature_class: path to feature class (file geodatabase or shapefile) on disk
+        :type feature_class: str
+        :param out_csv: path to output csv
+        :type out_csv: str
+        :return: path to output csv
+        :rtype: str
+        """
+
+        p = Path(out_csv)
+        self._msg("Converting feature class @ {0} to CSV table @ {1}".format(feature_class, out_csv))
+        TableToTable(feature_class, str(p.parent), str(p.name))
+
+        return out_csv
+
+    def create_petl_table_from_geodata(
+        self,
+        feature_class, 
+        include_geom=False,
+        return_featureset=True
+        ) -> Tuple[etl.Table, dict, int]:
+        """Convert an Esri Feature Class to a PETL table object.
+
+        Convert an Esri Feature Class to a PETL table object.
+
+        :param feature_class: [description]
+        :type feature_class: [type]
+        :param include_geom: [description], defaults to False
+        :param include_geom: bool, optional
+        :return: tuple containing an PETL Table object and FeatureSet
+        :rtype: Tuple(petl.Table, FeatureSet)
+        """
+        # print("Reading {0} into a PETL table object".format(feature_class))
+        
+        feature_set = FeatureSet(feature_class)
+        # convert the FeatureSet object to a python dictionary
+        fs = json.loads(feature_set.JSON)
+
+        # describe the feature class and get some properties
+        described_fc = Describe(feature_class)
+        field_objs = described_fc.fields # all fields
+        oid_field = None # OBJECTID OR FID field
+        if described_fc.hasOID:
+            oid_field = described_fc.OIDFieldName
+        shp_field = described_fc.shapeFieldName # SHAPE (geometry) field
+        crs_wkid = described_fc.spatialReference.factoryCode # spatial reference
+
+
+        # derive a list of fields to exclude from table conversion
+        fields_to_exclude = [x for x in [oid_field, shp_field] if x]        
+        # make a list of field names to include
+        attr_fields = [f.name for f in field_objs if f.name not in fields_to_exclude]
+        # add a geometry field, which will contain geometry as a dictionary
+        if include_geom:
+            attr_fields.append('geometry')
+
+        # self._msg(f"fields_to_exclude: {fields_to_exclude}", )
+        # self._msg(f"attr_fields {attr_fields}")
+        
+        table = etl\
+            .fromdicts(fs['features'])\
+            .unpackdict('attributes')\
+            .cut(*attr_fields)
+
+        if include_geom:
+            table = etl.unpackdict(table, 'geometry')
+
+        return table, feature_set, crs_wkid
+
+    def create_dicts_from_geodata(self, path_to_geodata):
+        """convert provider-formatted geodata to a Python dictionary"""
+        if Path(path_to_geodata).exists:
+            fs = FeatureSet(path_to_geodata)
+            return json.loads(fs.JSON)
+        else:
+            return {}
 
     def create_dataframe_from_geodata(
         in_table, 
@@ -596,8 +394,8 @@ class GP:
         x_column,
         y_column,
         output_featureclass=None,
-        sr=4326,
-        field_types_lookup=None        
+        crs_wkid=4326,
+        field_types_lookup={}        
         ):
         """convert a PETL table to a feature class in a file geodatabase. 
         This handles type-casting to column types that work with Esri FGDB 
@@ -649,7 +447,7 @@ class GP:
 
         with EnvManager(overwriteOutput=True):
 
-            spatial_ref = SpatialReference(sr)
+            spatial_ref = SpatialReference(crs_wkid)
 
             # Create an in_memory feature class to initially contain the points
             temp_feature_class = CreateFeatureclass_management(
@@ -694,7 +492,7 @@ class GP:
             with InsertCursor(temp_feature_class, fields_to_insert) as cursor:
                 for idx, row in enumerate(list(etl.records(petl_table))):
                     # print(idx, row['Survey_Id'])
-                    r = [self.fallback_to_json_str(v) for v in row] # all field values
+                    r = [self._fallback_to_json_str(v) for v in row] # all field values
                     r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
                     cursor.insertRow(r)
 
@@ -780,7 +578,7 @@ class GP:
         else:
             return feature_set
 
-    def extract_points_from_geodata(
+    def create_point_objects_from_geodata(
         self, 
         points_filepath, 
         uid_field,
@@ -799,7 +597,7 @@ class GP:
         #     self.msg('Reading from file')
         
         # extract feature class to a PETL table and a FeatureSet
-        raw_table, feature_set = self.geodata_to_petl_table(
+        raw_table, feature_set, crs_wkid = self.create_petl_table_from_geodata(
             points_filepath,
             include_geom=True,
             return_featureset=True
@@ -808,9 +606,6 @@ class GP:
         # convert the FeatureSet to its JSON representation
         feature_set_json = json.loads(feature_set.JSON)
 
-        # get the spatial reference code from the FeatureSet JSON
-        spatial_ref_code = feature_set_json.get('spatialReference', {}).get('wkid', None)
-
         # if this is geodata that follows the NAACC format, we use the NAACC
         # etl function to transform the table to a list of Point objects
         # with nested NAACC and capacity calc-ready attributes where possible
@@ -818,10 +613,10 @@ class GP:
         # instead of a CSV)
         points = []
         if is_naacc:
-            self.msg('reading points and capturing NAACC attributes')
+            self._msg('reading points and capturing NAACC attributes')
             # TODO: make this less clunky and with clearer assumptions:
             # load up the NaaccETL class with defaults
-            naacc_etl = NaaccEtl(wkid=spatial_ref_code)
+            naacc_etl = NaaccEtl(wkid=crs_wkid)
             # assign the PETL table to the object
             naacc_etl.table = raw_table
             # print(etl.vis.lookall(raw_table))
@@ -833,15 +628,15 @@ class GP:
         # Otherwise we transform the raw table to a list of Point objects here
         # (This is workflow for Peak-Flow)
         else:
-            self.msg('reading points')
+            self._msg('reading points')
             for idx, r in enumerate(list(etl.dicts(raw_table))):
                 point_kwargs = dict(
                     uid=r[uid_field],
                     lat=float(r["geometry"]['y']),
                     lng=float(r["geometry"]['x']),
-                    spatial_ref_code=spatial_ref_code,
                     include=True,
-                    raw=r
+                    raw=r,
+                    spatial_ref_code=crs_wkid
                 )
                 if group_id_field:
                     point_kwargs['group_id'] = r[group_id_field]
@@ -851,15 +646,265 @@ class GP:
 
         if output_points_filepath:
             # finally, save it out
-            self.msg('saving points')
+            self._msg('saving points')
             # save a copy of the points feature_set to the output location
             feature_set.save(output_points_filepath)
 
         # return the list of Point objects and a dict version of the FeatureSet
         return points, feature_set_json, spatial_ref_code
 
+    def get_centroid_of_feature_envelope(self, in_features, project_as=4326) -> Dict:
+        """given features, calculate the envelope, and return
+        the centroid of the envelope as a dictionary
+        
+        Args:
+            in_features ([type]): layer, feature class, etc--anything that arcpy can read.
+            project_as (int, optional): WKID of coodinate system to return coordinates as. Defaults to 4326.
+
+        Returns:
+            dict: coordinates of the centroid in a dictionary keyed by lat, lon
+        """
+
+        fs = FeatureSet(in_features)
+        # in-memory
+        mbg="memory\mbg"
+        
+        MinimumBoundingGeometry(
+            fs,
+            mbg,
+            "RECTANGLE_BY_AREA",
+            "ALL"
+        )
+        d = Describe(mbg)
+        sr = d.spatialReference
+
+        pt = None
+
+        with SearchCursor(mbg, ["SHAPE@XY"]) as sc: 
+            for r in sc:
+                x, y = r[0]
+                pt = ArcPoint(X=x, Y=y)
+
+        centroid = PointGeometry(inputs=pt, spatial_reference=sr)
+        # reproject
+        if project_as:
+            centroid = centroid.projectAs(SpatialReference(project_as))
+
+        Delete(mbg)
+        return dict(
+            lon=centroid.centroid.X,
+            lat=centroid.centroid.Y
+        )
+
     # --------------------------------------------------------------------------
-    # Catchment delineation functions
+    # Public Pre-Processing methods for rasters
+    # DEM, Slope, Curve Number
+
+    def prep_curvenumber_raster(self, 
+        dem,
+        curve_number_raster,
+        out_cn_raster=None,
+        out_coor_system=None
+        ):
+        """
+        Clip, reproject, and resample the curve number raster to match the DEM.
+        Ensure everything utilizes the DEM as the snap raster.
+        The result is returned in a dictionary referencing an ArcPy Raster object
+        for the file gdb location of the processed curve number raster.
+        
+        For any given study area, this will only need to be run once.
+        """
+        
+        # make the DEM an ArcPy Raster object, so we can get the raster properties
+        if not isinstance(dem,Raster):
+            dem = Raster(dem)
+        
+        self._msg("Clipping...")
+        # clip the curve number raster, since it is likely for a broader study area
+        clipped_cn = self._so("cn_clipped")
+        Clip_management(
+            in_raster=curve_number_raster,
+            out_raster=clipped_cn,
+            in_template_dataset=dem,
+            clipping_geometry="NONE",
+            maintain_clipping_extent="NO_MAINTAIN_EXTENT"
+        )
+        
+        # set the snap raster for subsequent operations
+        env.snapRaster = dem
+        
+        # reproject and resample he curve number raster to match the dem
+        if not out_cn_raster:
+            prepped_cn = self._so("cn_prepped")
+        else:
+            prepped_cn = out_cn_raster
+        self._msg("Projecting and Resampling...")
+        ProjectRaster_management(
+            in_raster=clipped_cn,
+            out_raster=prepped_cn,
+            out_coor_system=out_coor_system,
+            resampling_type="NEAREST",
+            cell_size=dem.meanCellWidth
+        )
+        
+        return {
+            "curve_number_raster": Raster(prepped_cn)
+        } 
+
+    def build_curvenumber_raster(self, 
+        landcover_raster,
+        lookup_csv,
+        soils_polygon,
+        soils_hydrogroup_field="SOIL_HYDRO",
+        reference_raster=None,
+        out_cn_raster=None
+        ):
+        """Build a curve number raster from landcover raster, soils polygon, and a crosswalk between 
+        landcover classes, soil hydro groups, and curve numbers.
+
+        :param lookup_csv: [description]
+        :type lookup_csv: [type]
+        :param landcover_raster: [description]
+        :type landcover_raster: [type]
+        :param soils_polygon: polygon containing soils with a hydro classification. 
+        :type soils_polygon: [type]
+        :param soils_hydrogroup_field: [description], defaults to "SOIL_HYDRO" (from the NCRS soils dataset)
+        :type soils_hydrogroup_field: str, optional
+        :param out_cn_raster: [description]
+        :type out_cn_raster: [type]    
+        """
+
+        # GP Environment ----------------------------
+        self._msg("Setting up GP Environment...")
+        # if reference_raster is provided, we use it to set the GP environment for 
+        # subsequent raster operations
+        if reference_raster: 
+            if not isinstance(reference_raster,Raster):
+                # read in the reference raster as a Raster object.
+                reference_raster = Raster(reference_raster)
+        else:
+            reference_raster = Raster(landcover_raster)
+
+        # set the snap raster, cell size, and extent, and coordinate system for subsequent operations
+        env.snapRaster = reference_raster
+        env.cellSize = reference_raster.meanCellWidth
+        env.extent = reference_raster
+        env.outputCoordinateSystem = reference_raster
+        
+        cs = env.outputCoordinateSystem.exportToString()
+
+        # SOILS -------------------------------------
+        
+        self._msg("Processing Soils...")
+        # read the soils polygon into a raster, get list(set()) of all cell values from the landcover raster
+        soils_raster_path = self._so("soils_raster")
+        PolygonToRaster(soils_polygon, soils_hydrogroup_field, soils_raster_path, "CELL_CENTER")
+        soils_raster = Raster(soils_raster_path)
+
+        # use the raster attribute table to build a lookup of raster values to soil hydro codes
+        # from the polygon (that were stored in the raster attribute table after conversion)
+        if not soils_raster.hasRAT:
+            self._msg("Soils raster does not have an attribute table. Building...", "warning")
+            BuildRasterAttributeTable_management(soils_raster, "Overwrite")
+        # build a 2D array from the RAT
+        fields = ["Value", soils_hydrogroup_field]
+        rows = [fields]
+        # soils_raster_table = MakeTableView_management(soils_raster_path)
+        with SearchCursor(soils_raster_path, fields) as sc:
+            for row in sc:
+                rows.append([row[0], row[1]])
+        # turn that into a dictionary, where the key==soil hydro text and value==the raster cell value
+        lookup_from_soils = {v: k for k, v in etl.records(rows)}
+        # also capture a list of just the values, used to iterate conditionals later
+        soil_values = [v['Value'] for v in etl.records(rows)]
+
+        # LANDCOVER ---------------------------------
+        self._msg("Processing Landcover...")
+        if not isinstance(landcover_raster, Raster):
+            # read in the reference raster as a Raster object.
+            landcover_raster = Raster(landcover_raster)
+        landcover_values = []
+        with SearchCursor(landcover_raster, ["Value"]) as sc:
+            for row in sc:
+                landcover_values.append(row[0])
+
+        # LOOKUP TABLE ------------------------------
+        self._msg("Processing Lookup Table...")
+        # read the lookup csv, clean it up, and use the lookups from above to limit it to just
+        # those values in the rasters
+        t = etl\
+            .fromcsv(lookup_csv)\
+            .convert('utc', int)\
+            .convert('cn', int)\
+            .select('soil', lambda v: v in lookup_from_soils.keys())\
+            .convert('soil', lookup_from_soils)\
+            .select('utc', lambda v: v in landcover_values)
+        
+        # This gets us a table where we the landcover class (as a number) corresponding to the 
+        # correct value in the converted soil raster, with the corresponding curve number.
+
+        # DETERMINE CURVE NUMBERS -------------------
+        self._msg("Assigning Curve Numbers...")
+        # Use that to reassign cell values using conditional map algebra operations
+        cn_rasters = []
+        for rec in etl.records(t):
+            cn_raster_component = Con((landcover_raster == rec.utc) & (soils_raster == rec.soil), rec.cn, 0)
+            cn_rasters.append(cn_raster_component)
+
+        cn_raster = CellStatistics(cn_rasters, "MAXIMUM")
+
+        # REPROJECT THE RESULTS -------------------
+        self._msg("Reprojecting and saving the results....")
+        if not out_cn_raster:
+            out_cn_raster = self._so("cn_raster","random","fgdb")
+
+        ProjectRaster_management(
+            in_raster=cn_raster,
+            out_raster=out_cn_raster,
+            out_coor_system=cs,
+            resampling_type="NEAREST",
+            cell_size=env.cellSize
+        )
+        
+        # cn_raster.save(out_cn_raster)
+        return out_cn_raster
+
+    def derive_analysis_rasters_from_dem(self, dem, force_flow="NORMAL"):
+        """derive slope and flow direction from a DEM.
+        Results are returned in a dictionary that contains references to
+        ArcPy Raster objects stored in the "fgdb" (temporary) workspace
+
+        Returns:
+            {
+                "flow_direction_raster": Raster(flow_direction_raster),
+                "slope_raster": Raster(slope_raster),
+            }
+
+        """
+        from arcpy import env
+        
+        # set the snap raster for subsequent operations
+        env.snapRaster = dem
+        
+        # calculate flow direction for the whole DEM
+        flow_direction_raster = self._so("flowdir","random","fgdb")
+        flowdir = FlowDirection(in_surface_raster=dem, force_flow=force_flow)
+        flowdir.save(flow_direction_raster)
+        
+        # calculate slope for the whole DEM
+        slope = Slope(in_raster=dem, output_measurement="PERCENT_RISE", method="PLANAR")
+        slope_raster = self._so("slope","random","fgdb")
+        slope.save(slope_raster)
+
+        return {
+            "flow_direction_raster": flow_direction_raster,
+            "slope_raster": slope_raster,
+        }
+
+    # --------------------------------------------------------------------------
+    # Analytics for delineation and data derivation in Series
+    # Used for *catch-basin* analysis; works with a single watershed raster 
+    # that contains multiple watersheds
 
     def _delineate_all_catchments(
         self, 
@@ -895,18 +940,13 @@ class GP:
             BuildRasterAttributeTable_management(all_sheds, "Overwrite")
 
         # save the catchment raster
-        self.all_sheds_raster = self.so("catchments","timestamp","fgdb")
+        self.all_sheds_raster = self._so("catchments","timestamp","fgdb")
         all_sheds.save(self.all_sheds_raster)
-        self.msg("Catchments raster saved:\n\t{0}".format(self.config.all_sheds_raster))
+        self._msg("Catchments raster saved:\n\t{0}".format(self.config.all_sheds_raster))
 
         self.config.all_sheds_raster = self.all_sheds_raster
 
         return self.all_sheds_raster
-
-    # --------------------------------------------------------------------------
-    # Analytics for delineation and data derivation in Series
-    # Used for *catch-basin* analysis; works with a single watershed raster 
-    # that contains multiple watersheds
 
     def _calc_catchment_flowlength_max(self, 
         catchment_area_raster,
@@ -1051,7 +1091,7 @@ class GP:
                     flow_direction_raster,
                     leng_conv_factor
                 )
-                results[this_id]["max_fl"] = self.clean(fl_max)
+                results[this_id]["max_fl"] = self._clean(fl_max)
                 # if this_id in results.keys():
                 #     results[this_id]["max_fl"] = self.clean(fl_max)
                 # else:
@@ -1069,8 +1109,8 @@ class GP:
             for p, path_to_rainfall_raster in precip_raster_lookup.items():
 
                 # calculate average curve number within each catchment for all catchments
-                table_rainfall_avg = self.so("rainfall_avg", p, "fgdb")
-                self.msg("Average Rainfall Table: {0}".format(table_rainfall_avg))
+                table_rainfall_avg = self._so("rainfall_avg", p, "fgdb")
+                self._msg("Average Rainfall Table: {0}".format(table_rainfall_avg))
                 ZonalStatisticsAsTable(
                     catchment_areas, 
                     self.raster_field, 
@@ -1083,7 +1123,7 @@ class GP:
                     for r in c:
                         this_id = r[0]
                         this_val= r[1]
-                        results[this_id]['rainfall'][p] = self.clean(this_val)
+                        results[this_id]['rainfall'][p] = self._clean(this_val)
         elif precip_table:
             # TODO: allow fall-back to a NOAA precip table here
             # For now, this won't work.
@@ -1097,15 +1137,15 @@ class GP:
         # AVERAGE CURVE NUMBER
 
         # calculate average curve number within each catchment for all catchments
-        table_cns = self.so("cn_zs_table","timestamp","fgdb")
-        self.msg("CN Table: {0}".format(table_cns))
+        table_cns = self._so("cn_zs_table","timestamp","fgdb")
+        self._msg("CN Table: {0}".format(table_cns))
         ZonalStatisticsAsTable(catchment_areas, self.raster_field, curve_number_raster, table_cns, "DATA", "MEAN")
         # push table into results object
         with SearchCursor(table_cns,[self.raster_field,"MEAN"]) as c:
             for r in c:
                 this_id = r[0]
                 this_val = r[1]
-                results[this_id]["avg_cn"] = self.clean(this_val)
+                results[this_id]["avg_cn"] = self._clean(this_val)
                 # if this_id in results.keys():
                 #     results[this_id]["avg_cn"] = self.clean(this_area)
                 # else:
@@ -1117,15 +1157,15 @@ class GP:
 
         if slope_raster:
 
-            table_slopes = self.so("slopes_zs_table","timestamp","fgdb")
-            self.msg("Slopes Table: {0}".format(table_slopes))
+            table_slopes = self._so("slopes_zs_table","timestamp","fgdb")
+            self._msg("Slopes Table: {0}".format(table_slopes))
             ZonalStatisticsAsTable(catchment_areas, self.raster_field, slope_raster, table_slopes, "DATA", "MEAN")
             # push table into results object
             with SearchCursor(table_slopes,[self.raster_field,"MEAN"]) as c:
                 for r in c:
                     this_id = r[0]
                     this_val = r[1]
-                    results[this_id]["avg_slope"] = self.clean(this_val)
+                    results[this_id]["avg_slope"] = self._clean(this_val)
                     # if this_id in results.keys():
                     #     results[this_id]["avg_slope"] = self.clean(this_area)
                     # else:
@@ -1133,15 +1173,15 @@ class GP:
         # if the slope raster was not provided, we fall-back to a simplified 
         # calculation: catchment_max_elevation - catchment_min_elevation) / max_flow_length
         else: 
-            table_slopes_alt = self.so("slopes_zs_table","timestamp","fgdb")
-            self.msg("Slopes Table (Alternate Method): {0}".format(table_slopes_alt))
+            table_slopes_alt = self._so("slopes_zs_table","timestamp","fgdb")
+            self._msg("Slopes Table (Alternate Method): {0}".format(table_slopes_alt))
             ZonalStatisticsAsTable(catchment_areas, self.raster_field, slope_raster, table_slopes_alt, "DATA", "MEAN")
             # push table into results object
             with SearchCursor(table_slopes_alt, [self.raster_field,"MEAN"]) as c:
                 for r in c:
                     this_id = r[0]
                     this_val = r[1]
-                    results[this_id]["avg_slope"] = self.clean(this_val)        
+                    results[this_id]["avg_slope"] = self._clean(this_val)        
 
             
         # ------------------------------------------------------------------------
@@ -1149,7 +1189,7 @@ class GP:
 
         # calculate area of each catchment
         #ZonalGeometryAsTable(catchment_areas,"Value","output_table") # crashes like a mfer
-        cp = self.so("catchmentpolygons","timestamp","fgdb")
+        cp = self._so("catchmentpolygons","timestamp","fgdb")
         #RasterToPolygon copies our ids from self.raster_field into "gridcode"
         if out_catchment_polygons_simplify:
             simplify = "SIMPLIFY"
@@ -1159,7 +1199,7 @@ class GP:
 
         # Dissolve the converted polygons, since some of the raster zones may have corner-corner links
         if not out_catchment_polygons:
-            cpd = self.so("catchmentpolygonsdissolved","timestamp","fgdb")
+            cpd = self._so("catchmentpolygonsdissolved","timestamp","fgdb")
         else:
             cpd = out_catchment_polygons
         Dissolve_management(
@@ -1175,9 +1215,9 @@ class GP:
                 this_id = r[0]
                 this_area = r[1] * area_conv_factor
                 if this_id in results.keys():
-                    results[this_id]["area_up"] = self.clean(this_area)
+                    results[this_id]["area_up"] = self._clean(this_area)
                 else:
-                    results[this_id] = {"area_up": self.clean(this_area)}
+                    results[this_id] = {"area_up": self._clean(this_area)}
         
         # flip results object into a records-style array of dictionaries
         # (this makes conversion to table later on simpler)
@@ -1213,7 +1253,7 @@ class GP:
 
         from arcpy import env
 
-        self.msg('Setting environment parameters...', set_progressor_label=True)
+        self._msg('Setting environment parameters...', set_progressor_label=True)
         env_raster = Raster(raster_flowdir_filepath)
         env.snapRaster = env_raster
         env.cellSize = (env_raster.meanCellHeight + env_raster.meanCellWidth) / 2.0
@@ -1234,7 +1274,7 @@ class GP:
         # -----------------------------------------------------
         # SET ENVIRONMENT VARIABLES
 
-        self.msg('Setting environment parameters...', set_progressor_label=True)
+        self._msg('Setting environment parameters...', set_progressor_label=True)
         env_raster = Raster(self.config.raster_flowdir_filepath)
         env.snapRaster = env_raster
         env.cellSize = (env_raster.meanCellHeight + env_raster.meanCellWidth) / 2.0
@@ -1249,7 +1289,7 @@ class GP:
 
         units = pint.UnitRegistry()
 
-        self.msg('Determing units of reference raster dataset...', set_progressor_label=True)
+        self._msg('Determing units of reference raster dataset...', set_progressor_label=True)
 
         acf, lcf = None, None
         area_conv_factor, leng_conv_factor = 1, 1
@@ -1263,22 +1303,22 @@ class GP:
             if 'foot'.upper() in unit_name.upper():
                 acf = 1 * units.square_foot
                 lcf = 1 * units.foot
-                self.msg("...auto-detected 'feet' from the source data")
+                self._msg("...auto-detected 'feet' from the source data")
             elif 'meter'.upper() in unit_name.upper():
                 acf = 1 * (units.meter ** 2)
                 lcf = 1 * units.meter
-                self.msg("...auto-detected 'meters' from the source data")
+                self._msg("...auto-detected 'meters' from the source data")
             else:
-                self.msg("Could not determine conversion factor for '{0}'. You may need to reproject your data.".format(unit_name))
+                self._msg("Could not determine conversion factor for '{0}'. You may need to reproject your data.".format(unit_name))
         else:
-            self.msg("Reference raster dataset has no spatial reference information.")
+            self._msg("Reference raster dataset has no spatial reference information.")
         # set the conversion factors for length an area based on the detected units
         if acf and lcf:
             # get correct conversion factor for casting units to that required by equations in calc.py
             area_conv_factor = acf.to(units.kilometer ** 2).magnitude #square kilometers
             leng_conv_factor = lcf.to(units.meter).magnitude #meters
-            self.msg("Area conversion factor: {0}".format(area_conv_factor))
-            self.msg("Length conversion factor: {0}".format(leng_conv_factor))
+            self._msg("Area conversion factor: {0}".format(area_conv_factor))
+            self._msg("Length conversion factor: {0}".format(leng_conv_factor))
             
             self.config.area_conv_factor = area_conv_factor
             self.config.leng_conv_factor = leng_conv_factor
@@ -1329,8 +1369,8 @@ class GP:
             group_id=fprops['group_id'],
         )        
 
-        self.msg("--------------------------------")
-        self.msg("analyzing point {0} | group {1}".format(shed.uid, shed.group_id))
+        self._msg("--------------------------------")
+        self._msg("analyzing point {0} | group {1}".format(shed.uid, shed.group_id))
 
 
         # we can get a tabular look at what's in the layer like this:
@@ -1343,13 +1383,13 @@ class GP:
             cellSize=flow_direction_raster,
         ):
             # delineate one watershed
-            self.msg('delineating catchment')
+            self._msg('delineating catchment')
             one_shed = Watershed(
                 in_flow_direction_raster=flow_direction_raster,
                 in_pour_point_data=point_geodata,
             )
             
-            shed.filepath_raster = self.so("shed_{}_delineation".format(shed.uid))
+            shed.filepath_raster = self._so("shed_{}_delineation".format(shed.uid))
             # print(shed.filepath_raster)
             one_shed.save(shed.filepath_raster)
         
@@ -1359,11 +1399,11 @@ class GP:
         ## ---------------------------------------------------------------------
         # convert raster to polygon
         
-        self.msg("converting catchment")
+        self._msg("converting catchment")
         
         #ZonalGeometryAsTable(catchment_areas,"Value","output_table") # crashes like a mfer
         #cp = self.so("catchmentpolygons","timestamp","fgdb")
-        cp = self.so("shed_{}_polygon".format(shed.uid))
+        cp = self._so("shed_{}_polygon".format(shed.uid))
         #RasterToPolygon copies our ids from self.raster_field into "gridcode"
         simplify = "NO_SIMPLIFY"
         if out_catchment_polygons_simplify:
@@ -1376,7 +1416,7 @@ class GP:
         if out_shed_polygon:
             shed.filepath_vector = out_shed_polygon
         else:
-            shed.filepath_vector = self.so("shed_{}_delineation_dissolved".format(shed.uid))
+            shed.filepath_vector = self._so("shed_{}_delineation_dissolved".format(shed.uid))
         
         Dissolve(
             in_features=cp,
@@ -1388,7 +1428,7 @@ class GP:
         ## ---------------------------------------------------------------------
         # calculate area of catchment
 
-        self.msg("calculating area")
+        self._msg("calculating area")
 
         # get and sum the areas for all records 
         # (there should only be one at this point, but...)
@@ -1407,7 +1447,7 @@ class GP:
         ## ---------------------------------------------------------------------
         # calculate flow length
 
-        self.msg("calculating flow length")
+        self._msg("calculating flow length")
         
         with EnvManager(
             snapRaster=flow_direction_raster,
@@ -1429,9 +1469,9 @@ class GP:
         ## ---------------------------------------------------------------------
         # calculate average curve number
 
-        self.msg("calculating average curve number")
+        self._msg("calculating average curve number")
         
-        table_cn_avg = self.so("shed_{0}_cn_avg".format(shed.uid))
+        table_cn_avg = self._so("shed_{0}_cn_avg".format(shed.uid))
 
         with EnvManager(
             cellSizeProjectionMethod="PRESERVE_RESOLUTION",
@@ -1458,10 +1498,10 @@ class GP:
         ## ---------------------------------------------------------------------
         # calculate average slope
 
-        self.msg("calculating average slope")
+        self._msg("calculating average slope")
         
         
-        table_slope_avg = self.so("shed_{0}_slope_avg".format(shed.uid))
+        table_slope_avg = self._so("shed_{0}_slope_avg".format(shed.uid))
         
         with EnvManager(
             cellSizeProjectionMethod="PRESERVE_RESOLUTION",
@@ -1490,14 +1530,14 @@ class GP:
         
         rainfalls = []
         
-        self.msg('calculating average rainfall')
+        self._msg('calculating average rainfall')
 
         # for each rainfall raster representing a storm frequency:
         for rr in rainfall_rasters:
             # self.msg(rr['freq'])
             # print(rr)
 
-            table_rainfall_avg = self.so(
+            table_rainfall_avg = self._so(
                 "shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq'])
             )
             
@@ -1546,7 +1586,7 @@ class GP:
 
         #-----------------------------------------------------------------------
         # add all derived properties to the vector file output
-        self.msg('saving delineation features')
+        self._msg('saving delineation features')
 
         with EnvManager(overwriteOutput=True):
             
@@ -1647,46 +1687,3 @@ class GP:
 
         # return all updated Point objects, which includes nested shed data
         return points
-
-    def centroid_of_feature_envelope(self, in_features, project_as=4326) -> Dict:
-        """given features, calculate the envelope, and return
-        the centroid of the envelope as a dictionary
-        
-        Args:
-            in_features ([type]): layer, feature class, etc--anything that arcpy can read.
-            project_as (int, optional): WKID of coodinate system to return coordinates as. Defaults to 4326.
-
-        Returns:
-            dict: coordinates of the centroid in a dictionary keyed by lat, lon
-        """
-
-        fs = FeatureSet(in_features)
-        # in-memory
-        mbg="memory\mbg"
-        
-        MinimumBoundingGeometry(
-            fs,
-            mbg,
-            "RECTANGLE_BY_AREA",
-            "ALL"
-        )
-        d = Describe(mbg)
-        sr = d.spatialReference
-
-        pt = None
-
-        with SearchCursor(mbg, ["SHAPE@XY"]) as sc: 
-            for r in sc:
-                x, y = r[0]
-                pt = ArcPoint(X=x, Y=y)
-
-        centroid = PointGeometry(inputs=pt, spatial_reference=sr)
-        # reproject
-        if project_as:
-            centroid = centroid.projectAs(SpatialReference(project_as))
-
-        Delete(mbg)
-        return dict(
-            lon=centroid.centroid.X,
-            lat=centroid.centroid.Y
-        )

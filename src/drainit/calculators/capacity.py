@@ -5,6 +5,8 @@ from marshmallow import EXCLUDE
 from marshmallow_dataclass import class_schema
 import pint
 
+from ..utils import get_type
+
 units = pint.UnitRegistry()
 
 
@@ -146,4 +148,4 @@ CapacitySchema = class_schema(Capacity)
 
 # helper that creates a lookup of numeric fields, used during crosswalking + validation
 capacity_fields_and_defaults = [(f.name, f.default) for f in fields(Capacity)]
-capacity_numeric_fields = {f.name: f.type for f in fields(Capacity) if f.type in [int, float]}
+capacity_numeric_fields = {f.name: get_type(f.type) for f in fields(Capacity) if get_type(f.type) in [int, float]}

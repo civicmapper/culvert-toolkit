@@ -62,7 +62,7 @@ class TestNaaccETL:
         d = tmp_path
         # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\src.drainit')
         results = workflows.NaaccDataIngest(
-            naacc_csv=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
+            naacc_src_table=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
             output_folder=str(d),
             output_workspace=str(d / "naacc.gdb"),
             output_fc_name='naacc_points'
@@ -83,16 +83,25 @@ class TestNaaccETL:
 
         # capacity calculated for 5 records
 
-    # def test_naacc_data_ingest_for_capacitycalculator(self, tmp_path):
+    def test_naacc_data_ingest_from_fgdb_fc(self, tmp_path, sample_prepped_naacc_geodata):
+        d = tmp_path
+        # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\src.drainit')
+        results = workflows.NaaccDataIngest(
+            naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points_raw'),
+            output_folder=str(d),
+            output_workspace=str(d / "test_output_naacc.gdb"),
+            output_fc_name='naacc_points'
+        )
+        t = results.naacc_table # petl table
+        
+        # evaluate the sample results:
+        # 3 records
+        assert etl.nrows(t) == 3
 
-    #     models.WorkflowConfig()
+        # 2 without validation errors
+        assert etl.nrows(etl.selectnone(t, "validation_errors")) == 2
 
-    #     ccc = workflows.CulvertCapacityCore(
-    #         points_filepath=
-    #         points_id_fieldname=
-    #         points_group_fieldname=
-    #     )
-    #     ccc.load_points()
-
-    #     return
+        # the results were saved as geodata; check we have 3 features
+        f = results._testing_output_geodata()
+        assert len(f) == 3
 
