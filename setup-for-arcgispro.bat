@@ -9,8 +9,12 @@ call "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe" create --clone a
 
 call "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\activate.bat" drainit-for-arcgispro
 
+@echo Updating packages...
+
+call "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe" update –all
+
 @echo Installing additional dependencies...
 
-for /f %%i in (setup\esri-cloned-requirements.txt) do "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe" install --yes --verbose -c conda-forge esri%%i
+for /f %%i in (setup\esri-cloned-requirements.txt) do "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe" install --yes --verbose %%i
 
 @echo Done!
