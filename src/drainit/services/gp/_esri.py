@@ -651,7 +651,7 @@ class GP:
             feature_set.save(output_points_filepath)
 
         # return the list of Point objects and a dict version of the FeatureSet
-        return points, feature_set_json, spatial_ref_code
+        return points, feature_set_json, crs_wkid
 
     def get_centroid_of_feature_envelope(self, in_features, project_as=4326) -> Dict:
         """given features, calculate the envelope, and return
@@ -1344,14 +1344,16 @@ class GP:
     def _delineate_and_analyze_one_catchment(
         self,
         point_geodata: FeatureSet,
-        pour_point_field: str,
+        uid: str,
+        group_id: str,
         flow_direction_raster: str,
         slope_raster: str,
         curve_number_raster: str,
         out_shed_polygon: str,
         rainfall_rasters: tuple = None,
         out_catchment_polygons_simplify: bool = False,
-        save_featureset: bool = False
+        save_featureset: bool = False,
+        pour_point_field: str = None
         # rainfall_unit_conversion_factor = 0.1,
         ) -> Shed:
         """perform delineation one point and analysis on the watershed
@@ -1363,10 +1365,12 @@ class GP:
         """
         fs = json.loads(point_geodata.JSON)
         # create a shed (dataclass object) from the feature
-        fprops = fs['features'][0]['attributes']
+        # fprops = fs['features'][0]['attributes']
         shed = Shed(
-            uid=fprops['uid'],
-            group_id=fprops['group_id'],
+            # uid=fprops['uid'],
+            # group_id=fprops['group_id'],
+            uid=uid,
+            group_id=group_id
         )        
 
         self._msg("--------------------------------")
