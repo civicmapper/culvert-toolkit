@@ -57,7 +57,8 @@ from arcpy.management import (
     BuildRasterAttributeTable,
     MinimumBoundingGeometry,
     Merge,
-    CalculateFields
+    CalculateFields,
+    CopyRaster
 )
 from arcpy import (
     GetCount_management, 
@@ -76,8 +77,9 @@ from arcpy import AddMessage, AddWarning, AddError
 
 # this package
 from ...config import FREQUENCIES, QP_HEADER, VALIDATION_ERRORS_FIELD_LENGTH
-from ...models import WorkflowConfig, DrainItPoint, Shed, Rainfall
+from ...models import WorkflowConfig, DrainItPoint, Shed, Rainfall, RainfallRasterConfig
 from ..naacc import NaaccEtl
+# from ...lib.codetiming.codetiming import Timer
 
 units = pint.UnitRegistry()
 
@@ -695,6 +697,17 @@ class GP:
             lon=centroid.centroid.X,
             lat=centroid.centroid.Y
         )
+
+    def create_geotiffs_from_noaa_rasters(self, rrc: RainfallRasterConfig):
+        """converts all rasters in the rainfall rasters config to geotiffs;
+        updates the path in the config object"""
+        for r in rrc.rasters:
+            i = Path(r.path)
+            n = f'{str(i.name)}.tif'
+            o = i.parent / n
+            self._msg(f"creating {n}")
+            CopyRaster(str(i),str(o))
+            r.path = o
 
     # --------------------------------------------------------------------------
     # Public Pre-Processing methods for rasters
@@ -1403,7 +1416,7 @@ class GP:
         ## ---------------------------------------------------------------------
         # convert raster to polygon
         
-        self._msg("converting catchment")
+        self._msg("vectorizing catchment")
         
         #ZonalGeometryAsTable(catchment_areas,"Value","output_table") # crashes like a mfer
         #cp = self.so("catchmentpolygons","timestamp","fgdb")
@@ -1538,7 +1551,7 @@ class GP:
 
         # for each rainfall raster representing a storm frequency:
         for rr in rainfall_rasters:
-            # self.msg(rr['freq'])
+            self.msg(f"...{rr['freq']} year")
             # print(rr)
 
             table_rainfall_avg = self._so(
@@ -1616,7 +1629,10 @@ class GP:
             CalculateFields(
                 in_table=shed.filepath_vector,
                 expression_type="PYTHON3",
-                fields=[[f[0], f[2]] for f in fields_to_add]
+                fields=[
+                    [f[0], '{}'.format(f[2])] for f in fields_to_add
+                ]
+                # [SRC_FIELD, '"{0}"'.format(src)], # note the weird nested quotation syntax here
             )
 
         #-----------------------------------------------------------------------
@@ -1668,6 +1684,7 @@ class GP:
 
             # delineate a catchment/basin/watershed ("shed") and derive 
             # some data from that, storing it in a Shed object.
+            # with Timer(name="ShedAnalysis", text="{name}: {minutes:.1f} minutes", logger=self._msg):
             shed = self._delineate_and_analyze_one_catchment(
                 uid=point.uid,
                 group_id=point.group_id,
