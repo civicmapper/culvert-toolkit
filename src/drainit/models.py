@@ -371,14 +371,16 @@ class WorkflowConfig:
     # -----------------------------
     # input landscape rasters
 
-    # optional for peak-flow-calc
+    # optional
     raster_dem_filepath: Optional[str] = None
     raster_watershed_filepath: Optional[str] = None
+    raster_flowlength_filepath: Optional[str] = None
 
-    # required for peak-flow-calc (can be derived)
+    # required
     raster_flowdir_filepath: str = None
     raster_slope_filepath: str = None
     raster_curvenumber_filepath: str = None
+    
 
     # --------------------------
     # input rainfall

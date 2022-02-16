@@ -1434,6 +1434,7 @@ class GP:
         uid: str,
         group_id: str,
         flow_direction_raster: str,
+        flow_length_raster: str,
         slope_raster: str,
         curve_number_raster: str,
         out_shed_polygon: str,
@@ -1560,24 +1561,42 @@ class GP:
                 extent=one_shed.extent,
                 parallelProcessingFactor='100%'
             ):
-            
-                # clip the flow direction raster to the catchment area (zone value)
-                clipped_flowdir = SetNull(IsNull(one_shed), Raster(flow_direction_raster))
 
-                Raster(clipped_flowdir).save(
-                    self._so("shed_{0}_clipped_flowdir".format(shed.uid))
-                )
+                # Use the input flow length raster here if provided. Clip it to 
+                # the shed and calculate max as raster max minus raster min. 
+                # This saves a ton of time over deriving the flow length raster.
+                if flow_length_raster:
+                    clipped_flowlen = SetNull(IsNull(one_shed), Raster(flow_length_raster))
+                    desc_flowflen = Describe(flow_length_raster)
+                    try:
+                        # get the crs units from the spatial ref object
+                        flowlen_crs_unit = desc_flowflen.spatialReference.linearUnitName.lower()
+                    except:
+                        self.msg("Unable to get units from input flow length raster. Falling back to meters.", arc_status="warning")
+                        flowlen_crs_unit = "meter"
+                    max_fl = clipped_flowlen.maximum - clipped_flowlen.minimum
+                    shed.max_fl = units.Quantity(max_fl, flowlen_crs_unit).m_as("meter")
                 
-                # calculate flow length
-                flow_len_raster = FlowLength(clipped_flowdir, "UPSTREAM")
-                # determine maximum flow length
-                #shed.max_fl = flow_len_raster.maximum
-                #TODO: convert length to ? using leng_conv_factor (detected from the flow direction raster)
-                #fl_max = fl_max * leng_conv_factor
-                if flow_len_raster.maximum:
-                    shed.max_fl = units.Quantity(flow_len_raster.maximum, flowdir_crs_unit).m_as("meter")
+                # otherwise, generate a flow length raster for the shed and get 
+                # its maximum value
                 else:
-                    shed.max_fl = 0
+                    # clip the flow direction raster to the catchment area (zone value)
+                    clipped_flowdir = SetNull(IsNull(one_shed), Raster(flow_direction_raster))
+
+                    Raster(clipped_flowdir).save(
+                        self._so("shed_{0}_clipped_flowdir".format(shed.uid))
+                    )
+                    
+                    # calculate flow length
+                    flow_len_raster = FlowLength(clipped_flowdir, "UPSTREAM")
+                    # determine maximum flow length
+                    #shed.max_fl = flow_len_raster.maximum
+                    #TODO: convert length to ? using leng_conv_factor (detected from the flow direction raster)
+                    #fl_max = fl_max * leng_conv_factor
+                    if flow_len_raster.maximum:
+                        shed.max_fl = units.Quantity(flow_len_raster.maximum, flowdir_crs_unit).m_as("meter")
+                    else:
+                        shed.max_fl = 0
 
         ## ---------------------------------------------------------------------
         # calculate average slope
@@ -1672,10 +1691,10 @@ class GP:
                 # calculate the average rainfall for the watershed
                 with EnvManager(
                     cellSizeProjectionMethod="CONVERT_UNITS",
-                    extent=one_shed.extent,
+                    extent="MINOF",
                     cellSize="MINOF",
                     overwriteOutput=True,
-                    parallelProcessingFactor='100%'
+                    # parallelProcessingFactor='100%'
                 ):
                     args = [
                         one_shed,
@@ -1762,6 +1781,7 @@ class GP:
         point: dict,
         pour_point_field: str,
         flow_direction_raster: str,
+        flow_length_raster: str,
         slope_raster: str,
         curve_number_raster: str,
         precip_src_config: dict,
@@ -1786,6 +1806,7 @@ class GP:
                 point_geodata=point_geodata,
                 pour_point_field=pour_point_field,
                 flow_direction_raster=flow_direction_raster,
+                flow_length_raster=flow_length_raster,
                 slope_raster=slope_raster,
                 curve_number_raster=curve_number_raster,
                 rainfall_rasters=precip_src_config['rasters'],
@@ -1802,6 +1823,7 @@ class GP:
         points: List[DrainItPoint],
         pour_point_field: str,
         flow_direction_raster: str,
+        flow_length_raster: str,
         slope_raster: str,
         curve_number_raster: str,
         precip_src_config: dict,
@@ -1820,13 +1842,14 @@ class GP:
                     DrainItPointSchema().dump(p),
                     pour_point_field,
                     flow_direction_raster,
+                    flow_length_raster,
                     slope_raster,
                     curve_number_raster,
                     precip_src_config,
                     out_shed_polygons,
                     out_shed_polygons_simplify,
                     override_skip
-                ) 
+                )
                 for p in points
             ]
             
@@ -1874,6 +1897,7 @@ class GP:
                     point_geodata=point_geodata,
                     pour_point_field=pour_point_field,
                     flow_direction_raster=flow_direction_raster,
+                    flow_length_raster=flow_length_raster,
                     slope_raster=slope_raster,
                     curve_number_raster=curve_number_raster,
                     rainfall_rasters=precip_src_config['rasters'],

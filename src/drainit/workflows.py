@@ -738,6 +738,7 @@ class CulvertCapacityCore(WorkflowManager):
             pour_point_field=self.config.points_id_fieldname,
             flow_direction_raster=self.config.raster_flowdir_filepath,
             slope_raster=self.config.raster_slope_filepath,
+            flow_length_raster=self.config.raster_flowlength_filepath,
             curve_number_raster=self.config.raster_curvenumber_filepath,
             precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
             out_shed_polygons=self.config.output_sheds_filepath,
