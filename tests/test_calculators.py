@@ -132,7 +132,7 @@ class TestCapacityCalc:
         # cc.config.output_sheds_filepath = cc.gp.so("test_delineations")
         # create a temp output workspace for saving the sheds
         workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
-        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_delineations')            
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_delineations')
 
         cc.config.points = cc.gp.delineation_and_analysis_in_parallel(
             points=cc.config.points,
@@ -164,6 +164,46 @@ class TestCapacityCalc:
         # bad_points = [p for p in cc.config.points if p.include == False]
         # assert len(bad_points) == 3
 
+    def test_delineation_and_analysis_in_parallel_mpire(self, all_sample_inputs, tmp_path):
+        """runs the delineation/analysis using multi-processing.
+        """
+
+        # instantiate the class with the kwargs and run the load_points method
+        kw = all_sample_inputs
+        cc = workflows.CulvertCapacityCore(**kw)
+        cc.load_points()
+
+        # for testing, set a temp output path for the shed polygons
+        # cc.config.output_sheds_filepath = cc.gp.so("test_delineations")
+        # create a temp output workspace for saving the sheds
+        workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_delineations')
+
+        cc.config.points = cc.gp.delineation_and_analysis_in_parallel(
+            points=cc.config.points,
+            pour_point_field=cc.config.points_id_fieldname,
+            flow_direction_raster=cc.config.raster_flowdir_filepath,
+            slope_raster=cc.config.raster_slope_filepath,
+            curve_number_raster=cc.config.raster_curvenumber_filepath,
+            precip_src_config=models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config),
+            out_shed_polygons=cc.config.output_sheds_filepath,
+            out_shed_polygons_simplify=cc.config.sheds_simplify,
+            override_skip=True,
+            try_multiprocessing=True
+        )
+        
+        # pp(cc.config)
+        # pp(cc.config.points)
+        # pp(cc.config.output_sheds_filepath)
+
+        output_config_filepath = Path(tmp_path) / 'drainit_config.json'
+        cc.save_config(str(output_config_filepath))
+
+        assert output_config_filepath.exists()
+
+        have_sheds = [p for p in cc.config.points if p.shed is not None]
+        assert len(have_sheds) == 8
+   
     def test_analytics(self, sample_completed_delineation_config, tmp_path):
         
         cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_completed_delineation_config))
@@ -208,4 +248,16 @@ class TestCapacityCalc:
         
         cc._export_culvert_featureclass()
 
+    def test_culvertcapacity_e2e(self, tmp_path, all_sample_inputs):
         
+        cc = workflows.CulvertCapacityCore(**all_sample_inputs)
+
+        workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
+
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
+        cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
+
+        cc.run()
+
+        # pp(cc.config)

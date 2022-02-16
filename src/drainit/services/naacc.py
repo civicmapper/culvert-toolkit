@@ -38,8 +38,12 @@ class NaaccEtl:
         output_path=None,
         lookup_naac_inlet_shape=NAACC_INLET_SHAPE_CROSSWALK,
         lookup_naac_inlet_type=NAACC_INLET_TYPE_CROSSWALK,
-        wkid=4326
-        ) ->  None :
+        wkid=4326,
+        naacc_x="GIS_Longitude",
+        naacc_y="GIS_Latitude",
+        naacc_uid="Naacc_Culvert_Id",
+        naacc_groupid="Survey_Id"
+        ) ->  None:
 
         self.naacc_csv_file=naacc_csv_file
         self.naacc_petl_table=naacc_petl_table
@@ -47,6 +51,11 @@ class NaaccEtl:
         self.lookup_naac_inlet_shape=lookup_naac_inlet_shape
         self.lookup_naac_inlet_type=lookup_naac_inlet_type
         self.wkid=wkid
+
+        self.naacc_x = naacc_x
+        self.naacc_y = naacc_y
+        self.naacc_uid = naacc_uid
+        self.naacc_groupid = naacc_groupid
 
         self.naacc_culvert_schema = NaaccCulvertSchema()
         self.capacity_schema = CapacitySchema()
@@ -655,8 +664,8 @@ class NaaccEtl:
             kwargs = dict(
                 uid=r["Naacc_Culvert_Id"],
                 group_id=r["Survey_Id"],
-                lat=float(r["GIS_Latitude"]),
-                lng=float(r["GIS_Longitude"]),
+                lng=float(r[self.naacc_x]),
+                lat=float(r[self.naacc_y]),
                 spatial_ref_code=self.wkid,
                 include=r['include'],
                 # raw=r

@@ -25,8 +25,9 @@ def max_return_calculator(list_of_overflows:List[float], list_of_frequencies: Li
     """
     handled_return_periods = []
     for freq, ovf in zip(list_of_frequencies, list_of_overflows):
-        if ovf >= 0: 
-            handled_return_periods.append(freq)
+        if ovf is not None:
+            if ovf >= 0: 
+                handled_return_periods.append(freq)
     if len(handled_return_periods) > 0:
         return max(handled_return_periods)
     return None

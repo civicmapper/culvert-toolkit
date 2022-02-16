@@ -320,11 +320,14 @@ class DrainItPoint:
             return
         # copy rainfall analytics 
         for r in self.shed.avg_rainfall:
-
+            if r.value:
+                avg_rainfall_cm = units.Quantity(f'{r.value} {r.units}').m_as('cm')
+            else:
+                avg_rainfall_cm = 0
             self.analytics.append(Analytics(
                 duration=r.dur,
                 frequency=r.freq,
-                avg_rainfall_cm=units.Quantity(f'{r.value} {r.units}').m_as('cm')
+                avg_rainfall_cm=avg_rainfall_cm
             ))
     
     def calculate_summary_analytics(self):

@@ -243,21 +243,22 @@ def peak_flow_calculator(
     :rtype: tuple[float, float]
     """
 
-    q_peak = -9999
-
-    # INIITAL CHECKS ------------------------------------------
-
-    # Skip calculation altogether if curve number or time of concentration are 0.
-    # (this indicates invalid data)
-    if avg_cn in [0,'',None]:
-        return None    
+    q_peak = None
 
     # -------------------------------------------
     # TIME OF CONCENTRATION
 
     if not tc_hr:
         tc_hr = time_of_concentration_calculator(max_flow_length_m, mean_slope_pct)
-    
+
+    # -------------------------------------------
+    # TIME OF CONCENTRATION    
+    # Skip calculation altogether if curve number or time of concentration are 0.
+    # (this indicates invalid data)
+    if avg_cn in [0,'',None]:
+        return q_peak, tc_hr
+
+
     # -------------------------------------------
     # STORAGE 
     
@@ -306,5 +307,6 @@ class Runoff:
     def calculate_peak_flow(self, **kwargs):
         # print(kwargs)
         results = peak_flow_calculator(**kwargs)
+        # print("peak_flow_calculator", results)
         self.culvert_peakflow_m3s, self.time_of_concentration_hr = results
         

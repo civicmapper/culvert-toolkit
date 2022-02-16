@@ -132,7 +132,7 @@ def retrieve_noaa_rainfall_pf_est(
 def retrieve_noaa_rainfall_rasters(
     out_folder,
     out_file_name="rainfall_rasters_config.json",
-    study="orb",
+    study="ne",
     url="https://hdsc.nws.noaa.gov/hdsc/pfds/newzip.php",
     ulm="a",
     ser="pds",

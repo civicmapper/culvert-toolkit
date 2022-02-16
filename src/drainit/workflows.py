@@ -206,22 +206,26 @@ class NaaccDataIngest(WorkflowManager):
             naacc = NaaccEtl(
                 naacc_csv_file=self.naacc_src_table,
                 output_path=output_csv,
-                wkid=self.crs_wkid
+                wkid=self.crs_wkid,
+                naacc_x=self.naacc_x,
+                naacc_y=self.naacc_y                
             )
         # anything else ends up here:
         else:
             t, fs, wkid = self.gp.create_petl_table_from_geodata(self.naacc_src_table, include_geom=True)
             self.crs_wkid = wkid
-
             # the lat/lon fields will have been derived from the input geodata's
             # geometry field instead of a table column; reset those params
             # TODO: handle from kwargs
             self.naacc_x = "x"
             self.naacc_y = "y"
+
             naacc = NaaccEtl(
                 naacc_petl_table=t,
                 output_path=output_csv,
                 wkid=self.crs_wkid,
+                naacc_x=self.naacc_x,
+                naacc_y=self.naacc_y
             )
 
         # extract the NAACC-compliant table to a PETL table, validating all fields *and* calculating
@@ -280,6 +284,7 @@ class RainfallDataGetter(WorkflowManager):
         aoi_geo,
         out_folder,
         out_file_name="rainfall_rasters_config.json",
+        target_crs_wkid=None,
         **kwargs
         ):
         """Tool for acquiring and persisting rainfall rasters for a study area
@@ -301,6 +306,7 @@ class RainfallDataGetter(WorkflowManager):
         self.out_file_name = out_file_name
         self.out_path = Path(out_folder) / out_file_name
         self.results = None
+        self.target_crs_wkid = target_crs_wkid
 
         self._run()
         print("saved to {0}".format(self.out_path))
@@ -317,6 +323,7 @@ class RainfallDataGetter(WorkflowManager):
             out_file_name=self.out_file_name, 
             study=r['reg']
         )
+        self.gp.create_geotiffs_from_noaa_rasters(rrc=rainfall_raster_config, target_crs_wkid=self.target_crs_wkid)
         self.results = rainfall_raster_config
         return self.results
 
@@ -452,8 +459,16 @@ class CulvertCapacityCore(WorkflowManager):
         # print("CulvertCapacityCore")
 
         super().__init__(**kwargs)
-        self.save_config_json_filepath = save_config_json_filepath
-        self.load_config(config_json_filepath=save_config_json_filepath)
+        
+        if save_config_json_filepath:
+            self.save_config_json_filepath = save_config_json_filepath
+            self.load_config(config_json_filepath=save_config_json_filepath)
+        else:
+            self.save_config_json_filepath = f'{self.gp._so("drainit_config", suffix="", where="folder")}.json'
+            self.load_config()
+
+        # initialize the appropriate GP module with the config variables
+        self.gp = GP(self.config) 
 
         # Field mappings
         # TODO: move to config and/or derive from dataclass metadata
@@ -496,10 +511,7 @@ class CulvertCapacityCore(WorkflowManager):
             "max_return_period": "max_return_period"
         })             
         self.frequency_fields = [f'y{freq}' for freq in FREQUENCIES]
-
-
-        # initialize the appropriate GP module with the config variables
-        self.gp = GP(self.config)
+        
     
     def load_points(self) -> Tuple[List[DrainItPoint], dict]:
         """workflow-specific approach to ETL of source point dataset. Handles a 
@@ -534,7 +546,7 @@ class CulvertCapacityCore(WorkflowManager):
             uid_field=self.config.points_id_fieldname,
             group_id_field=self.config.points_group_fieldname,
             is_naacc=True,
-            output_points_filepath=self.config.output_points_filepath
+            # output_points_filepath=self.config.output_points_filepath
         )
         
         # save those to the config
@@ -553,6 +565,8 @@ class CulvertCapacityCore(WorkflowManager):
         points_to_analyze: List[DrainItPoint] = [
             pt for pt in self.config.points if pt.include
         ]
+        self.gp.msg("--------------------------------")
+        self.gp.msg(f"analyzing {len(points_to_analyze)} points...")
 
         # ----------------------------------------------------------------------
         # ANALYZE all points individually
@@ -713,10 +727,13 @@ class CulvertCapacityCore(WorkflowManager):
             precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
             out_shed_polygons=self.config.output_sheds_filepath,
             out_shed_polygons_simplify=self.config.sheds_simplify,
-            override_skip=True # will run regardless of validation
+            override_skip=True, # will run regardless of validation,
+            try_multiprocessing=False
         )
+
         # assigns values to associated crossings and calculates peakflow vs capacity
         self._analyze_all_points()
+        
         # exports the result as a feature class, where each feature is a culvert
         culvert_table = self._export_culvert_featureclass()
         # saves that feature class to the config
@@ -727,7 +744,7 @@ class CulvertCapacityCore(WorkflowManager):
         # save the config
         if self.save_config_json_filepath:
             self.save_config(self.save_config_json_filepath)
-        
+
         return
 
 
