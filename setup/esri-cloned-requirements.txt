@@ -6,4 +6,5 @@ pint
 pytest
 requests
 tqdm
+mpire
 black
