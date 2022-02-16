@@ -7,8 +7,8 @@ from os import makedirs
 from copy import deepcopy
 from pathlib import Path
 from dataclasses import asdict, replace, fields
-from marshmallow import ValidationError
 from typing import Tuple, List
+from tempfile import mkdtemp
 from collections import Counter, OrderedDict
 
 import petl as etl
@@ -284,6 +284,7 @@ class RainfallDataGetter(WorkflowManager):
         aoi_geo,
         out_folder,
         out_file_name="rainfall_rasters_config.json",
+        target_raster=None,
         target_crs_wkid=None,
         **kwargs
         ):
@@ -307,6 +308,7 @@ class RainfallDataGetter(WorkflowManager):
         self.out_path = Path(out_folder) / out_file_name
         self.results = None
         self.target_crs_wkid = target_crs_wkid
+        self.target_raster = target_raster
 
         self._run()
         print("saved to {0}".format(self.out_path))
@@ -318,12 +320,25 @@ class RainfallDataGetter(WorkflowManager):
         r = retrieve_noaa_rainfall_pf_est(lat=coords['lat'], lon=coords['lon'])
         # pass the region to this function, which gets the rasters
         # and saves them to the specified folder
+        temp_out_folder = mkdtemp()
         rainfall_raster_config = retrieve_noaa_rainfall_rasters(
-            out_folder=self.out_folder, 
+            out_folder=temp_out_folder,
             out_file_name=self.out_file_name, 
             study=r['reg']
         )
-        self.gp.create_geotiffs_from_noaa_rasters(rrc=rainfall_raster_config, target_crs_wkid=self.target_crs_wkid)
+        # resample, reproject, and crop the downloaded rasters
+        rainfall_raster_config = self.gp.create_geotiffs_from_noaa_rasters(
+            rrc=rainfall_raster_config, 
+            out_folder=self.out_folder,
+            target_crs_wkid=self.target_crs_wkid, 
+            target_raster=self.target_raster
+        )
+        # save the config to JSON
+        with open(self.out_path, 'w') as fp:
+            json.dump(
+                RainfallRasterConfigSchema().dump(asdict(rainfall_raster_config)),
+                fp
+            )
         self.results = rainfall_raster_config
         return self.results
 

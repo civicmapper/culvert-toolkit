@@ -124,10 +124,10 @@ def retrieve_noaa_rainfall_pf_est(
     x = "{{{0}}}".format(", ".join([i.replace(";", "").replace(" = ", ": ") for i in r.text.split("\n") if i != '']))
     s = re.sub('(([a-z]\w*):)', '"\g<2>":', x)
     s = s.replace("\'", '"')
-    print(s)
+    # print(s)
     d = json.loads(s)
+    print(d)
     return d
-
 
 def retrieve_noaa_rainfall_rasters(
     out_folder,
@@ -267,25 +267,27 @@ def retrieve_noaa_rainfall_rasters(
         # make the request
         r = requests.post(url, data=data, stream=True)
         if r.ok:
-            # extract the response to the output folder
-            z = zipfile.ZipFile(BytesIO(r.content))
-            z.extractall(c.root)
+            try:
+                # extract the response to the output folder
+                z = zipfile.ZipFile(BytesIO(r.content))
+                z.extractall(c.root)
 
-            # list files in the zip folder
-            files_from_zip = z.NameToInfo.keys()
+                # list files in the zip folder
+                files_from_zip = z.NameToInfo.keys()
 
-            # create a lookup table that will help us find these later
-            for f in files_from_zip:
-                p = out_path / f
-                ext = p.suffix
-                # freq = re.findall(r'\d+', f)[0]
-                if ext == raster_format:
-                    c.rasters.append(
-                        RainfallRaster(str(p), freq, ext)
-                    )
+                # create a lookup table that will help us find these later
+                for f in files_from_zip:
+                    p = out_path / f
+                    ext = p.suffix
+                    # freq = re.findall(r'\d+', f)[0]
+                    if ext == raster_format:
+                        c.rasters.append(
+                            RainfallRaster(str(p), freq, ext)
+                        )
+            except Exception as e:
+                print("Download failed for {0} ({1}).\n{2}".format(data["freq"], data, e))
         else:
-            print("Download failed for {0} ({1})".format(data["freq"], data))
-            raise Exception
+            print("Download failed for {0} ({1})\n {2}".format(data["freq"], data, r.content))
 
     # out_full_path = out_path / "{0}_{1}.json".format(out_file_name, study)
 

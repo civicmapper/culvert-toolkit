@@ -59,7 +59,8 @@ from arcpy.management import (
     Merge,
     CalculateFields,
     CopyRaster,
-    Project
+    Project,
+    Resample
 )
 from arcpy import (
     GetCount_management, 
@@ -722,28 +723,62 @@ class GP:
             lat=centroid.centroid.Y
         )
 
-    def create_geotiffs_from_noaa_rasters(self, rrc: RainfallRasterConfig, target_crs_wkid=None, project_raster_kwargs=None):
+    def create_geotiffs_from_noaa_rasters(
+        self, 
+        rrc: RainfallRasterConfig, 
+        out_folder: str, 
+        target_crs_wkid=None, 
+        project_raster_kwargs=None, 
+        target_raster=None
+        ) -> RainfallRasterConfig:
         """Converts all rasters in the rainfall rasters config to geotiffs; 
         reprojects if a target crs is specified. Updates the path in the config 
         object"""
         for r in rrc.rasters:
-            i = Path(r.path)
-            n = f'{str(i.name)}.tif'
-            o = i.parent / n
+
+            p = Path(r.path)
+            n = f'{str(p.stem)}.tif'
+            o = Path(out_folder) / n
             self.msg(f"creating {n}")
+
+            if target_raster:
+                tsr = Raster(target_raster)
+                tsr.extent
+                tsr.meanCellWidth
+                tmp = self._so(n,where="in_memory")
+                # tmp = str(Path(out_folder) / f'temp_{str(p.stem)}.tif')
+                with EnvManager(
+                    snapRaster=tsr,
+                    extent=tsr.extent,
+                    overwriteOutput=True
+                ):
+                    ProjectRaster(str(p), tmp, out_coor_system=tsr.spatialReference)
+                with EnvManager(
+                    extent=tsr.extent,
+                    snapRaster=tsr,
+                    overwriteOutput=True
+                ):
+                    Resample(tmp, str(o), f'{tsr.meanCellWidth} {tsr.meanCellHeight}', "BILINEAR")
+
             if target_crs_wkid:
                 sr=SpatialReference(target_crs_wkid)
                 kwargs=dict(
-                    in_raster=str(i), 
+                    in_raster=str(p), 
                     out_raster=str(o), 
                     out_coor_system=sr
                 )
                 if project_raster_kwargs:
                     kwargs.update(project_raster_kwargs)
                 ProjectRaster(**kwargs)
-            else:
-                CopyRaster(str(i),str(o))
-            r.path = o
+
+            if not target_crs_wkid and not target_raster:
+                CopyRaster(str(p),str(o))
+
+            r.path = str(o)
+
+        rrc.root = out_folder
+        
+        return rrc
 
     # --------------------------------------------------------------------------
     # Public Pre-Processing methods for rasters
@@ -1443,7 +1478,8 @@ class GP:
             with EnvManager(
                 snapRaster=flow_direction_raster,
                 cellSize=flow_direction_raster,
-                extent=desc_flowdir.extent #"MAXOF"
+                extent=desc_flowdir.extent, #"MAXOF"
+                parallelProcessingFactor='100%'
             ):
                 # delineate one watershed
                 
@@ -1521,7 +1557,8 @@ class GP:
                 snapRaster=flow_direction_raster,
                 cellSize=flow_direction_raster,
                 overwriteOutput=True,
-                extent=one_shed.extent
+                extent=one_shed.extent,
+                parallelProcessingFactor='100%'
             ):
             
                 # clip the flow direction raster to the catchment area (zone value)
@@ -1555,7 +1592,8 @@ class GP:
                 cellSizeProjectionMethod="PRESERVE_RESOLUTION",
                 extent="MINOF",
                 cellSize=one_shed,
-                overwriteOutput=True
+                overwriteOutput=True,
+                parallelProcessingFactor='100%'
             ):
                 ZonalStatisticsAsTable(
                     one_shed, 
@@ -1588,7 +1626,8 @@ class GP:
                 # cellSizeProjectionMethod="PRESERVE_RESOLUTION",
                 extent="MINOF",
                 cellSize=rcn.meanCellWidth,
-                overwriteOutput=True
+                overwriteOutput=True,
+                parallelProcessingFactor='100%'
             ):
                 ZonalStatisticsAsTable(
                     one_shed,
@@ -1632,19 +1671,22 @@ class GP:
 
                 # calculate the average rainfall for the watershed
                 with EnvManager(
-                    # cellSizeProjectionMethod="PRESERVE_RESOLUTION",
+                    cellSizeProjectionMethod="CONVERT_UNITS",
                     extent=one_shed.extent,
-                    # cellSize=rrr.meanCellWidth,
-                    overwriteOutput=True
+                    cellSize="MINOF",
+                    overwriteOutput=True,
+                    parallelProcessingFactor='100%'
                 ):
-                    ZonalStatisticsAsTable(
+                    args = [
                         one_shed,
                         self.raster_field,
                         rrr,
                         table_rainfall_avg,
                         "DATA",
-                        "MEAN"
-                    )
+                        "MEAN"                        
+                    ]
+                    self.msg(f"DEBUG: {args}")
+                    ZonalStatisticsAsTable(*args)
 
                 rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
 
