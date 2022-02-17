@@ -4,6 +4,21 @@ _esri.py
 geoprocessing tasks with Esri Arcpy
 
 '''
+
+# __all__ = [
+#     'create_workspace',
+#     'detect_data_type',
+#     'create_petl_table_from_geodata',
+#     'create_dicts_from_geodata',
+#     'create_point_objects_from_geodata'
+#     'create_geodata_from_petl_table',
+#     'create_geotiffs_from_noaa_rasters',
+#     'get_centroid_of_feature_envelope',
+#     'delineation_and_analysis_in_parallel',    
+#     'msg',
+#     'so'
+# ]
+
 # standard library
 import os, time
 from collections import defaultdict
@@ -83,6 +98,8 @@ from ...models import WorkflowConfig, DrainItPoint, DrainItPointSchema, Shed, Ra
 from ..naacc import NaaccEtl
 
 
+
+
 units = pint.UnitRegistry()
 
 class GP:
@@ -120,7 +137,7 @@ class GP:
         if set_progressor_label:
             SetProgressorLabel(text)
 
-    def _so(self, prefix, suffix="unique", where="fgdb"):
+    def _so(self, prefix, suffix="unique", where="in_memory"):
         """complete path generator for Scratch Output (for use with ArcPy GP tools)
 
         Generates a string represnting a complete and unique file path, which is
@@ -988,445 +1005,61 @@ class GP:
             "slope_raster": slope_raster,
         }
 
-    # --------------------------------------------------------------------------
-    # Analytics for delineation and data derivation in Series
-    # Used for *catch-basin* analysis; works with a single watershed raster 
-    # that contains multiple watersheds
-
-    def _delineate_all_catchments(
-        self, 
-        inlets, 
-        flow_direction_raster, 
-        pour_point_field,
-        ):
-        """Delineate the catchment area(s) for the inlet(s), and provide a count.
-
-        :param inlets: path to point shapefile or feature class representing inlet location(s) from which catchment area(s) will be determined. Can be one or many inlets.
-        :type inlets: str
-        :param flow_direction_raster: [description]
-        :type flow_direction_raster: [type]
-        :param pour_point_field: [description]
-        :type pour_point_field: [type]
-        :return: a python dictionary structured as follows: 
-            {
-                "catchments": <path to the catchments raster created by the Arcpy.sa Watershed function>,
-                "count": <count (int) of the number of inlets/catchments>
-            }
-        :rtype: dict
-        """
-
-        # delineate the watershed(s) for all the inlets simultaneously. The 
-        # resulting basins will have no overlap. 
-        all_sheds = Watershed(
-            in_flow_direction_raster=flow_direction_raster,
-            in_pour_point_data=inlets,
-            pour_point_field=pour_point_field
-        )
-
-        if not all_sheds.hasRAT:
-            BuildRasterAttributeTable_management(all_sheds, "Overwrite")
-
-        # save the catchment raster
-        self.all_sheds_raster = self._so("catchments","timestamp","fgdb")
-        all_sheds.save(self.all_sheds_raster)
-        self.msg("Catchments raster saved:\n\t{0}".format(self.config.all_sheds_raster))
-
-        self.config.all_sheds_raster = self.all_sheds_raster
-
-        return self.all_sheds_raster
-
-    def _calc_catchment_flowlength_max(self, 
-        catchment_area_raster,
-        zone_value,
-        flow_direction_raster,
-        leng_conv_factor=1 #???
-        ):
-        
-        """
-        Derives flow length for a *single catchment area using a provided zone
-        value (the "Value" column of the catchment_area_raster's attr table).
-        
-        Inputs:
-            catchment_area: *raster* representing the catchment area(s)
-            zone_value: an integer from the "Value" column of the
-                catchment_area_raster's attr table.
-            flow_direction_raster: flow direction raster for the broader
-        outputs:
-            returns the 
-        """
-        # use watershed raster to clip flow_direction, slope rasters
-        # make a raster object with the catchment_area_raster raster
-        if not isinstance(catchment_area_raster, Raster):
-            c = Raster(catchment_area_raster)
-        else:
-            c = catchment_area_raster    
-        # clip the flow direction raster to the catchment area (zone value)
-        fd = SetNull(c != zone_value, flow_direction_raster)
-        # calculate flow length
-        fl = FlowLength(fd,"UPSTREAM")
-        # determine maximum flow length
-        fl_max = fl.maximum 
-        #TODO: convert length to ? using leng_conv_factor (detected from the flow direction raster)
-        fl_max = fl_max * leng_conv_factor
-            
-        return fl_max
-
-    def _calc_catchment_average_rainfall(self, catchment_area_raster, zone_value, rainfall_rasters=[]):
-        return
-
-    def _derive_data_for_all_catchments(self, 
-        catchment_areas,
-        flow_direction_raster,
-        slope_raster,
-        curve_number_raster,
-        area_conv_factor=0.00000009290304,
-        leng_conv_factor=1,
-        out_catchment_polygons=None,
-        precip_table=None,
-        precip_raster_lookup=None,
-        out_catchment_polygons_simplify=False
-        ):
-        """Generates statistics for all catchments using spatially-based 
-        characteristics.
-
-        :param catchment_areas: [description]
-        :type catchment_areas: [type]
-        :param flow_direction_raster: [description]
-        :type flow_direction_raster: [type]
-        :param slope_raster: [description]
-        :type slope_raster: [type]
-        :param curve_number_raster: [description]
-        :type curve_number_raster: [type]
-        :param area_conv_factor: for converting the area of the catchments to Sq. Km, which is expected by the core business logic. By default, the factor converts from square feet , defaults to 0.00000009290304
-        :type area_conv_factor: float, optional
-        :param leng_conv_factor: [description], defaults to 1
-        :type leng_conv_factor: int, optional
-        :param out_catchment_polygons: will optionally return a catchment polygon feature class, defaults to None
-        :type out_catchment_polygons: [type], optional
-        :param precip_table: [description], defaults to None
-        :type precip_table: dict, optional
-        :param precip_raster_lookup: [description], defaults to None
-        :type precip_raster_lookup: dict, optional,
-        :param out_catchment_polygons_simplify: [description], defaults to None
-        :type out_catchment_polygons_simplify: bool, optional    
-        :return: [description]
-        :rtype: [type]
-
-        Output: an array of records containing info about each inlet's catchment, e.g.:
-            [
-                {
-                    "id": <ID value from pour_point_field (spec'd in catchment_delineation func)> 
-                    "area_sqkm": <area of inlet's catchment in square km>
-                    "avg_slope": <average slope of DEM in catchment>
-                    "avg_cn": <average curve number in the catchment>
-                    "max_fl": <maximum flow length in the catchment>
-                    "precip_table": <catchment-specific precipitation estimates>
-                },
-                {...},
-                ...
-            ]
-
-        NOTE: For tools that handle multiple inputs quickly, we execute here (e.g., zonal
-        stats). For those we need to run on individual catchments, this parses the
-        catchments raster and passes individual catchments, along with other required 
-        data, to the calc_catchment_flowlength_max function.
-
-        """
-
-        # store the results, keyed by a catchment ID (int) that comes from the
-        # catchments layer gridcode
-        results = defaultdict(dict)
-        
-        # ------------------------------------------------------------------------
-        # CATCHMENTS 
-
-        # make a raster object with the catchment raster
-        if not isinstance(catchment_areas,Raster):
-            c = Raster(catchment_areas)
-        else:
-            c = catchment_areas
-        # if the catchment raster does not have an attribute table, build one
-        if not c.hasRAT:
-            BuildRasterAttributeTable_management(c, "Overwrite")
-
-        # make a table view of the catchment raster
-        catchment_table = 'catchment_table'
-        MakeTableView_management(c, catchment_table) #, {where_clause}, {workspace}, {field_info})
-
-        # ------------------------------------------------------------------------
-        # FLOW LENGTH
-        # calculate flow length for each zone. Zones must be isolated as individual
-        # rasters for this to work. We handle that with calc_catchment_flowlength_max()
-        # using the table to get the zone values
-
-        catchment_count = int(GetCount_management(catchment_table).getOutput(0))
-        with SearchCursor(catchment_table, [self.raster_field]) as catchments:
-
-            # TODO: implement multi-processing for this loop.
-            
-            ResetProgressor()
-            SetProgressor('step', "Mapping flow length for catchments", 0, catchment_count, 1)
-            # self.msg("Mapping flow length for catchments")
-
-            for idx, each in enumerate(catchments):
-                this_id = each[0]
-                # self.msg("{0}".format(this_id))
-                # calculate flow length for each "zone" in the raster
-                fl_max = self._calc_catchment_flowlength_max(
-                    catchment_areas,
-                    this_id,
-                    flow_direction_raster,
-                    leng_conv_factor
-                )
-                results[this_id]["max_fl"] = self._clean(fl_max)
-                # if this_id in results.keys():
-                #     results[this_id]["max_fl"] = self.clean(fl_max)
-                # else:
-                #     results[this_id] = {"max_fl": self.clean(fl_max)}
-                SetProgressorPosition(idx+1)
-            ResetProgressor()
-
-        # ------------------------------------------------------------------------
-        # AVERAGE RAINFALL (FROM RAINFALL RASTERS, IF PROVIDED)
-
-        # calculate average rainfall within each catchment for all catchments,
-        # but only if this parameter was provided:
-        if precip_raster_lookup:
-
-            for p, path_to_rainfall_raster in precip_raster_lookup.items():
-
-                # calculate average curve number within each catchment for all catchments
-                table_rainfall_avg = self._so("rainfall_avg", p, "fgdb")
-                self.msg("Average Rainfall Table: {0}".format(table_rainfall_avg))
-                ZonalStatisticsAsTable(
-                    catchment_areas, 
-                    self.raster_field, 
-                    path_to_rainfall_raster, 
-                    table_rainfall_avg, 
-                    "DATA", "MEAN"
-                )
-                # push table into results object
-                with SearchCursor(table_rainfall_avg, [self.raster_field,"MEAN"]) as c:
-                    for r in c:
-                        this_id = r[0]
-                        this_val= r[1]
-                        results[this_id]['rainfall'][p] = self._clean(this_val)
-        elif precip_table:
-            # TODO: allow fall-back to a NOAA precip table here
-            # For now, this won't work.
-            for h in QP_HEADER:
-                results[this_id][h]['rainfall'] = {}
-        else:
-            for h in QP_HEADER:
-                results[this_id][h]['rainfall'] = {}
-
-        # ------------------------------------------------------------------------
-        # AVERAGE CURVE NUMBER
-
-        # calculate average curve number within each catchment for all catchments
-        table_cns = self._so("cn_zs_table","timestamp","fgdb")
-        self.msg("CN Table: {0}".format(table_cns))
-        ZonalStatisticsAsTable(catchment_areas, self.raster_field, curve_number_raster, table_cns, "DATA", "MEAN")
-        # push table into results object
-        with SearchCursor(table_cns,[self.raster_field,"MEAN"]) as c:
-            for r in c:
-                this_id = r[0]
-                this_val = r[1]
-                results[this_id]["avg_cn"] = self._clean(this_val)
-                # if this_id in results.keys():
-                #     results[this_id]["avg_cn"] = self.clean(this_area)
-                # else:
-                #     results[this_id] = {"avg_cn": self.clean(this_area)}
-
-        # ------------------------------------------------------------------------
-        # AVERAGE SLOPE
-        # calculate average slope within each catchment for all catchments
-
-        if slope_raster:
-
-            table_slopes = self._so("slopes_zs_table","timestamp","fgdb")
-            self.msg("Slopes Table: {0}".format(table_slopes))
-            ZonalStatisticsAsTable(catchment_areas, self.raster_field, slope_raster, table_slopes, "DATA", "MEAN")
-            # push table into results object
-            with SearchCursor(table_slopes,[self.raster_field,"MEAN"]) as c:
-                for r in c:
-                    this_id = r[0]
-                    this_val = r[1]
-                    results[this_id]["avg_slope"] = self._clean(this_val)
-                    # if this_id in results.keys():
-                    #     results[this_id]["avg_slope"] = self.clean(this_area)
-                    # else:
-                    #     results[this_id] = {"avg_slope": self.clean(this_area)}
-        # if the slope raster was not provided, we fall-back to a simplified 
-        # calculation: catchment_max_elevation - catchment_min_elevation) / max_flow_length
-        else: 
-            table_slopes_alt = self._so("slopes_zs_table","timestamp","fgdb")
-            self.msg("Slopes Table (Alternate Method): {0}".format(table_slopes_alt))
-            ZonalStatisticsAsTable(catchment_areas, self.raster_field, slope_raster, table_slopes_alt, "DATA", "MEAN")
-            # push table into results object
-            with SearchCursor(table_slopes_alt, [self.raster_field,"MEAN"]) as c:
-                for r in c:
-                    this_id = r[0]
-                    this_val = r[1]
-                    results[this_id]["avg_slope"] = self._clean(this_val)        
-
-            
-        # ------------------------------------------------------------------------
-        # AREA
-
-        # calculate area of each catchment
-        #ZonalGeometryAsTable(catchment_areas,"Value","output_table") # crashes like a mfer
-        cp = self._so("catchmentpolygons","timestamp","fgdb")
-        #RasterToPolygon copies our ids from self.raster_field into "gridcode"
-        if out_catchment_polygons_simplify:
-            simplify = "SIMPLIFY"
-        else:
-            simplify = "NO_SIMPLIFY"
-        RasterToPolygon(catchment_areas, cp, simplify, self.raster_field)
-
-        # Dissolve the converted polygons, since some of the raster zones may have corner-corner links
-        if not out_catchment_polygons:
-            cpd = self._so("catchmentpolygonsdissolved","timestamp","fgdb")
-        else:
-            cpd = out_catchment_polygons
-        Dissolve_management(
-            in_features=cp,
-            out_feature_class=cpd,
-            dissolve_field="gridcode",
-            multi_part="MULTI_PART"
-        )
-
-        # get the area for each record, and push into results object
-        with SearchCursor(cpd,["gridcode","SHAPE@AREA"]) as c:
-            for r in c:
-                this_id = r[0]
-                this_area = r[1] * area_conv_factor
-                if this_id in results.keys():
-                    results[this_id]["area_up"] = self._clean(this_area)
-                else:
-                    results[this_id] = {"area_up": self._clean(this_area)}
-        
-        # flip results object into a records-style array of dictionaries
-        # (this makes conversion to table later on simpler)
-        # self.msg(results,"warning")
-        records = []
-        for k in results.keys():
-            record = {
-                "area_up":0,
-                "avg_slope":0,
-                "max_fl":0,
-                "avg_cn":0,
-                "tc_hr":0,
-                "rainfall": {}
-            }
-            for each_result in record.keys():
-                if each_result in results[k].keys():
-                    record[each_result] = results[k][each_result]
-            record["id"] = k
-            records.append(record)
-        
-        if out_catchment_polygons:
-            return records, cpd
-        else:
-            return records, None
-
-    def catchment_delineation_in_series(
-        self,
-        points_featureset,
-        raster_flowdir_filepath,
-        points_id_fieldname,
-        **kwargs
-        ):
-
-        from arcpy import env
-
-        self.msg('Setting environment parameters...', set_progressor_label=True)
-        env_raster = Raster(raster_flowdir_filepath)
-        env.snapRaster = env_raster
-        env.cellSize = (env_raster.meanCellHeight + env_raster.meanCellWidth) / 2.0
-        env.extent = env_raster.extent
-
-        if isinstance(points_featureset, dict):
-            points_featureset = FeatureSet(json.dumps(points_featureset))
-
-        delineations = self._delineate_all_catchments(
-            inlets=points_featureset,
-            flow_direction_raster=raster_flowdir_filepath,
-            pour_point_field=points_id_fieldname,
-            **kwargs
-        )
-
-    def derive_data_from_catchments_in_series(self):
-
-        # -----------------------------------------------------
-        # SET ENVIRONMENT VARIABLES
-
-        self.msg('Setting environment parameters...', set_progressor_label=True)
-        env_raster = Raster(self.config.raster_flowdir_filepath)
-        env.snapRaster = env_raster
-        env.cellSize = (env_raster.meanCellHeight + env_raster.meanCellWidth) / 2.0
-        env.extent = env_raster.extent
-
-        # --------------------------------------------------------------------------
-        # DETERMINE UNITS OF INPUT DATASETS
-        # Determine the units from the input flow-direction raster's spatial ref.
-        # This is used to determine the conversion factor, if any, that needs
-        # to be applied to measurements taken from the input rasters
-        # before calculating peak flow
-
-        units = pint.UnitRegistry()
-
-        self.msg('Determing units of reference raster dataset...', set_progressor_label=True)
-
-        acf, lcf = None, None
-        area_conv_factor, leng_conv_factor = 1, 1
-
-        # get the name of the linear unit from env_raster
-        unit_name = env_raster.spatialReference.linearUnitName
-
-        # attempt to auto-dectect unit names with the Pint package, and get the
-        # appropriate conversion factors for linear and area units
-        if unit_name:
-            if 'foot'.upper() in unit_name.upper():
-                acf = 1 * units.square_foot
-                lcf = 1 * units.foot
-                self.msg("...auto-detected 'feet' from the source data")
-            elif 'meter'.upper() in unit_name.upper():
-                acf = 1 * (units.meter ** 2)
-                lcf = 1 * units.meter
-                self.msg("...auto-detected 'meters' from the source data")
-            else:
-                self.msg("Could not determine conversion factor for '{0}'. You may need to reproject your data.".format(unit_name))
-        else:
-            self.msg("Reference raster dataset has no spatial reference information.")
-        # set the conversion factors for length an area based on the detected units
-        if acf and lcf:
-            # get correct conversion factor for casting units to that required by equations in calc.py
-            area_conv_factor = acf.to(units.kilometer ** 2).magnitude #square kilometers
-            leng_conv_factor = lcf.to(units.meter).magnitude #meters
-            self.msg("Area conversion factor: {0}".format(area_conv_factor))
-            self.msg("Length conversion factor: {0}".format(leng_conv_factor))
-            
-            self.config.area_conv_factor = area_conv_factor
-            self.config.leng_conv_factor = leng_conv_factor
-
-        self._derive_data_for_all_catchments(
-            catchment_areas=self.config.sheds,
-            flow_direction_raster=self.config.raster_flowdir_filepath,
-            slope_raster=self.config.raster_slope_filepath,
-            curve_number_raster=self.config.raster_curvenumber_filepath,
-            area_conv_factor=self.config.area_conv_factor,
-            leng_conv_factor=self.config.leng_conv_factor,
-            out_catchment_polygons=None,
-            precip_table=None,
-            precip_raster_lookup=None,
-            out_catchment_polygons_simplify=False            
-        )
 
     # --------------------------------------------------------------------------
     # Analytics for delineation and data derivation in Parallel
     # Used for *culvert* analysis; works with multiple overlapping watershed 
     # rasters, where each raster contains only a single watershed
+
+    @staticmethod
+    def _calc_rainfall_avg(rr, table_rainfall_avg, one_shed_filepath, raster_field):
+
+
+        # self.msg(f"...{rr['freq']} year")
+        print(f"...{rr['freq']} year")
+        # print(rr)
+        
+        rrr = Raster(rr['path'])
+
+        # calculate the average rainfall for the watershed
+        with EnvManager(
+            cellSizeProjectionMethod="CONVERT_UNITS",
+            extent="MINOF",
+            cellSize="MINOF",
+            overwriteOutput=True,
+            # parallelProcessingFactor='100%'
+        ):
+            args = [
+                Raster(one_shed_filepath),
+                raster_field,
+                rrr,
+                table_rainfall_avg,
+                "DATA",
+                "MEAN"                        
+            ]
+            # self.msg(f"DEBUG: {args}")
+            ZonalStatisticsAsTable(*args)
+
+        rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
+
+        # rainfall_units = "inches"
+
+        if len(rainfall_stats['features']) > 0:
+            # there shouldn't be multiple polygon features here, but this 
+            # willhandle edge cases:
+            means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
+            avg_rainfall = mean(means)
+            # NOAA Atlas 14 precip values are in 1000ths/inch, 
+            # converted to inches using Pint:
+            # avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
+        else:
+            avg_rainfall = None
+
+        return dict(
+            freq=rr['freq'], 
+            dur='24hr', 
+            value=avg_rainfall
+        )
 
     def _delineate_and_analyze_one_catchment(
         self,
@@ -1441,7 +1074,8 @@ class GP:
         rainfall_rasters: tuple = None,
         out_catchment_polygons_simplify: bool = False,
         save_featureset: bool = False,
-        pour_point_field: str = None
+        pour_point_field: str = None,
+        use_multiprocessing: bool = False
         # rainfall_unit_conversion_factor = 0.1,
         ) -> Shed:
         """perform delineation one point and analysis on the watershed
@@ -1475,7 +1109,7 @@ class GP:
         ## ---------------------------------------------------------------------
         # DELINEATION & CONVERSION
         with Timer(name="delineating catchment", text="{name}: {:.1f} seconds", logger=self.msg):
-            # self.msg('delineating catchment')
+            self.msg('delineating catchment')
             with EnvManager(
                 snapRaster=flow_direction_raster,
                 cellSize=flow_direction_raster,
@@ -1545,6 +1179,92 @@ class GP:
                     areas.append(this_area)
             
             shed.area_sqkm = sum(areas)
+
+
+        ## ---------------------------------------------------------------------
+        # calculate average rainfall for each storm frequency
+
+        with Timer(name="calculating average rainfall", text="{name}: {:.1f} seconds", logger=self.msg):
+                    
+            self.msg('calculating average rainfall')
+
+            if use_multiprocessing:
+
+                with WorkerPool() as pool:
+                    results = pool.map(
+                        self._calc_rainfall_avg,
+                        [
+                            (
+                                rr, 
+                                self._so("shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq'])),
+                                shed.filepath_raster,
+                                self.raster_field
+                            ) 
+                            for rr in rainfall_rasters
+                        ]
+                    )
+                rainfalls = [Rainfall(**result) for result in results] 
+
+            else:
+                rainfalls = []
+                # for each rainfall raster representing a storm frequency:
+                for rr in rainfall_rasters:
+
+                    self.msg(f"...{rr['freq']} year")
+                    # print(rr)
+
+                    table_rainfall_avg = self._so(
+                        "shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq']),
+                    )
+                    
+                    rrr = Raster(rr['path'])
+
+                    # calculate the average rainfall for the watershed
+                    with EnvManager(
+                        cellSizeProjectionMethod="CONVERT_UNITS",
+                        extent="MINOF",
+                        cellSize="MINOF",
+                        overwriteOutput=True,
+                        # parallelProcessingFactor='100%'
+                    ):
+                        args = [
+                            one_shed,
+                            self.raster_field,
+                            rrr,
+                            table_rainfall_avg,
+                            "DATA",
+                            "MEAN"                        
+                        ]
+                        # self.msg(f"DEBUG: {args}")
+                        ZonalStatisticsAsTable(*args)
+
+                    rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
+
+                    # rainfall_units = "inches"
+
+                    if len(rainfall_stats['features']) > 0:
+                        # there shouldn't be multiple polygon features here, but this 
+                        # willhandle edge cases:
+                        means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
+                        avg_rainfall = mean(means)
+                        # NOAA Atlas 14 precip values are in 1000ths/inch, 
+                        # converted to inches using Pint:
+                        # avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
+                    else:
+                        avg_rainfall = None
+
+                    # self.msg(rr['freq'], "year event:", avg_rainfall)
+                    rainfalls.append(
+                        Rainfall(
+                            freq=rr['freq'], 
+                            dur='24hr', 
+                            value=avg_rainfall
+                            # units=rainfall_units
+                        )
+                    )
+                    
+                
+            shed.avg_rainfall = sorted(rainfalls, key=lambda x: x.freq)
 
         
         ## ---------------------------------------------------------------------
@@ -1664,75 +1384,6 @@ class GP:
                     means = [f['attributes']['MEAN'] for f in cn_stats['features']]
                     shed.avg_cn = mean(means)
         
-        
-        ## ---------------------------------------------------------------------
-        # calculate average rainfall for each storm frequency
-
-        
-        self.msg("calculating average rainfall")
-
-        with Timer(name="calculating average rainfall", text="{name}: {:.1f} seconds", logger=self.msg):
-        
-            rainfalls = []
-            
-            # self.msg('calculating average rainfall')
-
-            # for each rainfall raster representing a storm frequency:
-            for rr in rainfall_rasters:
-                self.msg(f"...{rr['freq']} year")
-                # print(rr)
-
-                table_rainfall_avg = self._so(
-                    "shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq']),
-                )
-                
-                rrr = Raster(rr['path'])
-
-                # calculate the average rainfall for the watershed
-                with EnvManager(
-                    cellSizeProjectionMethod="CONVERT_UNITS",
-                    extent="MINOF",
-                    cellSize="MINOF",
-                    overwriteOutput=True,
-                    # parallelProcessingFactor='100%'
-                ):
-                    args = [
-                        one_shed,
-                        self.raster_field,
-                        rrr,
-                        table_rainfall_avg,
-                        "DATA",
-                        "MEAN"                        
-                    ]
-                    self.msg(f"DEBUG: {args}")
-                    ZonalStatisticsAsTable(*args)
-
-                rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
-
-                # rainfall_units = "inches"
-
-                if len(rainfall_stats['features']) > 0:
-                    # there shouldn't be multiple polygon features here, but this 
-                    # willhandle edge cases:
-                    means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
-                    avg_rainfall = mean(means)
-                    # NOAA Atlas 14 precip values are in 1000ths/inch, 
-                    # converted to inches using Pint:
-                    # avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
-                else:
-                    avg_rainfall = None
-
-                # self.msg(rr['freq'], "year event:", avg_rainfall)
-                rainfalls.append(
-                    Rainfall(
-                        freq=rr['freq'], 
-                        dur='24hr', 
-                        value=avg_rainfall
-                        # units=rainfall_units
-                    )
-                )
-                
-            shed.avg_rainfall = sorted(rainfalls, key=lambda x: x.freq)
 
         #-----------------------------------------------------------------------
         # add all derived properties to the vector file output
@@ -1776,8 +1427,9 @@ class GP:
 
         return shed
 
+    @staticmethod
     def _delineation_and_analysis_in_parallel_job(
-        self,
+        cls,
         point: dict,
         pour_point_field: str,
         flow_direction_raster: str,
@@ -1793,14 +1445,17 @@ class GP:
 
         if not override_skip and not point.include:
 
+            
+
             # create a FeatureSet for each individual Point object
             # this lets us keep our Point objects around while feeding
             # the GP tools a native input format.
-            point_geodata = self.create_geodata_from_points([point], as_dict=False)
+            point_geodata = cls.create_geodata_from_points([point], as_dict=False)
 
             # delineate a catchment/basin/watershed ("shed") and derive 
             # some data from that, storing it in a Shed object.
-            shed = self._delineate_and_analyze_one_catchment(
+            shed = cls._delineate_and_analyze_one_catchment(
+                cls,
                 uid=point.uid,
                 group_id=point.group_id,
                 point_geodata=point_geodata,
@@ -1830,84 +1485,85 @@ class GP:
         out_shed_polygons: str = None,
         out_shed_polygons_simplify: bool = False,
         override_skip: bool = False,
-        try_multiprocessing: bool = False
+        use_multiprocessing: bool = False
         ) -> Tuple[DrainItPoint]:
 
         shed_geodata = []
 
-        if try_multiprocessing:
+        # if use_multiprocessing:
 
-            args = [
-                (
-                    DrainItPointSchema().dump(p),
-                    pour_point_field,
-                    flow_direction_raster,
-                    flow_length_raster,
-                    slope_raster,
-                    curve_number_raster,
-                    precip_src_config,
-                    out_shed_polygons,
-                    out_shed_polygons_simplify,
-                    override_skip
-                )
-                for p in points
-            ]
+        #     args = [
+        #         (
+        #             DrainItPointSchema().dump(p),
+        #             pour_point_field,
+        #             flow_direction_raster,
+        #             flow_length_raster,
+        #             slope_raster,
+        #             curve_number_raster,
+        #             precip_src_config,
+        #             out_shed_polygons,
+        #             out_shed_polygons_simplify,
+        #             override_skip
+        #         )
+        #         for p in points
+        #     ]
             
-            with WorkerPool(enable_insights=True) as pool:
-                results = pool.map(
-                    self._delineation_and_analysis_in_parallel_job,
-                    args
-                )
+        #     with WorkerPool() as pool:
+        #         results = pool.map(
+        #             self._delineation_and_analysis_in_parallel_job,
+        #             args
+        #         )
 
-            # new points list created here:
-            points = []
-            for point in results:
-                pt = DrainItPointSchema().load(point)
-                points.append(pt)
-                shed_geodata.append(pt.shed.filepath_vector)
+        #     # new points list created here:
+        #     points = []
+        #     for point in results:
+        #         pt = DrainItPointSchema().load(point)
+        #         points.append(pt)
+        #         shed_geodata.append(pt.shed.filepath_vector)
 
-        else:
+        # else:
 
-            # for each Point in the input points list
-            for point in points:
+        # for each Point in the input points list
+        for point in points:
 
-                self.msg("--------------------------------")
-                
-
-                # if point is marked as not include and override_skip is false,
-                # skip this iteration.
-                if not override_skip and not point.include:
-                    continue
-                
-                self.msg("Analyzing point {0} | group {1}".format(point.uid, point.group_id))
-                # with Timer(name="Analyzing point {0} | group {1}".format(point.uid, point.group_id), text="{name}: {:.1f} seconds", logger=self.msg):
-                # create a FeatureSet for each individual Point object
-                # this lets us keep our Point objects around while feeding
-                # the GP tools a native input format.
-                # desc_flowdir = Describe(flow_direction_raster)
-                point_geodata = self.create_geodata_from_points([point], as_dict=False) #, output_crs_wkid=desc_flowdir.spatialReference.factoryCode)
-                # self.msg(point_geodata)
-
-                # delineate a catchment/basin/watershed ("shed") and derive 
-                # some data from that, storing it in a Shed object.
+            self.msg("--------------------------------")
             
-                shed = self._delineate_and_analyze_one_catchment(
-                    uid=point.uid,
-                    group_id=point.group_id,
-                    point_geodata=point_geodata,
-                    pour_point_field=pour_point_field,
-                    flow_direction_raster=flow_direction_raster,
-                    flow_length_raster=flow_length_raster,
-                    slope_raster=slope_raster,
-                    curve_number_raster=curve_number_raster,
-                    rainfall_rasters=precip_src_config['rasters'],
-                    out_shed_polygon=None,
-                    out_catchment_polygons_simplify=out_shed_polygons_simplify
-                )
 
-                # save that to the Point object
-                point.shed = shed
-                shed_geodata.append(shed.filepath_vector)
+            # if point is marked as not include and override_skip is false,
+            # skip this iteration.
+            if not override_skip and not point.include:
+                continue
+            
+            self.msg("Analyzing point {0} | group {1}".format(point.uid, point.group_id))
+            # with Timer(name="Analyzing point {0} | group {1}".format(point.uid, point.group_id), text="{name}: {:.1f} seconds", logger=self.msg):
+            # create a FeatureSet for each individual Point object
+            # this lets us keep our Point objects around while feeding
+            # the GP tools a native input format.
+            # desc_flowdir = Describe(flow_direction_raster)
+            point_geodata = self.create_geodata_from_points([point], as_dict=False) #, output_crs_wkid=desc_flowdir.spatialReference.factoryCode)
+            # self.msg(point_geodata)
+
+            # delineate a catchment/basin/watershed ("shed") and derive 
+            # some data from that, storing it in a Shed object.
+        
+            shed = self._delineate_and_analyze_one_catchment(
+                uid=point.uid,
+                group_id=point.group_id,
+                point_geodata=point_geodata,
+                pour_point_field=pour_point_field,
+                flow_direction_raster=flow_direction_raster,
+                flow_length_raster=flow_length_raster,
+                slope_raster=slope_raster,
+                curve_number_raster=curve_number_raster,
+                rainfall_rasters=precip_src_config['rasters'],
+                out_shed_polygon=None,
+                out_catchment_polygons_simplify=out_shed_polygons_simplify,
+                use_multiprocessing=use_multiprocessing
+            )
+
+            # save that to the Point object
+            point.shed = shed
+            shed_geodata.append(shed.filepath_vector)
             
         # merge the sheds into a single layer
         if out_shed_polygons:
