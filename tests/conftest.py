@@ -71,7 +71,8 @@ def sample_landscape_data(tmp_path):
     yield dict(
         flowdir = d / "dem_filled_flowdir.tif",
         curveno = d / "curveno.tif",
-        slope = d / "dem_filled_slope.tif"
+        slope = d / "dem_filled_slope.tif",
+        flowlen = d / "dem_filled_flowlen.tif"
     )
     # shutil.rmtree(d)
 

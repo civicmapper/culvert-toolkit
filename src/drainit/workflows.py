@@ -48,6 +48,7 @@ class WorkflowManager:
         self,
         config_json_filepath=None,
         use_esri=USE_ESRI, 
+        use_multiprocessing=False,
         **kwargs
     ):
         # print("WorkflowManager")
@@ -75,6 +76,7 @@ class WorkflowManager:
         
         self.using_esri = use_esri
         self.using_wbt = not use_esri
+        self.use_multiprocessing = use_multiprocessing
         self.units = pint.UnitRegistry()
         self.gp = GP(self.config)
 
@@ -368,81 +370,81 @@ class CurveNumberMaker(WorkflowManager):
 #     """
 
 
-class PeakFlowCore(WorkflowManager):
+# class PeakFlowCore(WorkflowManager):
 
-    def __init__(
-        self, 
-        precip_src_config_filepath,
-        save_config_json_filepath=None,
-        **kwargs
-    ):
-        """Core Peak Flow workflow.
+#     def __init__(
+#         self, 
+#         precip_src_config_filepath,
+#         save_config_json_filepath=None,
+#         **kwargs
+#     ):
+#         """Core Peak Flow workflow.
 
-        :param save_config_json_filepath: save workflow config to a file, defaults to None
-        :type save_config_json_filepath: str, optional
-        :param kwargs: relevant properties in the WorkflowConfig object
-        :type kwargs: kwargs, optional 
-        """
+#         :param save_config_json_filepath: save workflow config to a file, defaults to None
+#         :type save_config_json_filepath: str, optional
+#         :param kwargs: relevant properties in the WorkflowConfig object
+#         :type kwargs: kwargs, optional 
+#         """
 
-        super().__init__(**kwargs)
-        self.save_config_json_filepath = save_config_json_filepath
-        self.load_config(precip_src_config_filepath=precip_src_config_filepath)
+#         super().__init__(**kwargs)
+#         self.save_config_json_filepath = save_config_json_filepath
+#         self.load_config(precip_src_config_filepath=precip_src_config_filepath)
 
-        # initialize the appropriate GP object with the config variables
-        self.gp = GP(self.config)
+#         # initialize the appropriate GP object with the config variables
+#         self.gp = GP(self.config)
     
-    def load_points(self):
-        self.gp.create_point_objects_from_geodata()
-        pass
+#     def load_points(self):
+#         self.gp.create_point_objects_from_geodata()
+#         pass
     
-    def run_core_workflow(self):
+#     def run_core_workflow(self):
 
-        self.load_points()
+#         self.load_points()
 
-        # delineate watersheds
-        self.gp.catchment_delineation_in_series()
+#         # delineate watersheds
+#         self.gp.catchment_delineation_in_series()
 
-        # derive data from catchments
-        self.gp.derive_data_from_catchments()
+#         # derive data from catchments
+#         self.gp.derive_data_from_catchments()
 
-        # calculate peak flow (t of c and flow per return period)
+#         # calculate peak flow (t of c and flow per return period)
         
 
-        # save the config
-        if self.save_config_json_filepath:
-            self.save_config(self.save_config_json_filepath)        
+#         # save the config
+#         if self.save_config_json_filepath:
+#             self.save_config(self.save_config_json_filepath)        
         
-        return
+#         return
 
 
-class PeakFlow01(PeakFlowCore):
-    """Peak flow calculator; derives needed rasters from the DEM.
-    """
-    def __init__(self, **kwargs):
+# class PeakFlow01(PeakFlowCore):
+#     """Peak flow calculator; derives needed rasters from the DEM.
+#     """
+#     def __init__(self, **kwargs):
         
-        super().__init__(**kwargs)
+#         super().__init__(**kwargs)
 
-        # Serialize the parameters from workflow config that are applicable to 
-        # this workflow -- make sure we have what we need
-        errors = PeakFlow01Schema().validate(asdict(self.config))
+#         # Serialize the parameters from workflow config that are applicable to 
+#         # this workflow -- make sure we have what we need
+#         errors = PeakFlow01Schema().validate(asdict(self.config))
 
-        if errors:
-            for k, v in errors:
-                print("errors for {0}: {1}".format(k, "; ".join(v)))
-            self.validation_errors.append(errors)
-            return
+#         if errors:
+#             for k, v in errors:
+#                 print("errors for {0}: {1}".format(k, "; ".join(v)))
+#             self.validation_errors.append(errors)
+#             return
 
-        # ETL the input points. We don't need NAACC for peak flow, just 
-        # locations and UID
-        self.gp.load_points()
+#         # ETL the input points. We don't need NAACC for peak flow, just 
+#         # locations and UID
+#         self.gp.load_points()
 
-        # derive the rasters from input DEM and save refs
-        derived_rasters = self.gp.derive_analysis_rasters_from_dem(self.config.raster_dem_filepath)
-        self.config.raster_flowdir_filepath = derived_rasters['flow_direction_raster']
-        self.config.raster_slope_filepath = derived_rasters['slope_raster']
+#         # derive the rasters from input DEM and save refs
+#         derived_rasters = self.gp.derive_analysis_rasters_from_dem(self.config.raster_dem_filepath)
+#         self.config.raster_flowdir_filepath = derived_rasters['flow_direction_raster']
+#         self.config.raster_slope_filepath = derived_rasters['slope_raster']
 
-        # run the rest of the peak-flow-calc workflow
-        self.run_core_workflow()
+#         # run the rest of the peak-flow-calc workflow
+#         self.run_core_workflow()
         
 
 
@@ -465,6 +467,7 @@ class CulvertCapacityCore(WorkflowManager):
         # output_points_filepath=None,
         # points_id_fieldname="Naacc_Culvert_Id",
         # points_group_fieldname="Survey_Id",
+        use_multiprocessing=False,
         **kwargs
         ):
         """End-to-end calculation of culvert capacity, peak-flow, and overflow. 
@@ -481,6 +484,8 @@ class CulvertCapacityCore(WorkflowManager):
         else:
             self.save_config_json_filepath = f'{self.gp._so("drainit_config", suffix="", where="folder")}.json'
             self.load_config()
+        
+        self.use_multiprocessing = use_multiprocessing
 
         # initialize the appropriate GP module with the config variables
         self.gp = GP(self.config) 
@@ -722,7 +727,14 @@ class CulvertCapacityCore(WorkflowManager):
         t3 = etl.cutout(t2, *self.frequency_fields)
         
         # create a feature class from the table
-        self.gp.create_geodata_from_petl_table(t3, 'lng', 'lat', self.config.output_points_filepath)
+        self.gp.msg(f"saving output points to {self.config.output_points_filepath}")
+        self.gp.create_geodata_from_petl_table(
+            petl_table=t3, 
+            x_column='lng', 
+            y_column='lat', 
+            output_featureclass=self.config.output_points_filepath,
+            crs_wkid=self.config.points_spatial_ref_code
+        )
         
         return t3
 
@@ -738,13 +750,13 @@ class CulvertCapacityCore(WorkflowManager):
             pour_point_field=self.config.points_id_fieldname,
             flow_direction_raster=self.config.raster_flowdir_filepath,
             slope_raster=self.config.raster_slope_filepath,
-            flow_length_raster=self.config.raster_flowlength_filepath,
+            flow_length_raster=self.config.raster_flowlen_filepath,
             curve_number_raster=self.config.raster_curvenumber_filepath,
             precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
             out_shed_polygons=self.config.output_sheds_filepath,
             out_shed_polygons_simplify=self.config.sheds_simplify,
             override_skip=True, # will run regardless of validation,
-            try_multiprocessing=False
+            use_multiprocessing=self.use_multiprocessing
         )
 
         # assigns values to associated crossings and calculates peakflow vs capacity

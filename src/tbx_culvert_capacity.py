@@ -16,15 +16,16 @@ from drainit.workflows import CulvertCapacityCore
 
 # set the output sheds filepath based on the output points filepath,
 # (which will be limited to a fgdb feature class)
-output_points_filepath = GetParameterAsText(5)
+output_points_filepath = GetParameterAsText(6)
 output_sheds_filepath = output_points_filepath + "_sheds"
 
 culvert_capacity_calc = CulvertCapacityCore(
     points_filepath=GetParameterAsText(0),
     raster_flowdir_filepath=GetParameterAsText(1),
-    raster_slope_filepath=GetParameterAsText(2),
-    raster_curvenumber_filepath=GetParameterAsText(3),
-    precip_src_config_filepath=GetParameterAsText(4),
+    raster_flowlen_filepath=GetParameterAsText(2),
+    raster_slope_filepath=GetParameterAsText(3),
+    raster_curvenumber_filepath=GetParameterAsText(4),
+    precip_src_config_filepath=GetParameterAsText(5),
     output_points_filepath=output_points_filepath,
     output_sheds_filepath=output_sheds_filepath
 )

@@ -374,7 +374,7 @@ class WorkflowConfig:
     # optional
     raster_dem_filepath: Optional[str] = None
     raster_watershed_filepath: Optional[str] = None
-    raster_flowlength_filepath: Optional[str] = None
+    raster_flowlen_filepath: Optional[str] = None
 
     # required
     raster_flowdir_filepath: str = None
