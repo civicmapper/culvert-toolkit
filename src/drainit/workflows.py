@@ -755,7 +755,7 @@ class CulvertCapacityCore(WorkflowManager):
             precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
             out_shed_polygons=self.config.output_sheds_filepath,
             out_shed_polygons_simplify=self.config.sheds_simplify,
-            override_skip=True, # will run regardless of validation,
+            override_skip=False, # will run regardless of validation,
             use_multiprocessing=self.use_multiprocessing
         )
 
