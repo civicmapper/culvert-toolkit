@@ -10,9 +10,18 @@ The project is structure so there is a fairly clear separation of concerns betwe
 * the geoprocessing tools used to derive spatial statistics from the various map layers
 * the specific i/o requirements and interfaces expected in end-user workflows
 
-### drainit
+### src/
 
-This is the top-level package. It contains a few scripts
+The folder contains external-facing interfaces that use the `drainit` package. Includes":
+
+* `tbx_*.py` scripts, which are workflow-specific and map 1:1 with tools in the ArcGIS Pro toolbox `drainit.tbx`.
+* `cli.py`, the command line interface to the `drainit` package
+
+### src/drainit/
+
+This is the top-level package.
+
+It contains a few scripts:
 
 #### workflows.py
 
@@ -22,13 +31,11 @@ All workflow classes inherit from a base class that contains properties and meth
 
 #### cli.py
 
-#### tbx.py
-
 #### config.py and settings.py
 
-#### models
+#### models.py
 
-Module for internal data models used throughout the package. 
+Internal data models used throughout the package. 
 
 #### calculators
 
@@ -43,3 +50,5 @@ Scripts for interacting with third-party domain-specific data sources (e.g., NOA
 Geoprocessing services designed on specific provider tools (e.g., ESRI, Whitebox) and exposed through a generic class that is called by the workflow tools. This ensures `workflow.py` can run GP tools without needing to know exactly what underlying geoprocessing library is being used.
 
 ### tests
+
+Integration tests for workflows and tasks within workflows.
