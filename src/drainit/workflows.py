@@ -591,7 +591,8 @@ class CulvertCapacityCore(WorkflowManager):
         # ----------------------------------------------------------------------
         # ANALYZE all points individually
 
-        for pt in tqdm(points_to_analyze):
+        for pt in tqdm(points_to_analyze, desc="analyzing points"):
+        
 
             # print(pt.uid, pt.group_id)
 
@@ -660,7 +661,7 @@ class CulvertCapacityCore(WorkflowManager):
 
         # iterate through the group_ids, getting matching records from the table
         # and running calculations
-        for mcc in tqdm(multiculvert_crossing_group_ids):
+        for mcc in tqdm(multiculvert_crossing_group_ids, desc="analyzing multi-culvert crossings"):
 
             # get list of points with the same group id:
             crossing_pts: List[DrainItPoint] = list(filter(lambda pt: pt.group_id == mcc, points_to_analyze))
@@ -695,7 +696,7 @@ class CulvertCapacityCore(WorkflowManager):
         # finally, calculate summary analytics (those that derive stats from
         # multiple attributes) on each point
 
-        for pt in tqdm(self.config.points):
+        for pt in tqdm(self.config.points, desc="calculating summary analytics"):
             pt.calculate_summary_analytics()
 
     def _export_culvert_featureclass(self) -> etl.Table:

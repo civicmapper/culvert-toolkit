@@ -1,4 +1,5 @@
 import json
+import click
 from typing import List
 from pathlib import Path
 from collections import OrderedDict
@@ -609,9 +610,9 @@ class NaaccEtl:
         bad = etl.selectnotnone(validated_table, 'validation_errors')
         bad_ct = etl.nrows(bad)
         if bad_ct > 0:
-            print("{0} rows did not pass initial validation against the NAACC schema".format(bad_ct))
+            click.echo("{0} rows did not pass initial validation against the NAACC schema".format(bad_ct))
         else:
-            print("All rows passed initial validation against the NAACC schema")
+            click.echo("All rows passed initial validation against the NAACC schema")
         # print(etl.vis.see(bad))
 
         
@@ -623,7 +624,10 @@ class NaaccEtl:
 
         bad2 = etl.selectnotnone(hydrated_table, 'validation_errors')
         bad2_ct = etl.nrows(bad2) - bad_ct
-        print("{0} input points did not pass secondary validation (capacity)".format(bad2_ct))
+        if bad2_ct > 0:
+            click.echo("{0} input points did not pass secondary validation (capacity)".format(bad2_ct))
+        else:
+            click.echo("All rows passed secondary validation (capacity)")        
 
         # print(etl.vis.see(bad2))
         
