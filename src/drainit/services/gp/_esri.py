@@ -1326,6 +1326,10 @@ class GP:
             self.msg("calculating average slope")
             
             table_slope_avg = self._so("shed_{0}_slope_avg".format(shed.uid))
+
+            # debugging
+            # sloper = Describe(Raster(slope_raster))
+            # sloper.
             
             with EnvManager(
                 cellSizeProjectionMethod="PRESERVE_RESOLUTION",
@@ -1485,7 +1489,8 @@ class GP:
         out_shed_polygons: str = None,
         out_shed_polygons_simplify: bool = False,
         override_skip: bool = False,
-        use_multiprocessing: bool = False
+        use_multiprocessing: bool = False,
+        clear_memory_workspace: bool = True
         ) -> Tuple[DrainItPoint]:
 
         shed_geodata = []
@@ -1564,6 +1569,9 @@ class GP:
             # save that to the Point object
             point.shed = shed
             shed_geodata.append(shed.filepath_vector)
+
+            if clear_memory_workspace:
+                Delete('memory')
             
         # merge the sheds into a single layer
         if out_shed_polygons:
