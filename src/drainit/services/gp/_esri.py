@@ -120,12 +120,16 @@ class GP:
     # --------------------------------------------------------------------------
     # Workflow utility functions
 
-    def msg(self, text, arc_status=None, set_progressor_label=False):
+    def msg(self, text, arc_status=None, set_progressor_label=False, echo=False):
         """
         output messages through Click.echo (cross-platform shell printing) 
         and the ArcPy GP messaging interface and progress bars
         """
-        # click.echo(text)
+        if echo:
+            if arc_status:
+                click.echo("{0}: {1}".format(arc_status.upper(), text))
+            else:
+                click.echo(text)
 
         if arc_status == "warning":
             AddWarning(text)
@@ -180,6 +184,9 @@ class GP:
             else:
                 os.makedirs(where)
                 # location = Path(env.scratchGDB)
+        
+        if isinstance(location , str):
+            location = Path(location)
         
         # create and return full path
         if suffix == "unique":
@@ -371,15 +378,17 @@ class GP:
         # self.msg(f"fields_to_exclude: {fields_to_exclude}", )
         # self.msg(f"attr_fields {attr_fields}")
         
-        table = etl\
-            .fromdicts(fs['features'])\
-            .unpackdict('attributes')\
-            .cut(*attr_fields)
+        table = etl.fromdicts(fs['features'])
 
-        if include_geom:
-            table = etl.unpackdict(table, 'geometry')
+        if etl.nrows(table) > 0:
+            table = etl.unpackdict(table, 'attributes').cut(*attr_fields)
 
-        return table, feature_set, crs_wkid
+            if include_geom:
+                table = etl.unpackdict(table, 'geometry')
+            return table, feature_set, crs_wkid
+        else:
+            self.msg("The feature class is empty.", 'warning', echo=True)
+            return table, feature_set, crs_wkid
 
     def create_dicts_from_geodata(self, path_to_geodata):
         """convert provider-formatted geodata to a Python dictionary"""
@@ -432,7 +441,14 @@ class GP:
 
         Returns:
             [type]: [description]
-        """        
+        """
+
+        # Remove system fields look-alikes that may have snuck through;
+        # e.g., 'OBJECTID' may not be the actual oid field, but a duplicate
+        # due to whatever happend to the data before hand. It's presence here
+        # though will muck things up.
+        if 'OBJECTID' in list(etl.header(petl_table)):
+            petl_table = etl.cutout(petl_table, 'OBJECTID')
 
         # approach 1: via arcgis/pandas spatially-enabled dataframe. 
         # Chokes on None/null/NaN/NAType values and the conversion of column 
@@ -471,7 +487,7 @@ class GP:
             spatial_ref = SpatialReference(crs_wkid)
 
             # Create an in_memory feature class to initially contain the points
-            temp_fc = Path(self._so('temp_drainit_points',where="in_memory"))
+            temp_fc = Path(self._so('temp_drainit_points',where="in_memory", suffix="random"))
             temp_feature_class = CreateFeatureclass_management(
                 out_path=str(temp_fc.parent), #"memory",
                 out_name=temp_fc.name,
@@ -502,7 +518,7 @@ class GP:
                     fields_to_add.append([h, self._xwalk_types_to_arcgis_fields(field_types_lookup.get(h, str)), h, VALIDATION_ERRORS_FIELD_LENGTH])
                 else:
                     fields_to_add.append([h, self._xwalk_types_to_arcgis_fields(field_types_lookup.get(h, str))])
- 
+            # print([f[0] for f in fields_to_add])
             AddFields_management(
                 temp_feature_class,
                 fields_to_add
@@ -569,7 +585,7 @@ class GP:
             
 
             # Create an in_memory feature class to initially contain the points
-            temp_fc = Path(self._so('temp_drainit_points',where="in_memory"))
+            temp_fc = Path(self._so('temp_drainit_points',where="in_memory", suffix="random"))
             feature_class = CreateFeatureclass_management(
                 out_path=str(temp_fc.parent), #"memory",
                 out_name=temp_fc.name,
@@ -1148,7 +1164,8 @@ class GP:
             if out_shed_polygon:
                 shed.filepath_vector = out_shed_polygon
             else:
-                shed.filepath_vector = self._so("shed_{}_delineation_dissolved".format(shed.uid))
+                shed.filepath_vector = self._so("shed_{}_dissolved".format(shed.uid), where="fgdb")
+                # print(shed.filepath_vector)
             
             Dissolve(
                 in_features=cp,
@@ -1328,8 +1345,8 @@ class GP:
             table_slope_avg = self._so("shed_{0}_slope_avg".format(shed.uid))
 
             # debugging
-            # sloper = Describe(Raster(slope_raster))
-            # sloper.
+            # sloped = Describe(Raster(slope_raster))
+            # sloped.
             
             with EnvManager(
                 cellSizeProjectionMethod="PRESERVE_RESOLUTION",

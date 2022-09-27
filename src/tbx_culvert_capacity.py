@@ -8,7 +8,7 @@ import pathlib
 # print(pathlib.Path(__file__).parent.parent)
 
 from arcpy import GetParameterAsText
-from drainit.workflows import CulvertCapacityCore
+from drainit.workflows import CulvertCapacity
 # from workflows import CulvertCapacityCore
 
 # instantiate the calculator class with the required inputs
@@ -19,7 +19,7 @@ from drainit.workflows import CulvertCapacityCore
 output_points_filepath = GetParameterAsText(6)
 output_sheds_filepath = output_points_filepath + "_sheds"
 
-culvert_capacity_calc = CulvertCapacityCore(
+culvert_capacity_calc = CulvertCapacity(
     points_filepath=GetParameterAsText(0),
     raster_flowdir_filepath=GetParameterAsText(1),
     raster_flowlen_filepath=GetParameterAsText(2),
