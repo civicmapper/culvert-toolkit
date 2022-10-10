@@ -18,7 +18,7 @@ from ..calculators.capacity import (
     Capacity,
     CapacitySchema,
     calc_culvert_capacity,
-    capacity_numeric_fields
+    CAPACITY_NUMERIC_FIELDS
 )
 from ..utils import validate_petl_record_w_schema, convert_value_via_xwalk
 from .naacc_config import (
@@ -89,15 +89,15 @@ class NaaccEtl:
         # print(capacity_numeric_fields)
         for n_field, cap_field in NAACC_HEADER_LOOKUP.items():
             # for numeric fields, cast values to the specified python type based on the lookup above
-            if cap_field in capacity_numeric_fields.keys():
-                number_type = capacity_numeric_fields[cap_field]
+            if cap_field in CAPACITY_NUMERIC_FIELDS.keys():
+                number_type = CAPACITY_NUMERIC_FIELDS[cap_field]
                 try:
                     r[cap_field] = number_type(r[n_field])
                 except:
-                    r[cap_field] = r[n_field]
+                    r[cap_field] = r.get(n_field)
             # otherwise just copy them over
             else:
-                r[cap_field] = r[n_field]
+                r[cap_field] = r.get(n_field)
         # print({k:v for k,v in r.items() if k in capacity_numeric_fields})
         return tuple(r.values())
 
@@ -566,6 +566,8 @@ class NaaccEtl:
         :rtype: List[Point]
         """
 
+        click.echo("Performing NAACC data ingest")
+
         naacc_csv_file = self.naacc_csv_file if naacc_csv_file is None else None
         naacc_petl_table = self.naacc_petl_table if naacc_petl_table is None else None
         output_path = self.output_path if output_path is None else None
@@ -598,6 +600,11 @@ class NaaccEtl:
         # the schema model will attempt to type-cast any numbers stored as strings 
         # for only fields in the NaacCulvert dataclass; remove empty strings and 
         # replace with nulls
+
+        has_rows = etl.nrows(raw_table) > 0
+        
+        if not has_rows:
+            click.echo('No rows. Creating empty outputs.')
         
         
         validated_table = etl\
@@ -607,12 +614,14 @@ class NaaccEtl:
                 lambda rec: validate_petl_record_w_schema(rec, self.naacc_culvert_schema)
             )
 
-        bad = etl.selectnotnone(validated_table, 'validation_errors')
-        bad_ct = etl.nrows(bad)
-        if bad_ct > 0:
-            click.echo("{0} rows did not pass initial validation against the NAACC schema".format(bad_ct))
-        else:
-            click.echo("All rows passed initial validation against the NAACC schema")
+        
+        if has_rows:
+            bad = etl.selectnotnone(validated_table, 'validation_errors')
+            bad_ct = etl.nrows(bad)
+            if bad_ct > 0:
+                click.echo("> {0} rows did not pass initial validation (NAACC schema)".format(bad_ct))
+            else:
+                click.echo("> All rows passed initial validation (NAACC schema)")
         # print(etl.vis.see(bad))
 
         
@@ -622,17 +631,17 @@ class NaaccEtl:
             lookup_naac_inlet_type=lookup_naac_inlet_type
         )
 
-        bad2 = etl.selectnotnone(hydrated_table, 'validation_errors')
-        bad2_ct = etl.nrows(bad2) - bad_ct
-        if bad2_ct > 0:
-            click.echo("{0} input points did not pass secondary validation (capacity)".format(bad2_ct))
-        else:
-            click.echo("All rows passed secondary validation (capacity)")        
+        if has_rows:
+            bad2 = etl.selectnotnone(hydrated_table, 'validation_errors')
+            bad2_ct = etl.nrows(bad2) - bad_ct
+            if bad2_ct > 0:
+                click.echo("> {0} rows did not pass secondary validation (capacity schema)".format(bad2_ct))
+            else:
+                click.echo("> All rows passed secondary validation (capacity schema)")
 
         # print(etl.vis.see(bad2))
         
         # clean_table = etl.replaceall(hydrated_table, "", None)
-        
         
         # optionally save the table to a CSV file
         if output_path:
@@ -657,13 +666,17 @@ class NaaccEtl:
     def generate_points_from_table(self):
 
         if not self.table:
+            click.echo("No point data.")
             return None
 
         # ---------------------------------
         # Load into our DraintItPoint and nested NAACC dataclasses
+        src_points = list(etl.dicts(self.table))
+
+        click.echo("Generating {0} points from table".format(len(src_points)))
 
         points = []
-        for idx, r in enumerate(list(etl.dicts(self.table))):
+        for idx, r in enumerate(src_points):
             
             kwargs = dict(
                 uid=r["Naacc_Culvert_Id"],

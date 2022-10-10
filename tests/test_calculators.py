@@ -53,7 +53,7 @@ class TestCapacityCalc:
         kw = all_sample_inputs
 
         # instantiate the class with the kwargs and run the load_points method
-        cc = workflows.CulvertCapacityCore(**kw)
+        cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
         # test that all inputs are present in the config object
@@ -81,7 +81,7 @@ class TestCapacityCalc:
 
         # instantiate the class with the kwargs and run the load_points method
         kw = all_sample_inputs
-        cc = workflows.CulvertCapacityCore(**kw)
+        cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
         # get a single passing test point from the test data
@@ -124,7 +124,7 @@ class TestCapacityCalc:
 
         # instantiate the class with the kwargs and run the load_points method
         kw = all_sample_inputs
-        cc = workflows.CulvertCapacityCore(**kw)
+        cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
         # get a single passing test point from the test data
@@ -169,7 +169,7 @@ class TestCapacityCalc:
 
         # instantiate the class with the kwargs and run the load_points method
         kw = all_sample_inputs
-        cc = workflows.CulvertCapacityCore(**kw)
+        cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
         # for testing, set a temp output path for the shed polygons
@@ -217,7 +217,7 @@ class TestCapacityCalc:
 
         # instantiate the class with the kwargs and run the load_points method
         kw = all_sample_inputs
-        cc = workflows.CulvertCapacityCore(**kw)
+        cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
         # for testing, set a temp output path for the shed polygons
@@ -263,7 +263,7 @@ class TestCapacityCalc:
 
         # instantiate the class with the kwargs and run the load_points method
         kw = all_sample_inputs
-        cc = workflows.CulvertCapacityCore(**kw)
+        cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
         # for testing, set a temp output path for the shed polygons
@@ -299,7 +299,7 @@ class TestCapacityCalc:
    
     def test_analytics(self, sample_completed_delineation_config, tmp_path):
         
-        cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_completed_delineation_config))
+        cc = workflows.CulvertCapacity(save_config_json_filepath=str(sample_completed_delineation_config))
 
         # run the calculation
         cc._analyze_all_points()
@@ -333,7 +333,7 @@ class TestCapacityCalc:
 
     def test_export(self, tmp_path, sample_completed_capacity_config):
 
-        cc = workflows.CulvertCapacityCore(save_config_json_filepath=str(sample_completed_capacity_config))
+        cc = workflows.CulvertCapacity(save_config_json_filepath=str(sample_completed_capacity_config))
 
         workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
 
@@ -343,7 +343,7 @@ class TestCapacityCalc:
 
     def test_culvertcapacity_e2e(self, tmp_path, all_sample_inputs):
         
-        cc = workflows.CulvertCapacityCore(**all_sample_inputs)
+        cc = workflows.CulvertCapacity(**all_sample_inputs)
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
 
@@ -357,7 +357,7 @@ class TestCapacityCalc:
 
     def test_culvertcapacity_mp_e2e(self, tmp_path, all_sample_inputs):
         
-        cc = workflows.CulvertCapacityCore(
+        cc = workflows.CulvertCapacity(
             use_multiprocessing=True, 
             **all_sample_inputs
         )

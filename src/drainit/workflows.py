@@ -233,7 +233,6 @@ class NaaccDataIngest(WorkflowManager):
         # extract the NAACC-compliant table to a PETL table, validating all fields *and* calculating
         # culvert capacity on-the-fly
 
-
         naacc.validate_extend_hydrate_naacc_table()
         self.naacc_table = naacc.table
         
@@ -454,7 +453,7 @@ class CurveNumberMaker(WorkflowManager):
 # peak-flow and a culvert capacity models. Relies on a culvert data that 
 # follows the NAACC-standard.
 
-class CulvertCapacityCore(WorkflowManager):
+class CulvertCapacity(WorkflowManager):
 
     def __init__(
         self,
@@ -744,6 +743,10 @@ class CulvertCapacityCore(WorkflowManager):
         # load points
         # with NAACC data, capacity is calculated on load
         self.load_points() # updates self.config.points and self.config.points_features
+
+        if len(self.config.points) == 0:
+            click.echo("WARNING: No points to delineate from or analyze. CulvertCapacity terminating.")
+            return
 
         # delineate and analyze catchments for each point
         self.config.points = self.gp.delineation_and_analysis_in_parallel(

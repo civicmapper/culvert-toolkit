@@ -10,7 +10,10 @@ def culvert_overflow_calculator(culvert_capacity, peak_flow):
 
     For now, assumes units are the same.
     """
-    return culvert_capacity - peak_flow
+    try:
+        return culvert_capacity - peak_flow
+    except:
+        return None
 
 def max_return_calculator(list_of_overflows:List[float], list_of_frequencies: List[Any]=FREQUENCIES):
     """Given a list of calculated overflows and corresponding list of frequencies,
