@@ -1400,6 +1400,8 @@ class GP:
                 
                 # spec the fields to add
                 fields_to_add = [
+                    ['uid', 'TEXT', shed.uid],
+                    ['group_id', 'TEXT', shed.group_id],
                     ['area_sqkm', 'FLOAT', shed.area_sqkm],
                     ['avg_slope_pct', 'FLOAT', shed.avg_slope_pct],
                     ['avg_cn', 'FLOAT', shed.avg_cn],
