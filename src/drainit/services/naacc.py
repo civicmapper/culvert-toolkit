@@ -220,7 +220,18 @@ class NaaccEtl:
             pi = 3.14159 #math.pi
 
             # -----------------------------------------------------
-            # variables to be calculated
+            # imperial to metric conversions
+            # NAACC data uses imperial, these calculations use metric
+
+            row["length"] = (row["length"] * units.foot).to(units.meter).magnitude
+            row["in_a"] = (row["in_a"] * units.foot).to(units.meter).magnitude
+            row["in_b"] = (row["in_b"] * units.foot).to(units.meter).magnitude
+            row["hw"] = (row["hw"] * units.foot).to(units.meter).magnitude
+            row["out_a"] = (row["out_a"] * units.foot).to(units.meter).magnitude
+            row["out_b"] = (row["out_b"] * units.foot).to(units.meter).magnitude
+
+            # -----------------------------------------------------
+            # variable defaults
 
             # culvert area ( square meters; default is for round pipe)
             culvert_area_sqm = ((row["in_a"] / 2) ** 2) * pi
@@ -239,16 +250,6 @@ class NaaccEtl:
             comments = []
             exclusion_comments = []
 
-            # -----------------------------------------------------
-            # imperial to metric conversions
-
-            row["length"] = (row["length"] * units.foot).to(units.meter).magnitude
-            row["in_a"] = (row["in_a"] * units.foot).to(units.meter).magnitude
-            row["hw"] = (row["hw"] * units.foot).to(units.meter).magnitude
-
-            # if culvert is not round, need B (height), so convert from feet to meters
-            if row["in_shape"] != "Round":
-                row["in_b"] = (row["in_b"] * units.foot).to(units.meter).magnitude
 
             # -----------------------------------------------------
             # culvert slope as rise/run

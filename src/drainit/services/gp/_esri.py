@@ -1089,7 +1089,7 @@ class GP:
         out_shed_polygon: str,
         rainfall_rasters: tuple = None,
         out_catchment_polygons_simplify: bool = False,
-        save_featureset: bool = False,
+        save_featureset: bool = True,
         pour_point_field: str = None,
         use_multiprocessing: bool = False
         # rainfall_unit_conversion_factor = 0.1,
