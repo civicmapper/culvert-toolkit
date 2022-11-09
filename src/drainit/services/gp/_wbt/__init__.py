@@ -1,4 +1,4 @@
-from ..models import WorkflowConfig
+from ....models import WorkflowConfig
 
 class GP:
 

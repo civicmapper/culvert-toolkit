@@ -449,11 +449,12 @@ class CurveNumberMaker(WorkflowManager):
 
 # ------------------------------------------------------------------------------
 # Culvert Capacity Calculator
-# Calculates the capacity of culverts during storm events using a combination of
-# peak-flow and a culvert capacity models. Relies on a culvert data that 
-# follows the NAACC-standard.
 
 class CulvertCapacity(WorkflowManager):
+    """Culvert Capacity Calculator: Calculates the capacity of culverts during 
+    storm events using a combination of peak-flow and a culvert capacity models. 
+    Relies on a culvert data that follows the NAACC-standard.
+    """
 
     def __init__(
         self,
