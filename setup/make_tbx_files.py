@@ -40,11 +40,11 @@ def build_arcpy_support_files(
     arcpy.gp.createtoolboxsupportfiles(str(source_pyt))
 
     # remove the initially generated esri support files folder
-    # if target_build_path.exists():
-    #     shutil.rmtree(target_build_path)
+    if target_build_path.exists():
+        shutil.rmtree(target_build_path)
 
     # move the created support files
-    dest = shutil.move(source_build_path, target_build_path)
+    dest = shutil.move(str(source_build_path), str(target_build_path))
 
     # make a toolboxes folder with the support files
     if not target_pyt.parent.exists():
@@ -55,12 +55,16 @@ def build_arcpy_support_files(
     # copy in our versions of the metadata files to the right places, with the 
     # right names, to the distribution folder
     for i in source_pyt.parent.glob(f"{source_pyt.name}*.xml"):
-        parts = i.split(".")
-        renamed = f"{parts[1]}_{parts[0]}.xml"
+        print("copying", i.name)
+        if i.name == f"{source_pyt.name}.xml":
+            renamed = f"{source_pyt.stem}_toolbox.xml"
+        else:
+            parts = i.name.split(".")
+            renamed = f"{parts[1]}_{parts[0]}.xml"
         
         shutil.copyfile(
-            source_pyt.parent / i, 
-            target_docs_path / renamed
+            str(i),
+            str(target_docs_path / renamed)
         )
 
         
