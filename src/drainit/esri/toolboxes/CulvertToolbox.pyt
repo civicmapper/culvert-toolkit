@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from pathlib import Path
 import arcpy
-import os
+
 from drainit.workflows import CulvertCapacity
+from drainit.workflows import NaaccDataIngest
+from drainit.workflows import RainfallDataGetter
 
 class Toolbox(object):
     def __init__(self):
@@ -13,15 +16,16 @@ class Toolbox(object):
 
         # List of tool classes associated with this toolbox
         self.tools = [
+            NaaccEtlPytTool,
+            NoaaRainfallEtlPytTool,
             CulvertCapacityPytTool,
-            SampleTool
         ]
 
 class CulvertCapacityPytTool(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "NAACC Culvert Capacity"
-        self.description = "Measure the capacity of culverts by calculating peak flow over a hydrologically corrected digital elevation model. Culvert location data must be NAACC schema-compliant."
+        self.description = CulvertCapacity.__doc__
         self.canRunInBackground = True
 
     def getParameterInfo(self):
@@ -79,42 +83,109 @@ class CulvertCapacityPytTool(object):
         return
 
 
-class SampleTool(object):
+class NaaccEtlPytTool(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "Sample Tool"
-        self.description = ""
-        self.canRunInBackground = False
+        self.label = "NAACC Table Ingest"
+        self.description = NaaccDataIngest.__doc__
+        self.canRunInBackground = True
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        parameters=[arcpy.Parameter(displayName='Msg', 
-                                  name='msg',
-                                  datatype='GPString',
-                                  parameterType='Derived',
-                                  direction='Output')
-                                  ]
+        parameters=[
+            arcpy.Parameter(displayName="NAACC CSV", name="naacc_src_table", datatype="DEFile", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Output Folder", name="output_folder",datatype="DEFolder", parameterType='Required', direction='Output'),
+            arcpy.Parameter(displayName="Output Feature Class", name="output_fc",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+        ]
         return parameters
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
+
+        # TODO: check for Spatial Analyst
+
         return True
 
     def updateParameters(self, parameters):
         """Modify the values and properties of parameters before internal
         validation is performed.  This method is called whenever a parameter
         has been changed."""
+
         return
 
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
+
         return
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        result = os.getenv("username")
-        messages.AddMessage(f"{result}, welcome to the sample tool")
-        messages.AddMessage(CulvertCapacity.__init__.__doc__)
-        parameters[0].value = result
+
+        naacc_src_table = parameters[0].value
+        output_folder = parameters[1].value
+        output_fc_param = parameters[2].value
+
+        output_fc_path = Path(output_fc_param)
+        output_fc_name = output_fc_path.name
+        output_workspace = output_fc_path.parent
+        
+        n = NaaccDataIngest(
+            naacc_src_table=naacc_src_table,
+            output_folder=output_folder,
+            output_workspace=output_workspace,
+            output_fc_name=output_fc_name
+            # crs_wkid=GetParameterAsText(4), #4326
+            # naacc_x=GetParameterAsText(5), #"GIS_Longitude",
+            # naacc_y=GetParameterAsText(6)# "GIS_Latitude",
+        )
+        return n.output_points_filepath
+
+
+class NoaaRainfallEtlPytTool(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "NOAA Rainfall Raster Data Downloader"
+        self.description = RainfallDataGetter.__doc__
+        self.canRunInBackground = True
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        parameters=[
+            arcpy.Parameter(displayName="Area of Interest", name="aoi_geo", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Reference Raster", name="target_raster",datatype="GPRasterLayer", parameterType='Optional', direction='Input'),
+            arcpy.Parameter(displayName="Output Folder", name="out_folder",datatype="DEFolder", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Output Rainfall Configuration File Name", name="out_file_name",datatype="GPString", parameterType='Required', direction='Output'),
+        ]
+        return parameters
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+
+        # TODO: check for Spatial Analyst
+
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+
+        rdg = RainfallDataGetter(
+            aoi_geo=parameters[0].value,
+            target_raster=parameters[1].value,
+            out_folder=parameters[2].value,
+            out_file_name=parameters[3].value    
+        )
         return
