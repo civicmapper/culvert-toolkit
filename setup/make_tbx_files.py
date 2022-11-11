@@ -11,14 +11,14 @@ References:
 
 """
 
-from setuptools import setup, find_packages
 import pathlib
 from os import remove
 import shutil
 import arcpy
 
-HERE = pathlib.Path(__file__).parent.resolve()
+HERE = pathlib.Path(__file__).parent.parent.resolve()
 PYT = HERE / 'src' / 'CulvertToolbox.pyt'
+print(PYT, PYT.exists())
 ESRI_SOURCE_PATH = HERE / 'src' / 'esri'
 ESRI_TARGET_PATH = HERE / 'src' / 'drainit' / 'esri'
 
@@ -49,13 +49,13 @@ def build_arcpy_support_files(
     # copy the toolbox into it
     shutil.copyfile(source_pyt, target_pyt)
 
-    # delete the extra XML files
-    for i in source_pyt.parent.glob("*.xml"):
-        # find the XML files with a prefix matching the .pyt in the same folder
-        if str(i.name).startswith(source_pyt.stem):
-            f = str(source_pyt.parent / i)
-            print("deleting", f)
-            remove(f)
+    # # delete the tool metadata files
+    # for i in source_pyt.parent.glob("*.xml"):
+    #     # find the XML files with a prefix matching the .pyt in the same folder
+    #     if str(i.name).startswith(source_pyt.stem):
+    #         f = str(source_pyt.parent / i)
+    #         print("deleting", f)
+    #         remove(f)
 
 
-build_arcpy_support_files(here=HERE)
+build_arcpy_support_files()
