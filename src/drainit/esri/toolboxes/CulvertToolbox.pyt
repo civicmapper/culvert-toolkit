@@ -30,17 +30,20 @@ class CulvertCapacityPytTool(object):
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        parameters=[
-            arcpy.Parameter(displayName="Culvert Points", name="points_filepath", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Flow Direction", name="raster_flowdir_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Slope", name="raster_slope_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Curve Number", name="raster_curvenumber_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Precipitation Configuration File", name="precip_src_config_filepath", datatype="DEFile", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Result Points", name="output_points_filepath",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
-            arcpy.Parameter(displayName="Result Delineations", name="output_sheds_filepath",datatype="DEFeatureClass", parameterType='Derived', direction='Output'),
+        params=[
+            arcpy.Parameter(category="Culverts", displayName="Culvert Points", name="points_filepath", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Flow Direction", name="raster_flowdir_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Slope", name="raster_slope_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="Curve Number", displayName="Curve Number", name="raster_curvenumber_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="Rainfall", displayName="Precipitation Configuration File", name="precip_src_config_filepath", datatype="DEFile", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="Outputs", displayName="Result Points", name="output_points_filepath",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+            arcpy.Parameter(category="Outputs", displayName="Result Delineations", name="output_sheds_filepath",datatype="DEFeatureClass", parameterType='Derived', direction='Output'),
         ]
-        return parameters
+
+        params[0].filter.list = ['Point']
+
+        return params
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -92,12 +95,15 @@ class NaaccEtlPytTool(object):
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        parameters=[
+        params=[
             arcpy.Parameter(displayName="NAACC CSV", name="naacc_src_table", datatype="DEFile", parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Output Folder", name="output_folder",datatype="DEFolder", parameterType='Required', direction='Output'),
             arcpy.Parameter(displayName="Output Feature Class", name="output_fc",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
         ]
-        return parameters
+
+        params[0].filter.list = ['txt', 'csv']
+
+        return params
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -157,6 +163,7 @@ class NoaaRainfallEtlPytTool(object):
             arcpy.Parameter(displayName="Output Folder", name="out_folder",datatype="DEFolder", parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Output Rainfall Configuration File Name", name="out_file_name",datatype="GPString", parameterType='Required', direction='Output'),
         ]
+        parameters[3].value = "culvert_toolbox_rainfall_config"
         return parameters
 
     def isLicensed(self):

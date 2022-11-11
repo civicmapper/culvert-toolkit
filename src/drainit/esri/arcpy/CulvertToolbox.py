@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 r""""""
-__all__ = ['CulvertCapacityPytTool', 'SampleTool']
+__all__ = ['CulvertCapacityPytTool', 'NaaccEtlPytTool',
+           'NoaaRainfallEtlPytTool']
 __alias__ = 'CulvertToolbox'
 from arcpy.geoprocessing._base import gptooldoc, gp, gp_fixargs
 from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
@@ -35,13 +36,46 @@ def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, r
     except Exception as e:
         raise e
 
-@gptooldoc('SampleTool_CulvertToolbox', None)
-def SampleTool():
-    """SampleTool_CulvertToolbox()"""
+@gptooldoc('NaaccEtlPytTool_CulvertToolbox', None)
+def NaaccEtlPytTool(naacc_src_table=None, output_folder=None, output_fc=None):
+    """NaaccEtlPytTool_CulvertToolbox(naacc_src_table, output_folder, output_fc)
+
+     INPUTS:
+      naacc_src_table (File):
+          NAACC CSV
+
+     OUTPUTS:
+      output_folder (Folder):
+          Output Folder
+      output_fc (Feature Class):
+          Output Feature Class"""
     from arcpy.geoprocessing._base import gp, gp_fixargs
     from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
     try:
-        retval = convertArcObjectToPythonObject(gp.SampleTool_CulvertToolbox(*gp_fixargs((), True)))
+        retval = convertArcObjectToPythonObject(gp.NaaccEtlPytTool_CulvertToolbox(*gp_fixargs((naacc_src_table, output_folder, output_fc), True)))
+        return retval
+    except Exception as e:
+        raise e
+
+@gptooldoc('NoaaRainfallEtlPytTool_CulvertToolbox', None)
+def NoaaRainfallEtlPytTool(aoi_geo=None, target_raster=None, out_folder=None, out_file_name=None):
+    """NoaaRainfallEtlPytTool_CulvertToolbox(aoi_geo, {target_raster}, out_folder, out_file_name)
+
+     INPUTS:
+      aoi_geo (Feature Layer):
+          Area of Interest
+      target_raster {Raster Layer}:
+          Reference Raster
+      out_folder (Folder):
+          Output Folder
+
+     OUTPUTS:
+      out_file_name (String):
+          Output Rainfall Configuration File Name"""
+    from arcpy.geoprocessing._base import gp, gp_fixargs
+    from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
+    try:
+        retval = convertArcObjectToPythonObject(gp.NoaaRainfallEtlPytTool_CulvertToolbox(*gp_fixargs((aoi_geo, target_raster, out_folder, out_file_name), True)))
         return retval
     except Exception as e:
         raise e
