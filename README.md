@@ -1,5 +1,7 @@
 # Drain-It
 
+*NOTE: this repository is work-in-progress*
+
 Drain-It is an Inlet + Culvert Peak-Flow and Capacity Calculator that runs in ArcGIS Pro and uses a TR-55 Model and parameters derived from geospatial data.
 
 This software encompasses work originally developed by the Cornell Soil & Water Lab (on GitHub @ [github.com/SoilWaterLab](https://github.com/SoilWaterLab))
