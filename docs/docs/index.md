@@ -1,18 +1,17 @@
-# Drain-It
+# About
 
-Drain-It is an Inlet + Culvert Peak-Flow and Capacity Calculator that runs in ArcGIS Pro and uses a TR-55 Model and parameters derived from geospatial data.
+Drain-It is an Inlet + Culvert Peak-Flow and Capacity Calculator that uses a TR-55 Model and parameters derived from geospatial data.
 
 This software encompasses work originally developed by the Cornell Soil & Water Lab (on GitHub @ [github.com/SoilWaterLab](https://github.com/SoilWaterLab))
 
-## Installation and Use
-
-Check out the documentation at https://civicmapper.github.io/drain-it.
+---
 
 ## Credits/Contributors
 
 This repository represents an evolution of a previous effort, the [Peak-Flow Calculator](https://github.com/civicmapper/peak-flow-calculator/), which was a hard fork of the Water Lab's [CulvertEvalution](https://github.com/SoilWaterLab/CulvertEvaluation) repository. 
 
-Made in collaboration with the Cornell S&W lab, this repository includes additional updates to the science of the analysis from [CulvertModel_2.1](https://github.com/SoilWaterLab/CulvertModel_2.1), as well as a ground-up rebuild of the supporting codebase.
+Made in collaboration with the Cornell S&W lab, this repository includes additional updates to the science of the from [CulvertModel_2.1](https://github.com/SoilWaterLab/CulvertModel_2.1).
+
 
 * Original peak flow analytics are based on the culvert evaluation model developed by Rebecca Marjerison at the Cornell Soil and Water Lab in 2013, as [CulvertEvalution](https://github.com/SoilWaterLab/CulvertEvaluation)
 * David Gold, python script development, August 4, 2015

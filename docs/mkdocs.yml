@@ -1,0 +1,17 @@
+site_name: Drain-It
+nav: 
+  - 'index.md'
+  - 'installation.md'
+  - 'agp-python-toolbox.md'
+  - Data Guide:
+    - 'naacc-table.md'
+    - 'noaa-rainfall.md'
+    - 'curve-number-raster.md'
+    - 'dem-rasters.md'
+  - Analysis Guide:
+    - 'run-one.md'
+    - 'run-batch.md'
+  - Development:
+    - 'dev-overview.md'
+    - 'peak-flow.md'
+    - 'culvert-capacity.md'
