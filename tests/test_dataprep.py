@@ -60,7 +60,6 @@ class TestNaaccETL:
 
     def test_naacc_data_ingest_from_csv(self, tmp_path):
         d = tmp_path
-        # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\src.drainit')
         results = workflows.NaaccDataIngest(
             naacc_src_table=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
             output_folder=str(d),
@@ -85,7 +84,6 @@ class TestNaaccETL:
 
     def test_naacc_data_ingest_from_fgdb_fc(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path
-        # x = Path(r'C:\Users\chris\OneDrive\Documents\dev\drainage\src.drainit')
         results = workflows.NaaccDataIngest(
             naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points_raw'),
             output_folder=str(d),

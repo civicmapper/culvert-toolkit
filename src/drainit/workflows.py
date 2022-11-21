@@ -143,6 +143,8 @@ class WorkflowManager:
 
 
 class NaaccDataIngest(WorkflowManager):
+    """Read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., a file geodatabase feature class) for use in other culvert analysis tools.
+    """
 
     def __init__(
         self, 
@@ -271,7 +273,11 @@ class NaaccDataIngest(WorkflowManager):
 
 
 class RainfallDataGetter(WorkflowManager):
-    """Tool for acquiring and persisting rainfall rasters for a study area.
+    """Download rainfall rasters for your study area from NOAA. By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 year. All rasters are saved to the user-specified folder. A JSON file is automatically created; this file is used as a required input to other tools. Note that NOAA Atlas 14 precip values are in millimeters.
+    """
+    
+    """
+    Tool for acquiring and persisting rainfall rasters for a study area.
     Defaults to acquiring rainfall data for 24hr events for frequencies from 1 to 1000 year.
     All rasters are saved to a specified folder. A JSON file is automatically created; this 
     file is used as a required input to other tools.
@@ -449,11 +455,10 @@ class CurveNumberMaker(WorkflowManager):
 
 # ------------------------------------------------------------------------------
 # Culvert Capacity Calculator
-# Calculates the capacity of culverts during storm events using a combination of
-# peak-flow and a culvert capacity models. Relies on a culvert data that 
-# follows the NAACC-standard.
 
 class CulvertCapacity(WorkflowManager):
+    """Measure the capacity of culverts by calculating peak flow over a hydrologically corrected digital elevation model. Culvert location data must be NAACC schema-compliant.
+    """
 
     def __init__(
         self,

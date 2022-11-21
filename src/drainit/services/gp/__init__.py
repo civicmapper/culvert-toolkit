@@ -7,9 +7,9 @@ if USE_ESRI:
         from ._esri import GP
         echo("ArcPy available.")
     except ModuleNotFoundError:
-        echo("ArcPy not available. Falling back to WhiteboxTools and GeoPandas")
+        echo("ArcPy not available. ArcPy is currently the only supported geoprocessing backend.")
         # from ._wbt import *
 else:
-    echo("The WhiteboxTools+GeoPandas integration is not yet ready for use quite yet--please use Esri.")
+    echo("The WhiteboxTools+GeoPandas integration is not yet implemented.")
     # echo("Using WhiteboxTools and GeoPandas for Geoprocessing tasks.")
     # from ._wbt import *
