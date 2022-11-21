@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Overview - Drain-It</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Drain-It</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">About</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../installation/" class="nav-link">Installation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../agp-python-toolbox/" class="nav-link">Toolbox</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Guide <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
+</li>
+                                    
+<li>
+    <a href="../noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+</li>
+                                    
+<li>
+    <a href="../curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
+</li>
+                                    
+<li>
+    <a href="../dem-rasters/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guide <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+</li>
+                                    
+<li>
+    <a href="../run-batch/" class="dropdown-item">Batch Running the Capacity Calculator</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active">Overview</a>
+</li>
+                                    
+<li>
+    <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
+</li>
+                                    
+<li>
+    <a href="../culvert-capacity/" class="dropdown-item">Culvert Capacity Calculator</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../run-batch/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../peak-flow/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#overview" class="nav-link">Overview</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#setup-anaconda-python-and-dependencies" class="nav-link">Setup Anaconda Python and dependencies</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#project-structure" class="nav-link">Project Structure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="overview">Overview</h1>
+<h2 id="setup-anaconda-python-and-dependencies">Setup Anaconda Python and dependencies</h2>
+<h2 id="project-structure">Project Structure</h2>
+<p>The project is structure so there is a fairly clear separation of concerns between the code that handles</p>
+<ul>
+<li>the science behind the calculators</li>
+<li>the geoprocessing tools used to derive spatial statistics from the various map layers</li>
+<li>the specific i/o requirements and interfaces expected in end-user workflows</li>
+</ul>
+<h3 id="src">src/</h3>
+<p>The folder contains external-facing interfaces that use the <code>drainit</code> package. It includes:</p>
+<ul>
+<li><code>CulvertToolbox.pyt</code> and associated <code>xml</code> metadata.</li>
+<li>legacy <code>drainit.tbx</code> file (replaced by <code>CulvertToolbox.pyt</code>)</li>
+<li><code>tbx_*.py</code> scripts, which are workflow-specific and map 1:1 with tools in the ArcGIS Pro toolbox <code>drainit.tbx</code>.</li>
+</ul>
+<h3 id="srcdrainit">src/drainit/</h3>
+<p>This is the top-level package.</p>
+<p>It contains a few scripts:</p>
+<h4 id="workflowspy">workflows.py</h4>
+<p>Contains the code for executing analytical workflows at the highest level of abstraction. A single workflow is represented by a single python class. </p>
+<p>All workflow classes inherit from a base class that contains properties and methods for reading/writing workflow state to a JSON configuration file.</p>
+<h4 id="clipy">cli.py</h4>
+<p>Command line interface to the scripting tools (WIP).</p>
+<h4 id="configpy-and-settingspy">config.py and settings.py</h4>
+<p>Constants used for script execution.</p>
+<h4 id="modelspy">models.py</h4>
+<p>Internal data models used throughout the package. </p>
+<h4 id="calculators">calculators/</h4>
+<p>Module containing the science and business logic of the various calculators available in the package: </p>
+<ul>
+<li><a href="../peak-flow/">runoff/peak flow</a></li>
+<li><a href="../culvert-capacity/">culvert capacity</a></li>
+</ul>
+<h4 id="services">services/</h4>
+<p>Scripts for interacting with third-party domain-specific data sources (e.g., NOAA rainfall data, NAACC culvert data) and geoprocessing tools (e.g., Esri ArcPy, Whitebox tools).</p>
+<h5 id="gp">gp/</h5>
+<p>Geoprocessing services designed on specific provider tools (e.g., ESRI, Whitebox) and exposed through a generic class that is called by the workflow tools. This ensures <code>workflow.py</code> can run GP tools without needing to know exactly what underlying geoprocessing library is being used.</p>
+<h4 id="esri">esri/</h4>
+<p>This folder contains the built ArcGIS Pro Python toolbox, its metadata, and an <code>arcpy</code> interface script. </p>
+<p>These are automatically created during the build process and do not need to be manually edited under normal circumstances.</p>
+<h4 id="scripts-noaa-and-naaccc">Scripts: <code>noaa</code> and <code>naaccc</code></h4>
+<p>These are data provider-specific scripts that do that work </p>
+<h3 id="tests">tests</h3>
+<p>Integration tests for workflows and tasks within workflows.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
