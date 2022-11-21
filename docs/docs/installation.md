@@ -4,7 +4,7 @@
 
 Head to the [Releases page (github.com/civicmapper/drain-it/releases)](https://github.com/civicmapper/drain-it/releases) and download the `.whl` file from the latest version of the tool.
 
-## 1. Create a dedicated Python environment in ArcGIS Pro
+## 2. Create a dedicated Python environment in ArcGIS Pro
 
 To use this package, you'll need to install it a custom Python environment for ArcGIS Pro.
 

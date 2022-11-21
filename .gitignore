@@ -10,7 +10,7 @@
 build/
 dist/
 
-/docs/site/
+docs/site/
 
 *.gdb/
 *.mxd
