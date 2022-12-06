@@ -1,6 +1,6 @@
 """cli.py
 
-command line interface for drain-it, built with click
+command line interface for culvert-toolkit, built with click
 
 WIP
 

@@ -11,7 +11,7 @@ class Toolbox(object):
     def __init__(self):
         """Define the toolbox (the name of the toolbox is the name of the
         .pyt file)."""
-        self.label = "Culvert Toolkit"
+        self.label = "Culvert Analysis Toolkit"
         self.alias = "CulvertToolkit"
 
         # List of tool classes associated with this toolbox

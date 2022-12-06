@@ -67,11 +67,4 @@ def build_arcpy_support_files(
             str(target_docs_path / renamed)
         )
 
-        
-
-
-
-
-
-
 build_arcpy_support_files()

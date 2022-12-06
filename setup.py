@@ -1,6 +1,6 @@
 """setup.py
 
-This file is for packaging `drain-it` for distribution as a package and for use
+This file is for packaging `culvert-toolkit` for distribution as a package and for use
 in ArcGIS Pro using `setuptools`.
 
 References:
@@ -11,21 +11,18 @@ References:
 
 from setuptools import setup, find_packages
 import pathlib
-from os import remove
-import shutil
-import arcpy
 
 HERE = pathlib.Path(__file__).parent.resolve()
 
 setup(
-    name='drain-it',
+    name='culvert-toolkit',
     version='0.1.0',
     author='CivicMapper',
     author_email="info@civicmapper.com",
     description="A geospatial data-powered TR-55 model for modeling culvert capacity",
     long_description=(HERE / "README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
-    url="https://github.com/civicmapper/drain-it",
+    url="https://github.com/civicmapper/culvert-toolkit",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3.7',

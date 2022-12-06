@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<metadata xml:lang="en">
+	<Esri>
+		<CreaDate>20221111</CreaDate>
+		<CreaTime>12180100</CreaTime>
+		<ArcGISFormat>1.0</ArcGISFormat>
+		<SyncOnce>TRUE</SyncOnce>
+		<ModDate>20221206</ModDate>
+		<ModTime>123737</ModTime>
+		<scaleRange>
+			<minScale>150000000</minScale>
+			<maxScale>5000</maxScale>
+		</scaleRange>
+		<ArcGISProfile>ItemDescription</ArcGISProfile>
+	</Esri>
+	<tool name="NoaaRainfallEtlPytTool" displayname="NOAA Rainfall Raster Data Downloader" toolboxalias="CulvertToolkit" xmlns="">
+		<arcToolboxHelpPath>c:\program files\arcgis\pro\Resources\Help\gp</arcToolboxHelpPath>
+		<parameters>
+			<param name="aoi_geo" displayname="Area of Interest" type="Required" direction="Input" datatype="Feature Layer" expression="aoi_geo">
+				<dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;A feature class that contains data--any data--in your study area. This could be an Area of Interest (AOI) polygon but could also be culvert data.&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;The location of the features are just used to determine what NOAA region to download rainfall data for.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+			</param>
+			<param name="target_raster" displayname="Reference Raster" type="Optional" direction="Input" datatype="Raster Layer" expression="{target_raster}"/>
+			<param name="out_folder" displayname="Output Folder" type="Required" direction="Input" datatype="Folder" expression="out_folder">
+				<dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Output folder for the NOAA rainfall rasters and configuration file.&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;Remember: NOAA rainfall rasters cover a large area, so they are not necessarily project-specific. Don't feel compelled to save these with every delineation project!&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+			</param>
+			<param name="out_file_name" displayname="Output Rainfall Configuration File Name" type="Required" direction="Output" datatype="String" expression="out_file_name"/>
+		</parameters>
+		<summary>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Download rainfall rasters for your study area from NOAA. By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 years. All rasters are saved to the user-specified folder. &lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;This tool creates a &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;precipitation source configuration JSON file &lt;/SPAN&gt;&lt;SPAN&gt;in the output folder. The JSON file used as a required input to other tools. &lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;Note that NOAA Atlas 14 precip values are in &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;millimeters&lt;/SPAN&gt;&lt;SPAN&gt;; the capacity calculator an other tools convert the values to cm on-the-fly.&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;NOAA rainfall rasters cover a large area, so they are not necessarily specific to one culvert analysis project.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</summary>
+	</tool>
+	<dataIdInfo>
+		<idCitation>
+			<resTitle>NOAA Rainfall Raster Data Downloader</resTitle>
+		</idCitation>
+		<searchKeys>
+			<keyword>NOAA</keyword>
+			<keyword>rainfall</keyword>
+			<keyword>raster</keyword>
+			<keyword>preciptitation</keyword>
+		</searchKeys>
+	</dataIdInfo>
+	<distInfo>
+		<distributor>
+			<distorFormat>
+				<formatName>ArcToolbox Tool</formatName>
+			</distorFormat>
+		</distributor>
+	</distInfo>
+	<mdHrLv>
+		<ScopeCd value="005"/>
+	</mdHrLv>
+	<mdDateSt Sync="TRUE">20221206</mdDateSt>
+</metadata>

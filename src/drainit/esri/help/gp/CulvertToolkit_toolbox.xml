@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<metadata xml:lang="en">
+	<Esri>
+		<CreaDate>20221108</CreaDate>
+		<CreaTime>17180900</CreaTime>
+		<ArcGISFormat>1.0</ArcGISFormat>
+		<SyncOnce>TRUE</SyncOnce>
+		<ModDate>20221206</ModDate>
+		<ModTime>123737</ModTime>
+		<scaleRange>
+			<minScale>625000</minScale>
+			<maxScale>50000</maxScale>
+		</scaleRange>
+		<ArcGISProfile>ItemDescription</ArcGISProfile>
+	</Esri>
+	<toolbox name="CulvertToolbox" alias="CulvertToolkit">
+		<arcToolboxHelpPath>c:\program files\arcgis\pro\Resources\Help\gp</arcToolboxHelpPath>
+		<toolsets/></toolbox>
+	<dataIdInfo>
+		<idCitation>
+			<resTitle>CulvertToolbox</resTitle>
+		</idCitation>
+		<idPurp>A toolbox for analyzing peak flows and capacities of culverts based on the NAACC culvert model and TR-55 runoff model implemented by the Cornell Soil &amp; Water Lab.</idPurp>
+		<idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;P&gt;&lt;SPAN&gt;A toolbox for analyzing peak flows and capacities of culverts based on the NAACC culvert model and TR-55 runoff model implemented by the Cornell Soil &amp;amp; Water Lab.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;</idAbs>
+		<idCredit>Cornell Soil &amp; Water Lab, GroundPoint Engineering, CivicMapper</idCredit>
+		<searchKeys>
+			<keyword>culverts</keyword>
+			<keyword>drainage</keyword>
+			<keyword>peak flow</keyword>
+			<keyword>tr-55</keyword>
+			<keyword>stormwater</keyword>
+			<keyword>flooding</keyword>
+		</searchKeys>
+	</dataIdInfo>
+	<distInfo>
+		<distributor>
+			<distorFormat>
+				<formatName>ArcToolbox Toolbox</formatName>
+			</distorFormat>
+		</distributor>
+	</distInfo>
+	<mdHrLv>
+		<ScopeCd value="005"></ScopeCd>
+	</mdHrLv>
+	<mdDateSt Sync="TRUE">20221111</mdDateSt>
+</metadata>
