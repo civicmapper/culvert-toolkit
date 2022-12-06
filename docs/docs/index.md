@@ -1,8 +1,8 @@
-# Drain-It
+# Culvert Toolkit
 
-Drain-It is an Inlet + Culvert Peak-Flow and Capacity Calculator that uses a TR-55 Model and parameters derived from geospatial data.
+The Culvert Toolkit is an Inlet + Culvert Peak-Flow and Capacity Calculator that uses a TR-55 Model and parameters derived from geospatial data.
 
-* See [Installation](installation.md) to get Drain-It running in ArcGIS Pro
+* See [Installation](installation.md) to get the Culvert Toolkit running in ArcGIS Pro
 * [The toolbox](agp-python-toolbox.md) page provides an overview of the toolbox.
 * See the [Data Guides overview](data-overview.md) to understand the types inputs the tool requires
 * The [Analysis Guide overview](analysis-guide-overview.md) describes the ways the tool can be run.

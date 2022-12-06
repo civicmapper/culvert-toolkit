@@ -1,6 +1,6 @@
 # Installation
 
-## 1. Download the Drain-It Installation file
+## 1. Download the Culvert Toolkit installation file
 
 Head to the [Releases page (github.com/civicmapper/drain-it/releases)](https://github.com/civicmapper/drain-it/releases) and download the `.whl` file from the latest version of the tool.
 
@@ -24,4 +24,4 @@ Typically this gets added to your Windows Start Menu alongside the shortcut to A
 1. Open the Python Command Prompt that came with your ArcGIS Pro installation.
 3. In the command prompt, run `pip install <path-to-the-whl-file\drainit.whl>`. You'll replace `<path-to-the-whl-file\drainit.whl>` with the full path to the wheel file you downloaded in the previous step.
 
-After that you should see a `Drain-It` toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro. You may need to restart ArcGIS Pro before you see it.
+After that you should see a `Culvert Toolkit` toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro. You may need to restart ArcGIS Pro before you see it.

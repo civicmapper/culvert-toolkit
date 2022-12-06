@@ -1,6 +1,6 @@
 # Culvert Toolkit
 
-*NOTE: this repository is work-in-progress*
+*NOTE: this repository is work-in-progress* 
 
 The Culvert Toolkit is an Inlet + Culvert Peak-Flow and Capacity Calculator that runs in ArcGIS Pro and uses a TR-55 Model and parameters derived from geospatial data.
 
@@ -8,7 +8,7 @@ This software encompasses work originally developed by the Cornell Soil & Water 
 
 ## Installation and Use
 
-Check out the documentation at https://civicmapper.github.io/drain-it.
+Check out the documentation at https://civicmapper.github.io/culvert-toolkit.
 
 ## Credits/Contributors
 
