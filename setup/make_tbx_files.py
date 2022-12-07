@@ -26,7 +26,7 @@ def build_arcpy_support_files(
     target_build_path=ESRI_TARGET_PATH
     ):
 
-    print("building ArcPy support files")
+    print(f"building ArcPy support files for {str(source_pyt)}")
 
     # source build path is in the same folder as the PYT
     source_build_path = source_pyt.parent / 'esri'
@@ -54,7 +54,7 @@ def build_arcpy_support_files(
 
     # copy in our versions of the metadata files to the right places, with the 
     # right names, to the distribution folder
-    for i in source_pyt.parent.glob(f"{source_pyt.name}*.xml"):
+    for i in source_pyt.parent.glob(f"{source_pyt.stem}*.xml"):
         print("copying", i.name)
         if i.name == f"{source_pyt.name}.xml":
             renamed = f"{source_pyt.stem}_toolbox.xml"

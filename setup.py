@@ -25,12 +25,12 @@ setup(
     url="https://github.com/civicmapper/culvert-toolkit",
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.9',
         'Private :: Do Not Upload'
     ],    
     package_dir={"":"src"},
     packages=find_packages(where="src"),  # Required
-    python_requires=">=3.7, <4",
+    python_requires=">=3.9, <4",
     install_requires=[
         "codetiming",
         "pint",
@@ -39,7 +39,7 @@ setup(
         "requests",
         "petl",
         "marshmallow",
-        "marshmallow-dataclass",
+        "marshmallow-dataclass[union]",
     ],    
     package_data={
         'drainit':[
@@ -49,7 +49,7 @@ setup(
             'esri/help/gp/toolboxes/*', 
             'esri/help/gp/messages/*'
         ]
-    },
+    }, 
     # include_package_data=True,
     # entry_points='''
     #     [console_scripts]
