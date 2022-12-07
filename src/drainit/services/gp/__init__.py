@@ -1,6 +1,9 @@
 from click import echo
 from ...settings import USE_ESRI
 
+# class GP:
+#     pass
+
 if USE_ESRI:
     try:
         # import arcpy

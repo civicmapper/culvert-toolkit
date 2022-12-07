@@ -35,7 +35,7 @@ import pint
 import click
 import pandas as pd
 from codetiming import Timer
-from mpire import WorkerPool
+# from mpire import WorkerPool
 
 # ArcGIS imports
 # this import enables the Esri Spatially-Enabled DataFrame extension to Pandas DataFrames
@@ -1203,82 +1203,82 @@ class GP:
                     
             self.msg('calculating average rainfall')
 
-            if use_multiprocessing:
+            # if use_multiprocessing:
 
-                with WorkerPool() as pool:
-                    results = pool.map(
-                        self._calc_rainfall_avg,
-                        [
-                            (
-                                rr, 
-                                self._so("shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq'])),
-                                shed.filepath_raster,
-                                self.raster_field
-                            ) 
-                            for rr in rainfall_rasters
-                        ]
-                    )
-                rainfalls = [Rainfall(**result) for result in results] 
+            #     with WorkerPool() as pool:
+            #         results = pool.map(
+            #             self._calc_rainfall_avg,
+            #             [
+            #                 (
+            #                     rr, 
+            #                     self._so("shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq'])),
+            #                     shed.filepath_raster,
+            #                     self.raster_field
+            #                 ) 
+            #                 for rr in rainfall_rasters
+            #             ]
+            #         )
+            #     rainfalls = [Rainfall(**result) for result in results] 
 
-            else:
-                rainfalls = []
-                # for each rainfall raster representing a storm frequency:
-                for rr in rainfall_rasters:
+            # else:
+            rainfalls = []
+            # for each rainfall raster representing a storm frequency:
+            for rr in rainfall_rasters:
 
-                    self.msg(f"...{rr['freq']} year")
-                    # print(rr)
+                self.msg(f"...{rr['freq']} year")
+                # print(rr)
 
-                    table_rainfall_avg = self._so(
-                        "shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq']),
-                    )
-                    
-                    rrr = Raster(rr['path'])
-
-                    # calculate the average rainfall for the watershed
-                    with EnvManager(
-                        cellSizeProjectionMethod="CONVERT_UNITS",
-                        extent="MINOF",
-                        cellSize="MINOF",
-                        overwriteOutput=True,
-                        # parallelProcessingFactor='100%'
-                    ):
-                        args = [
-                            one_shed,
-                            self.raster_field,
-                            rrr,
-                            table_rainfall_avg,
-                            "DATA",
-                            "MEAN"                        
-                        ]
-                        # self.msg(f"DEBUG: {args}")
-                        ZonalStatisticsAsTable(*args)
-
-                    rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
-
-                    # rainfall_units = "inches"
-
-                    if len(rainfall_stats['features']) > 0:
-                        # there shouldn't be multiple polygon features here, but this 
-                        # willhandle edge cases:
-                        means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
-                        avg_rainfall = mean(means)
-                        # NOAA Atlas 14 precip values are in 1000ths/inch, 
-                        # converted to inches using Pint:
-                        # avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
-                    else:
-                        avg_rainfall = None
-
-                    # self.msg(rr['freq'], "year event:", avg_rainfall)
-                    rainfalls.append(
-                        Rainfall(
-                            freq=rr['freq'], 
-                            dur='24hr', 
-                            value=avg_rainfall
-                            # units=rainfall_units
-                        )
-                    )
-                    
+                table_rainfall_avg = self._so(
+                    "shed_{0}_rain_avg_{1}".format(shed.uid, rr['freq']),
+                )
                 
+                rrr = Raster(rr['path'])
+
+                # calculate the average rainfall for the watershed
+                with EnvManager(
+                    cellSizeProjectionMethod="CONVERT_UNITS",
+                    extent="MINOF",
+                    cellSize="MINOF",
+                    overwriteOutput=True,
+                    # parallelProcessingFactor='100%'
+                ):
+                    args = [
+                        one_shed,
+                        self.raster_field,
+                        rrr,
+                        table_rainfall_avg,
+                        "DATA",
+                        "MEAN"                        
+                    ]
+                    # self.msg(f"DEBUG: {args}")
+                    ZonalStatisticsAsTable(*args)
+
+                rainfall_stats = json.loads(RecordSet(table_rainfall_avg).JSON)
+
+                # rainfall_units = "inches"
+
+                if len(rainfall_stats['features']) > 0:
+                    # there shouldn't be multiple polygon features here, but this 
+                    # willhandle edge cases:
+                    means = [f['attributes']['MEAN'] for f  in rainfall_stats['features']]
+                    avg_rainfall = mean(means)
+                    # NOAA Atlas 14 precip values are in 1000ths/inch, 
+                    # converted to inches using Pint:
+                    # avg_rainfall = units.Quantity(f'{avg_rainfall}/1000 {rainfall_units}').m
+                else:
+                    avg_rainfall = None
+
+                # self.msg(rr['freq'], "year event:", avg_rainfall)
+                rainfalls.append(
+                    Rainfall(
+                        freq=rr['freq'], 
+                        dur='24hr', 
+                        value=avg_rainfall
+                        # units=rainfall_units
+                    )
+                )
+                
+            
             shed.avg_rainfall = sorted(rainfalls, key=lambda x: x.freq)
 
         
