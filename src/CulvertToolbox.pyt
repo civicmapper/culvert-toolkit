@@ -85,6 +85,11 @@ class CulvertCapacityPytTool(object):
         culvert_capacity_calc.run() 
         return
 
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return        
+
 
 class NaaccEtlPytTool(object):
     def __init__(self):
@@ -147,6 +152,11 @@ class NaaccEtlPytTool(object):
         )
         return n.output_points_filepath
 
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return        
+
 
 class NoaaRainfallEtlPytTool(object):
     def __init__(self):
@@ -196,3 +206,8 @@ class NoaaRainfallEtlPytTool(object):
             out_file_name=parameters[3].value    
         )
         return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return        
