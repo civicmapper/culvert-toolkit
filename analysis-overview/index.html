@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Overview - Culvert Toolkit</title>
+        <title>Overview - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -23,7 +23,7 @@
     <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="..">Culvert Toolkit</a>
+                <a class="navbar-brand" href="..">Culvert Analysis Toolkit</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -34,7 +34,7 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="navitem">
-                                <a href=".." class="nav-link">Culvert Toolkit</a>
+                                <a href=".." class="nav-link">Culvert Analysis Toolkit</a>
                             </li>
                             <li class="navitem">
                                 <a href="../installation/" class="nav-link">Installation</a>
@@ -43,7 +43,7 @@
                                 <a href="../toolbox/" class="nav-link">Toolbox</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Preparation Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -143,6 +143,18 @@
             
             <li class="nav-item" data-level="1"><a href="#overview" class="nav-link">Overview</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#model-input-consideration" class="nav-link">Model Input Consideration</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#naacc-culvert-data-accuracy-spatial-and-temporal" class="nav-link">NAACC culvert data accuracy (spatial and temporal)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#hydrologically-corrected-digital-elevation-models-dems" class="nav-link">Hydrologically-corrected Digital Elevation Models (DEMs)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -151,7 +163,18 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="overview">Overview</h1>
-<p><em>Using the tools; best practices for working with large datasets and basins</em></p></div>
+<p><em>Using the tools; best practices for working with large datasets and basins</em></p>
+<h2 id="model-input-consideration">Model Input Consideration</h2>
+<p>Balancing DEM hydrologic and NAACC location-correctedness</p>
+<ul>
+<li>Full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery</li>
+<li>snap culverts to available hydro steam lines, burn the lines into the DEMs</li>
+</ul>
+<p>Depends on the use case!</p>
+<h3 id="naacc-culvert-data-accuracy-spatial-and-temporal">NAACC culvert data accuracy (spatial and temporal)</h3>
+<p>...</p>
+<h3 id="hydrologically-corrected-digital-elevation-models-dems">Hydrologically-corrected Digital Elevation Models (DEMs)</h3>
+<p>...</p></div>
             </div>
         </div>
 

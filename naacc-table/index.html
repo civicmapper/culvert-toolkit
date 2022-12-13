@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Working with NAACC Culvert Data - Culvert Toolkit</title>
+        <title>Working with NAACC Culvert Data - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -23,7 +23,7 @@
     <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="..">Culvert Toolkit</a>
+                <a class="navbar-brand" href="..">Culvert Analysis Toolkit</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -34,7 +34,7 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="navitem">
-                                <a href=".." class="nav-link">Culvert Toolkit</a>
+                                <a href=".." class="nav-link">Culvert Analysis Toolkit</a>
                             </li>
                             <li class="navitem">
                                 <a href="../installation/" class="nav-link">Installation</a>
@@ -43,7 +43,7 @@
                                 <a href="../toolbox/" class="nav-link">Toolbox</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Preparation Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -143,6 +143,18 @@
             
             <li class="nav-item" data-level="1"><a href="#working-with-naacc-culvert-data" class="nav-link">Working with NAACC Culvert Data</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#initial-download-and-clean-up" class="nav-link">Initial Download and Clean-Up</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#optionally" class="nav-link">Optionally:</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#run-the-naacc-table-ingest-tool" class="nav-link">Run the NAACC Table Ingest tool</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -150,7 +162,21 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="working-with-naacc-culvert-data">Working with NAACC Culvert Data</h1></div>
+<h1 id="working-with-naacc-culvert-data">Working with NAACC Culvert Data</h1>
+<h2 id="initial-download-and-clean-up">Initial Download and Clean-Up</h2>
+<ul>
+<li>Download the XLSX file from NAACC</li>
+<li>Delete headers (first eight rows)</li>
+<li>Save as CSV</li>
+</ul>
+<h3 id="optionally">Optionally:</h3>
+<p>While the <em>NAACC Table Ingest</em> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest.</p>
+<p>You may want to remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements. Or, you may need to import this table into GIS, and move features to streams or flow lines on a digital elevation model. </p>
+<p>Regardless, as long as the NAACC schema is preserved, subsequent tools will be able to use it.</p>
+<h2 id="run-the-naacc-table-ingest-tool">Run the <em>NAACC Table Ingest</em> tool</h2>
+<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., a file geodatabase feature class.</p>
+<p>Use the prepared CSV above as an input. If you've imported that CSV to a file geodatabase feature class already, that feature class will also work.</p>
+<p>An optional input for this tool allows you to supply a table representing corrected locations for crossings. If provided, the tool will update the input NAACC-compliant source table with locations from this optional input.</p></div>
             </div>
         </div>
 
