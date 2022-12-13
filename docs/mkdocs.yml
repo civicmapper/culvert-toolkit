@@ -3,7 +3,7 @@ nav:
   - index.md
   - installation.md
   - toolbox.md
-  - Data Guide:
+  - Data Preparation Guide:
     - data-overview.md
     - naacc-table.md
     - noaa-rainfall.md

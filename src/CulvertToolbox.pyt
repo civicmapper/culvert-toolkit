@@ -88,7 +88,7 @@ class CulvertCapacityPytTool(object):
     def postExecute(self, parameters):
         """This method takes place after outputs are processed and
         added to the display."""
-        return        
+        return
 
 
 class NaaccEtlPytTool(object):
@@ -104,6 +104,8 @@ class NaaccEtlPytTool(object):
             arcpy.Parameter(displayName="NAACC CSV", name="naacc_src_table", datatype="DEFile", parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Output Folder", name="output_folder",datatype="DEFolder", parameterType='Required', direction='Output'),
             arcpy.Parameter(displayName="Output Feature Class", name="output_fc",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+            arcpy.Parameter(displayName="Alternative Geometry Reference Table", name="alt_geom_table", datatype="DEFeatureClass", parameterType='Optional', direction='Input'),
+            arcpy.Parameter(displayName="Survey ID Field in Alt. Geometry Ref. Table ", name="alt_geom_table_join_field", datatype="DEFeatureClass", parameterType='Optional', direction='Input')
         ]
 
         params[0].filter.list = ['txt', 'csv']
