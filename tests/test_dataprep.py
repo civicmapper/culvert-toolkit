@@ -85,7 +85,7 @@ class TestNaaccETL:
     def test_naacc_data_ingest_from_fgdb_fc(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path
         results = workflows.NaaccDataIngest(
-            naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points_raw'),
+            naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points'),
             output_folder=str(d),
             output_workspace=str(d / "test_output_naacc.gdb"),
             output_fc_name='naacc_points'
@@ -94,12 +94,30 @@ class TestNaaccETL:
         
         # evaluate the sample results:
         # 3 records
-        assert etl.nrows(t) == 3
+        assert etl.nrows(t) == 8
 
         # 2 without validation errors
-        assert etl.nrows(etl.selectnone(t, "validation_errors")) == 2
+        assert etl.nrows(etl.selectnone(t, "validation_errors")) == 5
 
         # the results were saved as geodata; check we have 3 features
         f = results._testing_output_geodata()
-        assert len(f) == 3
+        assert len(f) == 8
 
+    # def test_naacc_data_resnapping(self, tmp_path, sample_prepped_naacc_geodata):
+    #     d = tmp_path
+    #     results = workflows.NaaccDataSnapping(
+    #         naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points_raw'),
+    #         naacc_alt_geodata=str(sample_prepped_naacc_geodata / 'naacc_crossings_moved'),
+    #     )
+    #     t = results.naacc_table # petl table
+        
+    #     # evaluate the sample results:
+    #     # 3 records
+    #     assert etl.nrows(t) == 3
+
+    #     # 2 without validation errors
+    #     assert etl.nrows(etl.selectnone(t, "validation_errors")) == 2
+
+    #     # the results were saved as geodata; check we have 3 features
+    #     f = results._testing_output_geodata()
+    #     assert len(f) == 3

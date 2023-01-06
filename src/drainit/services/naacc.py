@@ -4,7 +4,7 @@ from typing import List
 from pathlib import Path
 from collections import OrderedDict
 from dataclasses import fields
-from petl.transform.conversions import replaceall
+import pdb
 
 import pint
 import petl as etl
@@ -116,9 +116,12 @@ class NaaccEtl:
         :rtype: tuple
 
         """
-
+        # print("row.flds\n", row.flds)
+        # print("row\n", row)
         # convert PETL Record object to an ordered dictionary
         r = OrderedDict({i[0]: i[1] for i in zip(row.flds, row)})
+        # print("\nrow\n",r)
+        # print(len(row), len(row.flds), len(r.keys()))
         
         # if r['validation_errors'] is not None:
         #   return tuple(r.values())
@@ -471,13 +474,14 @@ class NaaccEtl:
         
         """
 
-        # extend the table with fields from the Capacity model
+        # Extend the table with fields from the Capacity model
+        # Remove any columns that already exist (this will remove any data that 
+        # may have existed in those columns in the input table)
+        capacity_model_columns = [(f.name, f.default) for f in fields(Capacity)]
+        already_exists = [h[0] for h in capacity_model_columns if h[0] in etl.header(validated_table)]
         extended_table = etl\
-            .addfields(
-                validated_table, 
-                [(f.name, f.default) for f in fields(Capacity)]
-                # [(k, v.default) for k,v in Capacity.__dataclass_fields__.items()]
-            )
+            .cutout(validated_table, *already_exists)\
+            .addfields(capacity_model_columns)
         # get the new header
         extended_table_header = list(etl.header(extended_table))
         # hydrate the table: copy values from the NAACC fields to the Capacity fields,
@@ -536,6 +540,8 @@ class NaaccEtl:
             # .convert('validation_errors', lambda v: json.dumps(v))\
             # .replace('validation_errors', "null", "")
             # .replaceall("", None)
+
+        # pdb.set_trace()
 
         return hydrated_table
 
@@ -608,13 +614,14 @@ class NaaccEtl:
             click.echo('No rows. Creating empty outputs.')
         
         
+        # Create a fieldmap. Most fields are 1:1, except for validation_errors,
+        # which is updated with validation error messages
+        validated_table_fieldmap = OrderedDict([(h, h) for h in etl.header(raw_table)])
+        validated_table_fieldmap['validation_errors'] = lambda rec: validate_petl_record_w_schema(rec, self.naacc_culvert_schema)
+        # run the transform
         validated_table = etl\
             .replaceall(raw_table, "", None)\
-            .addfield(
-                'validation_errors',
-                lambda rec: validate_petl_record_w_schema(rec, self.naacc_culvert_schema)
-            )
-
+            .fieldmap(validated_table_fieldmap)
         
         if has_rows:
             bad = etl.selectnotnone(validated_table, 'validation_errors')
@@ -625,7 +632,14 @@ class NaaccEtl:
                 click.echo("> All rows passed initial validation (NAACC schema)")
         # print(etl.vis.see(bad))
 
-        
+
+        # ----------------------------------------------------------------------------
+        # Hydrate the table: 
+        #
+        # This step entails deriving params used for capacity & overflow 
+        # calculations from NAACC columns.
+        #
+
         hydrated_table = self._extend_and_hydrate(
             validated_table=validated_table,
             lookup_naac_inlet_shape=lookup_naac_inlet_shape,
@@ -736,8 +750,6 @@ class NaaccEtl:
                     kwargs['capacity'] = self.capacity_schema.load(data=c, partial=True)
                 except:
                     pass
-
-            
             p = DrainItPoint(**kwargs)
             points.append(p)
         
