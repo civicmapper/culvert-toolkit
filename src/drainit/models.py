@@ -411,9 +411,12 @@ class WorkflowConfig:
     # List of Points for this workflow.
     # A Point optionally has its associated "Shed" object nested internally
     points: Optional[List[DrainItPoint]] = field(default_factory=list)
-    # List of Sheds generated for this workflow. Each shed is associated with 
-    # a point on the `uid` attribute.
-    # sheds: Optional[List[Shed]] = field(default_factory=list)
+
+    # --------------------------
+    # "meta"
+    # dictionary for anything else extra we need
+
+    meta: Optional[dict] = field(default_factory=dict)
 
 
 WorkflowConfigSchema = class_schema(WorkflowConfig)

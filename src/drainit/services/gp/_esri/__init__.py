@@ -21,13 +21,11 @@ geoprocessing tasks with Esri Arcpy
 
 # standard library
 import os, time
-from collections import defaultdict
 from pathlib import Path
 from typing import List, Tuple, Dict
 import json
 from statistics import mean
-from tqdm import tqdm
-from dataclasses import fields
+import pdb
 
 # third party tools
 import petl as etl
@@ -310,6 +308,27 @@ class GP:
         CreateFileGDB(str(out_folder_path), out_name)
         return out_folder_path / f'{out_name}.gdb'
 
+    def create_featureclass_parents(self, out_feature_class: str) -> Path:
+        """given a full path to feature class in a geodatabase, create any all
+        parent directories that don't already exist, plus the fgdb if it doesn't
+        exist"""
+        fc_path = Path(out_feature_class)
+        found_gdb_idx, found_gdb = False, False
+        for idx, p in enumerate(fc_path.parts):
+            found_gdb = p.endswith(".gdb")
+            if found_gdb:
+                found_gdb_idx = idx
+            # print(idx, p, found_gdb, found_gdb_idx)
+        # print(found_gdb_idx, found_gdb)
+            
+        if found_gdb_idx:
+            output_workspace = Path(*fc_path.parts[:found_gdb_idx+1])
+            print("output_workspace", output_workspace)
+            if not output_workspace.exists():
+                output_workspace = self.create_workspace(output_workspace.parent, output_workspace.name)
+        
+        return False        
+
     def detect_data_type(self, filepath:str):
         return Describe(filepath).dataType
 
@@ -332,11 +351,11 @@ class GP:
 
         return out_csv
 
-    def create_petl_table_from_geodata(
+    def create_petl_table_from_geodata( 
         self,
-        feature_class, 
-        include_geom=False,
-        return_featureset=True
+        feature_class:str, 
+        include_geom:bool=False,
+        # alt_xy_fields:List[str]=None
         ) -> Tuple[etl.Table, dict, int]:
         """Convert an Esri Feature Class to a PETL table object.
 
@@ -363,7 +382,6 @@ class GP:
             oid_field = described_fc.OIDFieldName
         shp_field = described_fc.shapeFieldName # SHAPE (geometry) field
         crs_wkid = described_fc.spatialReference.factoryCode # spatial reference
-
 
         # derive a list of fields to exclude from table conversion
         fields_to_exclude = [x for x in [oid_field, shp_field] if x]        
@@ -547,7 +565,7 @@ class GP:
         # else:
         return json.loads(feature_set.JSON)
 
-    def create_geodata_from_points(
+    def create_geodata_from_drainitpoints(
         self, 
         points: List[DrainItPoint],
         output_points_filepath=None,
@@ -634,7 +652,7 @@ class GP:
         else:
             return feature_set
 
-    def create_point_objects_from_geodata(
+    def create_drainitpoints_from_geodata(
         self, 
         points_filepath, 
         uid_field,
@@ -754,7 +772,7 @@ class GP:
             lat=centroid.centroid.Y
         )
 
-    def create_geotiffs_from_noaa_rasters(
+    def create_geotiffs_from_rainfall_rasters(
         self, 
         rrc: RainfallRasterConfig, 
         out_folder: str, 
@@ -810,6 +828,25 @@ class GP:
         rrc.root = out_folder
         
         return rrc
+
+    def update_geodata_geoms_with_other_geodata(self, target_feature_class, target_join_field,  source_feature_class, source_join_field, output_feature_class):
+
+        target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=False)
+        source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
+
+        geometry_table = etl.cut(source_table, *[source_join_field, "x", "y"])
+
+        t = etl.leftjoin(
+            left=target_table, 
+            right=geometry_table, 
+            lkey=target_join_field, 
+            rkey=source_join_field
+        )
+
+        self.create_geodata_from_petl_table(t,"x","y",output_feature_class)
+        
+        return t
+        
 
     # --------------------------------------------------------------------------
     # Public Pre-Processing methods for rasters
@@ -1562,7 +1599,7 @@ class GP:
             # this lets us keep our Point objects around while feeding
             # the GP tools a native input format.
             # desc_flowdir = Describe(flow_direction_raster)
-            point_geodata = self.create_geodata_from_points([point], as_dict=False) #, output_crs_wkid=desc_flowdir.spatialReference.factoryCode)
+            point_geodata = self.create_geodata_from_drainitpoints([point], as_dict=False) #, output_crs_wkid=desc_flowdir.spatialReference.factoryCode)
             # self.msg(point_geodata)
 
             # delineate a catchment/basin/watershed ("shed") and derive 

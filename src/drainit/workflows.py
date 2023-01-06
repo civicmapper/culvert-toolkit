@@ -2,14 +2,13 @@
 """
 
 import json
-from math import exp
-from os import makedirs
 from copy import deepcopy
 from pathlib import Path
 from dataclasses import asdict, replace, fields
 from typing import Tuple, List
 from tempfile import mkdtemp
 from collections import Counter, OrderedDict
+import pdb
 
 import petl as etl
 import click
@@ -41,7 +40,7 @@ from .utils import get_type
 
 class WorkflowManager:
     """Base class for all workflows. Provides methods for storing and 
-    persisting results from various workflow components.
+    persisting results for workflows.
     """
 
     def __init__(
@@ -79,6 +78,8 @@ class WorkflowManager:
         self.use_multiprocessing = use_multiprocessing
         self.units = pint.UnitRegistry()
         self.gp = GP(self.config)
+
+        # code.interact(local=locals())
 
     def load_config(self, config_json_filepath=None):
         """load a workflow from a JSON file
@@ -148,27 +149,28 @@ class NaaccDataIngest(WorkflowManager):
 
     def __init__(
         self, 
-        naacc_src_table,
-        output_folder,
-        output_workspace,
-        output_fc_name,
-        crs_wkid=4326,
-        naacc_x="GIS_Longitude",
-        naacc_y="GIS_Latitude",
+        naacc_src_table:str,
+        output_folder:str,
+        output_workspace:str,
+        output_fc_name:str,
+        crs_wkid:int=4326,
+        naacc_x:str="GIS_Longitude",
+        naacc_y:str="GIS_Latitude",
         **kwargs
-        ):
+        ):  
         """read in, validate, and extend a NAACC compliant source table, saving
         the output to a geodata format (e.g., feature class in a geodatabase)
 
         Args:
-            naacc_src_table ([type]): The path to the NAACC CSV
-            output_folder: the path to the folder where outputs will be saved
-            output_workspace ([type]): the path to the output workspace for geodata.
-            output_fc_name ([type]): name of output files (feature class or shapefile, also used for the csv)
-            crs_wkid (int, optional): the WKID of the coordinates in the NAACC CSV. Defaults to 4326.
-            naacc_x
-            naacc_y
-        """
+            naacc_src_table (str): The path to the NAACC table
+            output_folder (str): the path to the folder where outputs will be saved
+            output_workspace (str): the path to the output workspace for geodata.
+            output_fc_name (str): name of output files (feature class or shapefile, also used for the csv)
+            crs_wkid (int, optional): the WKID of the coordinates in the NAACC CSV. Defaults to 4326.. Defaults to 4326.
+            naacc_x (str, optional): name of the field in the naacc_src_table with Longitude/Y. Defaults to "GIS_Longitude".
+            naacc_y (str, optional): name of the field in the naacc_src_table with Latitude/X. Defaults to "GIS_Latitude".
+        """        
+
         super().__init__(**kwargs)
         self.output_folder = Path(output_folder)
         self.output_workspace = Path(output_workspace)
@@ -196,7 +198,7 @@ class NaaccDataIngest(WorkflowManager):
             self.output_folder.mkdir(parents=True)
         if not self.output_workspace.exists():
             self.gp.create_workspace(self.output_workspace.parent, self.output_workspace.name)
-        # save path for the output table
+        # save path for the output table in the config
         self.output_points_filepath = str(Path(self.output_workspace) / self.output_fc_name)
         # set the file name of the output csv (will be used to derive subset tables as well)
         output_csv = self.output_folder / str(self.output_fc_name + ".csv")
@@ -212,7 +214,7 @@ class NaaccDataIngest(WorkflowManager):
                 output_path=output_csv,
                 wkid=self.crs_wkid,
                 naacc_x=self.naacc_x,
-                naacc_y=self.naacc_y                
+                naacc_y=self.naacc_y
             )
         # anything else ends up here:
         else:
@@ -270,6 +272,57 @@ class NaaccDataIngest(WorkflowManager):
             d = self.gp.create_dicts_from_geodata(self.output_points_filepath)
             return d['features']
         else: return {}
+
+
+class NaaccDataSnapping(WorkflowManager):
+    def __init__(
+        self, 
+        output_fc:str,
+        naacc_points_table:str,
+        geometry_source_table:str,
+        naacc_points_table_join_field:str="Survey_Id",
+        geometry_source_table_join_field:str="Survey_Id",
+        **kwargs
+        ):   
+        """Move points in an existing ingested NAACC points table to new locations by referencing another table, and joining the geometry of features in that table based on a join ID
+
+        Args:
+            output_fc (str): path to a new output feature class
+            naacc_points_table (str): feature class with NAACC data (prepped via NaaccDataIngest)
+            naacc_points_table_join_field (str): field in naacc_points_table used to match geometries to geometry_source_table records
+            geometry_source_table (str): path to geodata table that includes modified geometries to replace those in naacc_src_table
+            geometry_source_table_join_field (str, optional): field in geometry_source_table used to match geometries to naacc_points_table records. Defaults to "Survey_Id".
+        """        
+
+        super().__init__(**kwargs)
+        self.gp = GP(self.config)
+
+        self.output_fc = output_fc
+        
+        self.naacc_points_table = naacc_points_table
+        self.naacc_points_table_join_field = naacc_points_table_join_field
+        self.geometry_source_table = geometry_source_table
+        self.geometry_source_table_join_field = geometry_source_table_join_field
+
+        self.output_table = None
+
+        self._run()
+
+    def _run(self):
+
+        output_workspace = self.gp.create_featureclass_parents(self.output_fc)
+        print(output_workspace)
+
+        self.output_table = self.gp.update_geodata_geoms_with_other_geodata(
+            target_feature_class=self.naacc_points_table,
+            target_join_field=self.naacc_points_table_join_field,
+            source_feature_class=self.geometry_source_table,
+            source_join_field=self.geometry_source_table_join_field,
+            output_feature_class=self.output_fc
+        )
+
+        return self.output_table
+
 
 
 class RainfallDataGetter(WorkflowManager):
@@ -334,7 +387,7 @@ class RainfallDataGetter(WorkflowManager):
             study=r['reg']
         )
         # resample, reproject, and crop the downloaded rasters
-        rainfall_raster_config = self.gp.create_geotiffs_from_noaa_rasters(
+        rainfall_raster_config = self.gp.create_geotiffs_from_rainfall_rasters(
             rrc=rainfall_raster_config, 
             out_folder=self.out_folder,
             target_crs_wkid=self.target_crs_wkid, 
@@ -565,7 +618,7 @@ class CulvertCapacity(WorkflowManager):
         # geojson), load it into a Python representation of that data in a 
         # geo-format (e.g., geojson or geoservices json (Esri)), ETL the table
         # else:
-        points, points_features, points_spatial_ref_code = self.gp.create_point_objects_from_geodata(
+        points, points_features, points_spatial_ref_code = self.gp.create_drainitpoints_from_geodata(
             points_filepath=self.config.points_filepath,
             uid_field=self.config.points_id_fieldname,
             group_id_field=self.config.points_group_fieldname,

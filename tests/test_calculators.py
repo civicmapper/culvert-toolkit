@@ -86,7 +86,7 @@ class TestCapacityCalc:
 
         # get a single passing test point from the test data
         test_point = cc.config.points[3]
-        point_geodata = cc.gp.create_geodata_from_points([test_point], as_dict=False)
+        point_geodata = cc.gp.create_geodata_from_drainitpoints([test_point], as_dict=False)
         # serialize the precip src config object as a dictionary
         precip_src_config = models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config)
 
@@ -129,7 +129,7 @@ class TestCapacityCalc:
 
         # get a single passing test point from the test data
         test_point = cc.config.points[3]
-        point_geodata = cc.gp.create_geodata_from_points([test_point], as_dict=False)
+        point_geodata = cc.gp.create_geodata_from_drainitpoints([test_point], as_dict=False)
         # serialize the precip src config object as a dictionary
         precip_src_config = models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config)
 
