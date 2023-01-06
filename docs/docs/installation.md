@@ -24,6 +24,8 @@ ArcGIS Pro comes with a **"Python Command Prompt"** shortcut available, which ru
 Typically this gets added to your Windows Start Menu alongside the shortcut to ArcGIS Pro.
 
 1. Open the Python Command Prompt that came with your ArcGIS Pro installation.
-3. In the command prompt, run `pip install <path-to-the-whl-file\drainit.whl>`. You'll replace `<path-to-the-whl-file\drainit.whl>` with the full path to the wheel file you downloaded in the previous step.
+3. In the command prompt, run `pip install "<path-to-the-whl-file\drainit.whl>"`. You'll replace `"<path-to-the-whl-file\drainit.whl>"` with the full path to the wheel file you downloaded in the previous step. Include the quotes `"`.
 
-After that you should see a `Culvert Analysis Toolkit` toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro. You may need to restart ArcGIS Pro before you see it.
+Restart ArcGIS Pro. Open an existing or new project, and you should see a `Culvert Analysis Toolkit` toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro:
+
+![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png)
