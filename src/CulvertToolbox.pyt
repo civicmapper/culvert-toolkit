@@ -101,14 +101,14 @@ class NaaccEtlPytTool(object):
     def getParameterInfo(self):
         """Define parameter definitions"""
         params=[
-            arcpy.Parameter(displayName="NAACC CSV", name="naacc_src_table", datatype="DEFile", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="NAACC Table (CSV or Feature Class)", name="naacc_src_table", datatype=["DEFile", "DEFeatureClass"], parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Output Folder", name="output_folder",datatype="DEFolder", parameterType='Required', direction='Output'),
             arcpy.Parameter(displayName="Output Feature Class", name="output_fc",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
             arcpy.Parameter(displayName="Alternative Geometry Reference Table", name="alt_geom_table", datatype="DEFeatureClass", parameterType='Optional', direction='Input'),
             arcpy.Parameter(displayName="Survey ID Field in Alt. Geometry Ref. Table ", name="alt_geom_table_join_field", datatype="DEFeatureClass", parameterType='Optional', direction='Input')
         ]
 
-        params[0].filter.list = ['txt', 'csv']
+        # params[0].filter.list = ['txt', 'csv']
 
         return params
 
