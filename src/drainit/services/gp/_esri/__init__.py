@@ -829,7 +829,7 @@ class GP:
         
         return rrc
 
-    def update_geodata_geoms_with_other_geodata(self, target_feature_class, target_join_field,  source_feature_class, source_join_field, output_feature_class):
+    def update_geodata_geoms_with_other_geodata(self, target_feature_class, target_join_field,  source_feature_class, source_join_field, output_feature_class, crs_wkid=4326):
 
         target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=False)
         source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
@@ -843,7 +843,7 @@ class GP:
             rkey=source_join_field
         )
 
-        self.create_geodata_from_petl_table(t,"x","y",output_feature_class)
+        self.create_geodata_from_petl_table(t,"x","y",output_feature_class, crs_wkid)
         
         return t
         
