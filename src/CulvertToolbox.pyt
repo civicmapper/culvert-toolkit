@@ -24,7 +24,7 @@ class Toolbox(object):
             NoaaRainfallEtlPytTool,
             CulvertCapacityPytTool,
         ]
-        
+
 
 class CulvertCapacityPytTool(object):
     def __init__(self):
@@ -168,7 +168,7 @@ class NaaccEtlPytTool(object):
 class NaaccSnappingPytTool(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "NAACC Table Ingest"
+        self.label = "NAACC Culvert Snapping"
         self.description = NaaccDataSnapping.__doc__
         self.canRunInBackground = True
 
