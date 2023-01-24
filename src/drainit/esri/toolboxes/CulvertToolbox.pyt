@@ -3,9 +3,12 @@
 from pathlib import Path
 import arcpy
 
-from drainit.workflows import CulvertCapacity
-from drainit.workflows import NaaccDataIngest
-from drainit.workflows import RainfallDataGetter
+from drainit.workflows import (
+    CulvertCapacity,
+    NaaccDataIngest,
+    NaaccDataSnapping,
+    RainfallDataGetter
+)
 
 class Toolbox(object):
     def __init__(self):
@@ -17,9 +20,11 @@ class Toolbox(object):
         # List of tool classes associated with this toolbox
         self.tools = [
             NaaccEtlPytTool,
+            NaaccSnappingPytTool,
             NoaaRainfallEtlPytTool,
             CulvertCapacityPytTool,
         ]
+        
 
 class CulvertCapacityPytTool(object):
     def __init__(self):
@@ -88,7 +93,7 @@ class CulvertCapacityPytTool(object):
     def postExecute(self, parameters):
         """This method takes place after outputs are processed and
         added to the display."""
-        return        
+        return
 
 
 class NaaccEtlPytTool(object):
@@ -101,12 +106,14 @@ class NaaccEtlPytTool(object):
     def getParameterInfo(self):
         """Define parameter definitions"""
         params=[
-            arcpy.Parameter(displayName="NAACC CSV", name="naacc_src_table", datatype="DEFile", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="NAACC Table (CSV or Feature Class)", name="naacc_src_table", datatype=["DEFile", "DEFeatureClass"], parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Output Folder", name="output_folder",datatype="DEFolder", parameterType='Required', direction='Output'),
             arcpy.Parameter(displayName="Output Feature Class", name="output_fc",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+            arcpy.Parameter(displayName="Alternative Geometry Reference Table", name="alt_geom_table", datatype="DEFeatureClass", parameterType='Optional', direction='Input'),
+            arcpy.Parameter(displayName="Survey ID Field in Alt. Geometry Ref. Table ", name="alt_geom_table_join_field", datatype="DEFeatureClass", parameterType='Optional', direction='Input')
         ]
 
-        params[0].filter.list = ['txt', 'csv']
+        # params[0].filter.list = ['txt', 'csv']
 
         return params
 
@@ -151,6 +158,78 @@ class NaaccEtlPytTool(object):
             # naacc_y=GetParameterAsText(6)# "GIS_Latitude",
         )
         return n.output_points_filepath
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return        
+
+
+class NaaccSnappingPytTool(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "NAACC Table Ingest"
+        self.description = NaaccDataSnapping.__doc__
+        self.canRunInBackground = True
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        params=[
+            arcpy.Parameter(displayName="Input NAACC culvert feature class", name="naacc_points_table", datatype=["GPFeatureLayer", "DEFeatureClass"], parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Input NAACC culvert feature class - crossing/survey ID field", name="naacc_points_table_join_field", datatype="Field", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Input snapped NAACC crossing feature class", name="geometry_source_table", datatype=["GPFeatureLayer", "DEFeatureClass"], parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Input snapped NAACC crossing feature class - crossing/survey ID field", name="geometry_source_table_join_field", datatype="Field", parameterType='Required', direction='Input'),
+            arcpy.Parameter(displayName="Output Feature Class", name="output_fc", datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+        ]
+        self.params = params
+
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+
+        # TODO: check for Spatial Analyst
+
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+
+        if parameters[0].value:
+            parameters[1] = arcpy.Describe(parameters[0].value).fields
+
+        if parameters[2].value:
+            parameters[3] = arcpy.Describe(parameters[2].value).fields
+
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter. This method is called after internal validation."""
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+
+        naacc_points_table = parameters[0].value
+        naacc_points_table_join_field = parameters[1].value
+        geometry_source_table = parameters[3].value
+        geometry_source_table_join_field = parameters[4].value
+        output_fc = parameters[5].value
+        
+        result = NaaccDataIngest(
+            output_fc=output_fc,
+            naacc_points_table=naacc_points_table,
+            geometry_source_table=geometry_source_table,
+            naacc_points_table_join_field=naacc_points_table_join_field,
+            geometry_source_table_join_field=geometry_source_table_join_field
+
+        )
+
+        return result.output_table
 
     def postExecute(self, parameters):
         """This method takes place after outputs are processed and

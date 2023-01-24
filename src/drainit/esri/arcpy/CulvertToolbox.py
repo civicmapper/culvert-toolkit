@@ -2,7 +2,7 @@
 r"""A toolbox for analyzing peak flows and capacities of culverts based
 on the NAACC culvert model and TR-55 runoff model implemented by the
 Cornell Soil &amp; Water Lab."""
-__all__ = ['CulvertCapacityPytTool', 'NaaccEtlPytTool',
+__all__ = ['CulvertCapacityPytTool', 'NaaccEtlPytTool', 'NaaccSnappingPytTool',
            'NoaaRainfallEtlPytTool']
 __alias__ = 'CulvertToolkit'
 from arcpy.geoprocessing._base import gptooldoc, gp, gp_fixargs
@@ -49,17 +49,21 @@ def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, r
         raise e
 
 @gptooldoc('NaaccEtlPytTool_CulvertToolkit', None)
-def NaaccEtlPytTool(naacc_src_table=None, output_folder=None, output_fc=None):
-    """NaaccEtlPytTool_CulvertToolkit(naacc_src_table, output_folder, output_fc)
+def NaaccEtlPytTool(naacc_src_table=None, output_folder=None, output_fc=None, alt_geom_table=None, alt_geom_table_join_field=None):
+    """NaaccEtlPytTool_CulvertToolkit(naacc_src_table, output_folder, output_fc, {alt_geom_table}, {alt_geom_table_join_field})
 
         Read in, validate, and extend a NAACC-compliant source table, saving
         the output as geodata (e.g., a file geodatabase feature class) for use
         in other culvert analysis tools.
 
      INPUTS:
-      naacc_src_table (File):
+      naacc_src_table (File / Feature Class):
           Path to CSV, SHP, or FGDB feature class containing data with a
           NAACC-compliant schema.
+      alt_geom_table {Feature Class}:
+          Alternative Geometry Reference Table
+      alt_geom_table_join_field {Feature Class}:
+          Survey ID Field in Alt. Geometry Ref. Table 
 
      OUTPUTS:
       output_folder (Folder):
@@ -69,7 +73,32 @@ def NaaccEtlPytTool(naacc_src_table=None, output_folder=None, output_fc=None):
     from arcpy.geoprocessing._base import gp, gp_fixargs
     from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
     try:
-        retval = convertArcObjectToPythonObject(gp.NaaccEtlPytTool_CulvertToolkit(*gp_fixargs((naacc_src_table, output_folder, output_fc), True)))
+        retval = convertArcObjectToPythonObject(gp.NaaccEtlPytTool_CulvertToolkit(*gp_fixargs((naacc_src_table, output_folder, output_fc, alt_geom_table, alt_geom_table_join_field), True)))
+        return retval
+    except Exception as e:
+        raise e
+
+@gptooldoc('NaaccSnappingPytTool_CulvertToolkit', None)
+def NaaccSnappingPytTool(naacc_points_table=None, naacc_points_table_join_field=None, geometry_source_table=None, geometry_source_table_join_field=None, output_fc=None):
+    """NaaccSnappingPytTool_CulvertToolkit(naacc_points_table, naacc_points_table_join_field, geometry_source_table, geometry_source_table_join_field, output_fc)
+
+     INPUTS:
+      naacc_points_table (Feature Layer / Feature Class):
+          Input NAACC culvert feature class
+      naacc_points_table_join_field (Field):
+          Input NAACC culvert feature class - crossing/survey ID field
+      geometry_source_table (Feature Layer / Feature Class):
+          Input snapped NAACC crossing feature class
+      geometry_source_table_join_field (Field):
+          Input snapped NAACC crossing feature class - crossing/survey ID field
+
+     OUTPUTS:
+      output_fc (Feature Class):
+          Output Feature Class"""
+    from arcpy.geoprocessing._base import gp, gp_fixargs
+    from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
+    try:
+        retval = convertArcObjectToPythonObject(gp.NaaccSnappingPytTool_CulvertToolkit(*gp_fixargs((naacc_points_table, naacc_points_table_join_field, geometry_source_table, geometry_source_table_join_field, output_fc), True)))
         return retval
     except Exception as e:
         raise e
