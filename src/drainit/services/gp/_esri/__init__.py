@@ -61,7 +61,11 @@ from arcpy.sa import (
     Con, 
     CellStatistics
 ) #, ZonalGeometryAsTable
-from arcpy.da import SearchCursor, InsertCursor, NumPyArrayToFeatureClass
+from arcpy.da import (
+    SearchCursor, 
+    InsertCursor, 
+    Describe as DaDescribe
+)
 from arcpy.management import (
     CreateFileGDB,
     Delete,
@@ -833,6 +837,15 @@ class GP:
 
         target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=False)
         source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
+        sr = DaDescribe(source_feature_class).get('spatialReference')
+        if sr:
+            if sr.PCSCode:
+                crs_wkid = sr.PCSCode
+            elif sr.GCSCode:
+                crs_wkid = sr.GCSCode
+            else:
+                # crs_wkid will default to 4326
+                pass        
 
         geometry_table = etl.cut(source_table, *[source_join_field, "x", "y"])
 

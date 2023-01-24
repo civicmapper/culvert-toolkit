@@ -212,37 +212,18 @@ class NaaccSnappingPytTool(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
 
-        # naacc_points_table = parameters[0].value
-        # naacc_points_table_join_field = parameters[1].value
-        # geometry_source_table = parameters[2].value
-        # geometry_source_table_join_field = parameters[3].value
-        # output_fc = parameters[4].value
-
-        # populate a dictionary of keyword arguments for the workflow tool
         for p in parameters:
             arcpy.AddMessage(f"{p.name} | {p.value}")
         
-        kwargs = dict(
+        tool_kwargs = dict(
             output_fc=parameters[4].value.value,
             naacc_points_table=parameters[0].value.value,
             geometry_source_table= parameters[2].value.value,
             naacc_points_table_join_field=parameters[1].value.value,
             geometry_source_table_join_field= parameters[3].value.value            
-        )            
-
-        # derive the spatial reference WKID to be applied to the output from 
-        # the geometry_source_table
-        sr = arcpy.da.Describe(kwargs['geometry_source_table']).get('spatialReference')
-        if sr:
-            if sr.PCSCode:
-                kwargs['crs_wkid'] = sr.PCSCode
-            elif sr.GCSCode:
-                kwargs['crs_wkid'] = sr.GCSCode
-            else:
-                # crs_wkid will default to 4326
-                pass
+        )
         
-        result = NaaccDataSnapping(**kwargs)
+        result = NaaccDataSnapping(**tool_kwargs)
 
         return result.output_table
 
