@@ -20,9 +20,11 @@ class Toolbox(object):
         # List of tool classes associated with this toolbox
         self.tools = [
             NaaccEtlPytTool,
+            NaaccSnappingPytTool,
             NoaaRainfallEtlPytTool,
             CulvertCapacityPytTool,
         ]
+        
 
 class CulvertCapacityPytTool(object):
     def __init__(self):
