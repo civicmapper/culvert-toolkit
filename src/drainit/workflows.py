@@ -284,7 +284,7 @@ class NaaccDataSnapping(WorkflowManager):
         geometry_source_table_join_field:str="Survey_Id",
         **kwargs
         ):   
-        """Move points in an existing ingested NAACC points table to new locations by referencing another table, and joining the geometry of features in that table based on a join ID
+        """Move points in an existing ingested NAACC points table to new locations by referencing another table, and joining the geometry of features in that table based on a join ID. This tool is most useful after culverts have been snapped to raster flow lines, which typically results in only the crossing location being mapped.
 
         Args:
             output_fc (str): path to a new output feature class
