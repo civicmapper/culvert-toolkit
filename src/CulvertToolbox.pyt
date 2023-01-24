@@ -212,17 +212,16 @@ class NaaccSnappingPytTool(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
 
-        for p in parameters:
-            arcpy.AddMessage(f"{p.name} | {p.value}")
+        # turn parameters into keyword args
+        tool_kwargs = {p.name: p.value.value for p in parameters}
+
+        # print some things
+        for k, v in tool_kwargs.items():
+            arcpy.AddMessage(f"{k} | {v}")
         
-        tool_kwargs = dict(
-            output_fc=parameters[4].value.value,
-            naacc_points_table=parameters[0].value.value,
-            geometry_source_table= parameters[2].value.value,
-            naacc_points_table_join_field=parameters[1].value.value,
-            geometry_source_table_join_field= parameters[3].value.value            
-        )
-        
+        arcpy.AddMessage(f"replacing the geometry in {tool_kwargs['naacc_points_table']} with geometry from {tool_kwargs['geometry_source_table']} based on the match between fields {tool_kwargs['naacc_points_table_join_field']} and {tool_kwargs['geometry_source_table_join_field']}")
+
+        # run the tool
         result = NaaccDataSnapping(**tool_kwargs)
 
         return result.output_table
