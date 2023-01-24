@@ -16,7 +16,7 @@ HERE = pathlib.Path(__file__).parent.resolve()
 
 setup(
     name='culvert-toolkit',
-    version='0.1.0',
+    version='0.1.1',
     author='CivicMapper',
     author_email="info@civicmapper.com",
     description="A geospatial data-powered TR-55 model for modeling culvert capacity",
@@ -27,7 +27,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3.9',
         'Private :: Do Not Upload'
-    ],    
+    ],
     package_dir={"":"src"},
     packages=find_packages(where="src"),  # Required
     python_requires=">=3.9, <4",
@@ -40,7 +40,7 @@ setup(
         "petl",
         "marshmallow",
         "marshmallow-dataclass[union]",
-    ],    
+    ],
     package_data={
         'drainit':[
             'esri/toolboxes/*',  
