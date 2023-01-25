@@ -64,7 +64,7 @@ class TestNaaccETL:
             naacc_src_table=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
             output_folder=str(d),
             output_workspace=str(d / "naacc.gdb"),
-            output_fc_name='naacc_points'
+            output_fc='naacc_points'
         )
         t = results.naacc_table # petl table
         
@@ -88,7 +88,7 @@ class TestNaaccETL:
             naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points'),
             output_folder=str(d),
             output_workspace=str(d / "test_output_naacc.gdb"),
-            output_fc_name='naacc_points'
+            output_fc='naacc_points'
         )
         t = results.naacc_table # petl table
         

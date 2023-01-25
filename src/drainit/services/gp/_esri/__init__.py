@@ -312,10 +312,14 @@ class GP:
         CreateFileGDB(str(out_folder_path), out_name)
         return out_folder_path / f'{out_name}.gdb'
 
-    def create_featureclass_parents(self, out_feature_class: str) -> Path:
+    def create_featureclass_parents(self, out_feature_class: str):
         """given a full path to feature class in a geodatabase, create any all
         parent directories that don't already exist, plus the fgdb if it doesn't
-        exist"""
+        exist
+
+        Returns a tuple of the parent folder of the workspace and the workspace (FGDB) name
+        
+        """
         fc_path = Path(out_feature_class)
         found_gdb_idx, found_gdb = False, False
         for idx, p in enumerate(fc_path.parts):
@@ -330,8 +334,9 @@ class GP:
             print("output_workspace", output_workspace)
             if not output_workspace.exists():
                 output_workspace = self.create_workspace(output_workspace.parent, output_workspace.name)
+            return output_workspace.parent, output_workspace.name
         
-        return False        
+        return False, False
 
     def detect_data_type(self, filepath:str):
         return Describe(filepath).dataType
@@ -359,7 +364,7 @@ class GP:
         self,
         feature_class:str, 
         include_geom:bool=False,
-        # alt_xy_fields:List[str]=None
+        # alt_xy_fields:List[str]=None 
         ) -> Tuple[etl.Table, dict, int]:
         """Convert an Esri Feature Class to a PETL table object.
 
@@ -677,8 +682,7 @@ class GP:
         # extract feature class to a PETL table and a FeatureSet
         raw_table, feature_set, crs_wkid = self.create_petl_table_from_geodata(
             points_filepath,
-            include_geom=True,
-            return_featureset=True
+            include_geom=True
         )
 
         # convert the FeatureSet to its JSON representation

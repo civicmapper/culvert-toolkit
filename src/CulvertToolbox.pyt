@@ -77,10 +77,29 @@ class CulvertCapacityPytTool(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
+
+        kwargs = {}
+        for p in parameters:
+            arcpy.AddMessage(f"{p.name} | {p.datatype}")
+            if p.parameterType != 'Derived':
+                if p.datatype in ('Feature Layer', 'Raster Layer'):
+                    kwargs[p.name] = p.value.dataSource
+                elif p.datatype == 'Feature Class':
+                    kwargs[p.name] = p.value.value
+                else:
+                    kwargs[p.name] = p.value.value
+
+            # try:
+            #     arcpy.AddMessage(f"{p.name} >>> {p.value.__class__.__name__}")
+            #     arcpy.AddMessage(f"\t{p.value.dataSource}")
+            #     kwargs[p.name] = p.value.dataSource
+            # except:
+            #     arcpy.AddMessage(f"{p.name} >>> {type(p.value)}")
+            #     arcpy.AddMessage(f"\t{p.value.value}")
+
+        kwargs['output_sheds_filepath'] = f"{kwargs['output_points_filepath']}_sheds"
         
-        culvert_capacity_calc = CulvertCapacity(
-            **{p.name: p.value for p in parameters}
-        )
+        culvert_capacity_calc = CulvertCapacity(**kwargs)
         # run the calculator
         # * Internally this method calls the load_points method, which ETLs the feature class 
         # at `points_filepath` to the internal data model and perform validation.
@@ -107,7 +126,6 @@ class NaaccEtlPytTool(object):
         """Define parameter definitions"""
         params=[
             arcpy.Parameter(displayName="NAACC Table (CSV or Feature Class)", name="naacc_src_table", datatype=["DEFile", "DEFeatureClass"], parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Output Folder", name="output_folder",datatype="DEFolder", parameterType='Required', direction='Output'),
             arcpy.Parameter(displayName="Output Feature Class", name="output_fc",datatype="DEFeatureClass", parameterType='Required', direction='Output')
         ]
 
@@ -138,23 +156,15 @@ class NaaccEtlPytTool(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
 
-        naacc_src_table = parameters[0].value
-        output_folder = parameters[1].value
-        output_fc_param = parameters[2].value
+        # turn parameters into keyword args
+        tool_kwargs = {p.name: p.value.value for p in parameters}
 
-        output_fc_path = Path(output_fc_param)
-        output_fc_name = output_fc_path.name
-        output_workspace = output_fc_path.parent
+        # print some things
+        for k, v in tool_kwargs.items():
+            arcpy.AddMessage(f"{k} | {v}")
         
-        n = NaaccDataIngest(
-            naacc_src_table=naacc_src_table,
-            output_folder=output_folder,
-            output_workspace=output_workspace,
-            output_fc_name=output_fc_name
-            # crs_wkid=GetParameterAsText(4), #4326
-            # naacc_x=GetParameterAsText(5), #"GIS_Longitude",
-            # naacc_y=GetParameterAsText(6)# "GIS_Latitude",
-        )
+        n = NaaccDataIngest(**tool_kwargs)
+
         return n.output_points_filepath
 
     def postExecute(self, parameters):
@@ -173,11 +183,11 @@ class NaaccSnappingPytTool(object):
     def getParameterInfo(self):
         """Define parameter definitions"""
         params=[
-            arcpy.Parameter(displayName="Input NAACC culvert feature class", name="naacc_points_table", datatype="DEFeatureClass", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Input NAACC culvert feature class - crossing/survey ID field", name="naacc_points_table_join_field", datatype="Field", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Input snapped NAACC crossing feature class", name="geometry_source_table", datatype="DEFeatureClass", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Input snapped NAACC crossing feature class - crossing/survey ID field", name="geometry_source_table_join_field", datatype="Field", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Output Feature Class", name="output_fc", datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+            arcpy.Parameter(displayName="feature class", name="naacc_points_table", datatype="DEFeatureClass", parameterType='Required', direction='Input', category="Input NAACC culverts (original locations)"),
+            arcpy.Parameter(displayName="crossing/survey ID field", name="naacc_points_table_join_field", datatype="Field", parameterType='Required', direction='Input', category="Input NAACC culverts (original locations)"),
+            arcpy.Parameter(displayName="NAACC crossing feature class", name="geometry_source_table", datatype="DEFeatureClass", parameterType='Required', direction='Input', category="Input NAACC snapped crossings (target locations)"),
+            arcpy.Parameter(displayName="NAACC crossing/survey ID field", name="geometry_source_table_join_field", datatype="Field", parameterType='Required', direction='Input', category="Input NAACC snapped crossings (target locations)"),
+            arcpy.Parameter(displayName="Output Feature Class", name="output_fc", datatype="DEFeatureClass", parameterType='Required', direction='Output', category="Output NAACC culverts with updated locations"),
         ]
         self.params = params
 
