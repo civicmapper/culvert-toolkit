@@ -127,41 +127,48 @@ class NaaccEtl:
         #   return tuple(r.values())
         
         # try:
-            
+
+        
         # collect any reasons for exclusion here:
         validation_errors = {}
 
-        # Check 1: wrong bridge type
-        if all([
-            r["crossing_type"] == "Bridge",
-            r["in_shape"] not in ["Box/Bridge with Abutments", "Open Bottom Arch Bridge/Culvert"],
-        ]):
-            r["include"] = False
-            validation_errors.setdefault('in_shape', []).append("Wrong bridge type ({0})".format(r["in_shape"]))
+        # -----------------------------
+        # check 1: only specific crossing_types
+        OK_CROSSING_TYPES = [i.lower() for i in [
+            'Culvert', 
+            'Multiple Culvert'
+        ]]
 
-        # Check 2: bridge span too long
-        if all([
-            r["crossing_type"] == "Bridge", 
-            r["in_a"] is not None and r["in_a"] >= 20
-        ]):
+        if r.get("crossing_type","").lower() not in OK_CROSSING_TYPES:
             r["include"] = False
-            validation_errors.setdefault('in_a', []).append("Bridge wider than 20 ft ({0} ft)".format(r["in_a"]))
+            validation_errors.setdefault('in_shape', []).append("Not a culvert or multi-culvert ({0})".format(r["in_shape"]))
 
-        # Check 3: bad geometry
-        culvert_geometry_fields = ["in_a", "in_b", "hw", "length"]
+        # -----------------------------
+        # Check 2: bad geometry
+
+        CULVERT_GEOMETRY_FIELDS_TO_CHECK_1 = [
+            "in_a", 
+            "in_b", 
+            "hw", 
+            "length",
+            "slope"
+        ]
 
         # check if all values in culvert_geometry_fields are floats:
-        culvert_geometry_fields_are_floats = [isinstance(r[f], float) for f in culvert_geometry_fields]
+        culvert_geometry_fields_are_floats = [
+            isinstance(r[f], float)
+            for f in CULVERT_GEOMETRY_FIELDS_TO_CHECK_1
+        ]
         # check if any values in culvert_geometry_fields are < 0:
         culvert_geometry_fields_are_lt0 = [
             v < 0 for v in 
-            [r[f] for f in culvert_geometry_fields]
+            [r[f] for f in CULVERT_GEOMETRY_FIELDS_TO_CHECK_1]
             if v is not None
         ]
 
         if not all(culvert_geometry_fields_are_floats):
             r["include"] = False
-            for f, v in zip(culvert_geometry_fields, culvert_geometry_fields_are_floats):
+            for f, v in zip(CULVERT_GEOMETRY_FIELDS_TO_CHECK_1, culvert_geometry_fields_are_floats):
                 if v is None:
                     validation_errors.setdefault(f, []).append("cannot be None.")
                 else:
@@ -169,13 +176,23 @@ class NaaccEtl:
             # validation_errors.append("Required culvert geometry is missing: {0}".format([f for f,v in zip(culvert_geometry_fields, culvert_geometry_fields_are_floats) if not v]))
         elif any(culvert_geometry_fields_are_lt0):
             r["include"] = False
-            for f, v in zip(culvert_geometry_fields, culvert_geometry_fields_are_lt0):
+            for f, v in zip(CULVERT_GEOMETRY_FIELDS_TO_CHECK_1, culvert_geometry_fields_are_lt0):
                 if v:
                     validation_errors.setdefault(f, []).append("must be a greater than zero ({0})".format(v))
             # validation_errors.append("Required culvert geometry is negative: {0}".format([f for f,v in zip(culvert_geometry_fields, culvert_geometry_fields_are_gt0) if not v]))
         else:
             pass
+
+        # -----------------------------
+        # Check 3: missing slope values
+        # -1 as an integer in the slope field indicates a missing slope value.
+        # TODO: determine if we can let these through (include=True) with an 
+        # assumed "0" for slope, but still flag them
         
+
+        # -------------------------------------------------
+        # Compile all validation errors and write to field
+
         # if any validation errors found, add to the row's validation_errors field
         if validation_errors:
             if r['validation_errors'] is not None:

@@ -33,6 +33,7 @@ import pint
 import click
 import pandas as pd
 from codetiming import Timer
+from tqdm import tqdm
 # from mpire import WorkerPool
 
 # ArcGIS imports
@@ -1341,7 +1342,7 @@ class GP:
 
         with Timer(name="calculating flow length", text="{name}: {:.1f} seconds", logger=self.msg):
 
-            self.msg("calculating flow length")
+            
             
             with EnvManager(
                 snapRaster=flow_direction_raster,
@@ -1355,6 +1356,7 @@ class GP:
                 # the shed and calculate max as raster max minus raster min. 
                 # This saves a ton of time over deriving the flow length raster.
                 if flow_length_raster:
+                    self.msg("calculating flow length (using provided flow length raster)")
                     clipped_flowlen = SetNull(IsNull(one_shed), Raster(flow_length_raster))
                     desc_flowflen = Describe(flow_length_raster)
                     try:
@@ -1369,6 +1371,7 @@ class GP:
                 # otherwise, generate a flow length raster for the shed and get 
                 # its maximum value
                 else:
+                    self.msg("calculating flow length for catchment area")
                     # clip the flow direction raster to the catchment area (zone value)
                     clipped_flowdir = SetNull(IsNull(one_shed), Raster(flow_direction_raster))
 
@@ -1600,7 +1603,7 @@ class GP:
         # else:
 
         # for each Point in the input points list
-        for point in points:
+        for point in tqdm(points):
 
             self.msg("--------------------------------")
             
