@@ -16,7 +16,7 @@ HERE = pathlib.Path(__file__).parent.resolve()
 
 setup(
     name='culvert-toolkit',
-    version='0.1.1',
+    version='0.1.2',
     author='CivicMapper',
     author_email="info@civicmapper.com",
     description="A geospatial data-powered TR-55 model for modeling culvert capacity",

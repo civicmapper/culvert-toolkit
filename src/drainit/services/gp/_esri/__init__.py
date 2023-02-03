@@ -833,6 +833,7 @@ class GP:
                 CopyRaster(str(p),str(o))
 
             r.path = str(o)
+            r.ext="tif"
 
         rrc.root = out_folder
         
@@ -938,7 +939,7 @@ class GP:
         :type landcover_raster: [type]
         :param soils_polygon: polygon containing soils with a hydro classification. 
         :type soils_polygon: [type]
-        :param soils_hydrogroup_field: [description], defaults to "SOIL_HYDRO" (from the NCRS soils dataset)
+        :param soils_hydrogroup_field: [description], defaults to "SOIL_HYDRO" (from the NCRS low-resolution soils dataset)
         :type soils_hydrogroup_field: str, optional
         :param out_cn_raster: [description]
         :type out_cn_raster: [type]    

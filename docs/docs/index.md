@@ -2,12 +2,30 @@
 
 ***This documentation is a work-in-progress***
 
-The Culvert Analysis Toolkit is an Inlet + Culvert Peak-Flow and Capacity Calculator that uses a TR-55 Model and parameters derived from geospatial data.
+The Culvert Analysis Toolkit is an inlet and culvert peak-flow and capacity calculator that uses a TR-55 Model and parameters derived from geospatial data. It analyzes how culverts perform within their watershed and reports out their capacity to handle storm events of increasing frequencies, and identifies the storms that might cause them to fail.
 
-* See [Installation](installation.md) to get the Culvert Analysis Toolkit running in ArcGIS Pro
-* [The toolbox](agp-python-toolbox.md) page provides an overview of the toolbox.
-* See the [Data Guides overview](data-overview.md) to understand the types inputs the tool requires
-* The [Analysis Guide overview](analysis-guide-overview.md) describes the ways the tool can be run.
+## Who is this toolkit for?
+
+The toolkit is designed to support understanding the efficacy of stormwater culvert infrastructure at a broad scale for planning purposes. To that end, the tool has two audiences:
+
+* Planners, who can use the outputs to support decision-making
+* Analysts, who are able to run the tool in GIS software and are comforttable wrangling the spatial datasets that are required inputs of the tools
+
+### What this toolkit is not
+
+This toolkit is not:
+
+* a replacement engineering tools like HEC-RAS or SWMM
+* appropriate for supporting the design and engineering of indivdual culverts
+
+---
+
+## Getting Started
+
+1. [Installation](installation.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
+2. [The Toolbox](agp-python-toolbox.md): an overview of the tools and what they do.
+3. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
+4. [Analysis Guide](analysis-guide-overview.md): using the tool and working with the results
 
 ---
 
@@ -18,7 +36,6 @@ This software encompasses work originally developed by the Cornell Soil & Water 
 This repository represents an evolution of a previous effort, the [Peak-Flow Calculator](https://github.com/civicmapper/peak-flow-calculator/), which was a hard fork of the Water Lab's [CulvertEvalution](https://github.com/SoilWaterLab/CulvertEvaluation) repository. 
 
 Made in collaboration with the Cornell S&W lab, this repository includes additional updates to the science of the from [CulvertModel_2.1](https://github.com/SoilWaterLab/CulvertModel_2.1).
-
 
 * Original peak flow analytics are based on the culvert evaluation model developed by Rebecca Marjerison at the Cornell Soil and Water Lab in 2013, as [CulvertEvalution](https://github.com/SoilWaterLab/CulvertEvaluation)
 * David Gold, python script development, August 4, 2015

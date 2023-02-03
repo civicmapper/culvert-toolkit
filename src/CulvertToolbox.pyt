@@ -53,7 +53,13 @@ class CulvertCapacityPytTool(object):
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
 
-        # TODO: check for Spatial Analyst
+        try:
+            if arcpy.CheckExtension("Spatial") != "Available":
+                raise Exception
+        except Exception:
+            return False  # The tool cannot be run
+
+        return True  # The tool can be run
 
         return True
 
@@ -255,15 +261,13 @@ class NoaaRainfallEtlPytTool(object):
             arcpy.Parameter(displayName="Area of Interest", name="aoi_geo", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Reference Raster", name="target_raster",datatype="GPRasterLayer", parameterType='Optional', direction='Input'),
             arcpy.Parameter(displayName="Output Folder", name="out_folder",datatype="DEFolder", parameterType='Required', direction='Input'),
-            arcpy.Parameter(displayName="Output Rainfall Configuration File Name", name="out_file_name",datatype="GPString", parameterType='Required', direction='Output'),
+            arcpy.Parameter(displayName="Output Rainfall Configuration File Name", name="out_file_name",datatype="GPString", parameterType='Optional', direction='Output'),
         ]
         parameters[3].value = "culvert_toolbox_rainfall_config"
         return parameters
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
-
-        # TODO: check for Spatial Analyst
 
         return True
 
@@ -283,12 +287,35 @@ class NoaaRainfallEtlPytTool(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
 
-        rdg = RainfallDataGetter(
-            aoi_geo=parameters[0].value,
-            target_raster=parameters[1].value,
-            out_folder=parameters[2].value,
-            out_file_name=parameters[3].value    
+        # kwargs = {}
+        # for p in parameters:
+        #     arcpy.AddMessage(f"{p.name} | {p.datatype}")
+        #     if p.parameterType != 'Derived':
+        #         if p.value:
+        #             if p.datatype in ('Feature Layer', 'Raster Layer'):
+        #                 kwargs[p.name] = p.value.dataSource
+        #             elif p.datatype == 'Feature Class':
+        #                 kwargs[p.name] = p.value.value
+        #             else:
+        #                 kwargs[p.name] = p.value.value
+
+        # required parameters
+        kwargs = dict(
+            aoi_geo=parameters[0].value.dataSource,
+            out_folder=parameters[2].value.value
         )
+
+        #optional paramters
+        if parameters[1].value:
+            kwargs.update(dict(
+                target_raster=parameters[1].value.dataSource
+            ))
+        if parameters[3].value:
+            kwargs.update(dict(
+                out_file_name=parameters[3].value
+            ))
+        arcpy.AddMessage(kwargs)
+        rdg = RainfallDataGetter(**kwargs)
         return
 
     def postExecute(self, parameters):

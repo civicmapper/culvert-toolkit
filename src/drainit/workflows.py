@@ -14,6 +14,7 @@ import petl as etl
 import click
 import pint
 from tqdm import tqdm
+from codetiming import Timer
 
 from .models import (
     Analytics,
@@ -270,6 +271,7 @@ class NaaccDataIngest(WorkflowManager):
 
 
 class NaaccDataSnapping(WorkflowManager):
+    
     def __init__(
         self, 
         output_fc:str,
@@ -322,21 +324,10 @@ class NaaccDataSnapping(WorkflowManager):
         return self.output_table
 
 
-
 class RainfallDataGetter(WorkflowManager):
-    """Download rainfall rasters for your study area from NOAA. By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 year. All rasters are saved to the user-specified folder. A JSON file is automatically created; this file is used as a required input to other tools. Note that NOAA Atlas 14 precip values are in millimeters.
+    """Download rainfall rasters for your study area from NOAA. By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 year. All rasters are saved to the user-specified folder. A JSON file is automatically created; this file is used as a required input to other tools. Note that NOAA Atlas 14 precip values are in 1000ths/inch.
     """
     
-    """
-    Tool for acquiring and persisting rainfall rasters for a study area.
-    Defaults to acquiring rainfall data for 24hr events for frequencies from 1 to 1000 year.
-    All rasters are saved to a specified folder. A JSON file is automatically created; this 
-    file is used as a required input to other tools.
-
-    Note that NOAA Atlas 14 precip values are in mm. The Peak Flow calculator 
-    requires those values be converted to cm. Currently that happens in the gp
-    module.
-    """
     def __init__(
         self,
         aoi_geo,
@@ -346,17 +337,22 @@ class RainfallDataGetter(WorkflowManager):
         target_crs_wkid=None,
         **kwargs
         ):
-        """Tool for acquiring and persisting rainfall rasters for a study area
+        """Tool for acquiring and persisting rainfall rasters for a study area.
+        Defaults to acquiring rainfall data for 24hr events for frequencies from 1 to 1000 year.
+        All rasters are saved to a specified folder. A JSON file is automatically created; this 
+        file is used as a required input to other tools.
+
+        Note that NOAA Atlas 14 precip values are in 1000ths/inch. The Peak Flow calculator 
+        requires those values be converted to cm. Currently that happens in the gp
+        module.
 
         Args:
-            aoi_geo (str): Path to anything geo from which a minimum bounding geometry can be derived
-            out_folder (str): path on disk where outputs will be saved
-            out_file_name (str, optional): name of JSON file that will store reference to outputs and 
-                is used as an input to other tools. Defaults to "rainfall_rasters_config.json".
-
-        Returns:
-            str: the full path to the output JSON file on disk
-        """        
+            aoi_geo (str): Path to anything geo from which a minimum bounding geometry can be derived. Used to identify the correct region for downloading rasters.
+            out_folder (_type_): path on disk where outputs will be saved
+            out_file_name (str, optional): name of JSON file that will store reference to outputs and is used as an input to other tools. Defaults to "rainfall_rasters_config.json".
+            target_raster (_type_, optional): Optional raster used for snapping and clipping the rainfall rasters.
+            target_crs_wkid (_type_, optional): Optional CRS WKID, used for reprojecting the rasters.
+        """
 
         super().__init__(**kwargs)
         
@@ -379,19 +375,22 @@ class RainfallDataGetter(WorkflowManager):
         # pass the region to this function, which gets the rasters
         # and saves them to the specified folder
         temp_out_folder = mkdtemp()
-        rainfall_raster_config = retrieve_noaa_rainfall_rasters(
-            out_folder=temp_out_folder,
-            out_file_name=self.out_file_name, 
-            study=r['reg']
-        )
+        with Timer(name="Retrieving rainfall rasters", text="{name}: {:.1f} seconds", logger=self.gp.msg):
+            rainfall_raster_config = retrieve_noaa_rainfall_rasters(
+                out_folder=temp_out_folder,
+                out_file_name=self.out_file_name, 
+                study=r['reg']
+            )
         # resample, reproject, and crop the downloaded rasters
-        rainfall_raster_config = self.gp.create_geotiffs_from_rainfall_rasters(
-            rrc=rainfall_raster_config, 
-            out_folder=self.out_folder,
-            target_crs_wkid=self.target_crs_wkid, 
-            target_raster=self.target_raster
-        )
+        with Timer(name="Post-processing rainfall rasters", text="{name}: {:.1f} seconds", logger=self.gp.msg):
+            rainfall_raster_config = self.gp.create_geotiffs_from_rainfall_rasters(
+                rrc=rainfall_raster_config, 
+                out_folder=self.out_folder,
+                target_crs_wkid=self.target_crs_wkid, 
+                target_raster=self.target_raster
+            )
         # save the config to JSON
+        self.gp.msg("Saving configuration file")
         with open(self.out_path, 'w') as fp:
             json.dump(
                 RainfallRasterConfigSchema().dump(asdict(rainfall_raster_config)),
