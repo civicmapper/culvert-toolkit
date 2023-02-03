@@ -26,6 +26,6 @@ Use the prepared CSV above as an input. If you've imported that CSV to a file ge
 
 Depending on your needs, you may find that the location precision of the supplied NAACC data was not adequate compared to the accuracy of your [hydrologically corrected DEM](dem-rasters.md). In that case, you may have moved culverts manually or snapped points to streams.
 
-If you need to update your NAACC table with better location data in an external table, use the *NAACC Data Snapping tool* to update the input NAACC-compliant source table with locations from another table.
+If you need to update your NAACC table with better location data from an external table, use the *NAACC Data Snapping tool* to update the input NAACC-compliant source table with locations from another table.
 
 (This tool basically runs a reverse 1-to-many join, replacing geometry in one or more feature class records with a single geometry from feature in a reference table using a column-based match)

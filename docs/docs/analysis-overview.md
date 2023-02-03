@@ -22,6 +22,10 @@ NOAA rainfall rasters cover a large geographic area, so you may only need to use
 
 The *NAACC Table Ingest* tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., a file geodatabase feature class) for use in other culvert analysis tools, like the NAACC Culvert Capacity Calculator
 
+## NAACC Data Snapping
+
+The *NAACC Data Snapping* tool can be used to reposition features in a NAACC-compliant feature class to locations in another feature class; e.g., move the NAACC culvert records to point features that have been snapped to streams on a hydrologically corrected DEM.
+
 ## NAACC Culvert Capacity
 
 The *NAACC Culvert Capacity* tool measure the capacity of culverts to handle storm events using the TR-55 model. It does this by: 
