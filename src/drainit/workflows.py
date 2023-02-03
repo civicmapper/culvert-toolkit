@@ -350,7 +350,7 @@ class RainfallDataGetter(WorkflowManager):
             aoi_geo (str): Path to anything geo from which a minimum bounding geometry can be derived. Used to identify the correct region for downloading rasters.
             out_folder (_type_): path on disk where outputs will be saved
             out_file_name (str, optional): name of JSON file that will store reference to outputs and is used as an input to other tools. Defaults to "rainfall_rasters_config.json".
-            target_raster (_type_, optional): Optional raster used for snapping and clipping the rainfall rasters.
+            target_raster (_type_, optional): Optional raster used for snapping and clipping the rainfall rasters. An appropriate input here is the DEM used for your study area. Depending on the size and resolution of that raster, you may see a decrease in processing times for peak-flow calculations.
             target_crs_wkid (_type_, optional): Optional CRS WKID, used for reprojecting the rasters.
         """
 
@@ -364,39 +364,39 @@ class RainfallDataGetter(WorkflowManager):
         self.target_crs_wkid = target_crs_wkid
         self.target_raster = target_raster
 
+        # auto run on init
         self._run()
         print("saved to {0}".format(self.out_path))
 
     def _run(self):
         # from a method in the GP module, get the centroid of the aoi
-        coords = self.gp.get_centroid_of_feature_envelope(self.aoi_geo)
-        # pass it to retrieve_noaa_rainfall_pf_est, which will give us the region
-        r = retrieve_noaa_rainfall_pf_est(lat=coords['lat'], lon=coords['lon'])
+        with Timer(name="Determing NOAA region", text="{name}: {:.1f} seconds", logger=self.gp.msg):
+            coords = self.gp.get_centroid_of_feature_envelope(self.aoi_geo)
+            # pass it to retrieve_noaa_rainfall_pf_est, which will give us the region
+            r = retrieve_noaa_rainfall_pf_est(lat=coords['lat'], lon=coords['lon'])
         # pass the region to this function, which gets the rasters
         # and saves them to the specified folder
         temp_out_folder = mkdtemp()
         with Timer(name="Retrieving rainfall rasters", text="{name}: {:.1f} seconds", logger=self.gp.msg):
-            rainfall_raster_config = retrieve_noaa_rainfall_rasters(
+            rainfall_raster_config1 = retrieve_noaa_rainfall_rasters(
                 out_folder=temp_out_folder,
                 out_file_name=self.out_file_name, 
                 study=r['reg']
             )
         # resample, reproject, and crop the downloaded rasters
         with Timer(name="Post-processing rainfall rasters", text="{name}: {:.1f} seconds", logger=self.gp.msg):
-            rainfall_raster_config = self.gp.create_geotiffs_from_rainfall_rasters(
-                rrc=rainfall_raster_config, 
+            rainfall_raster_config2 = self.gp.create_geotiffs_from_rainfall_rasters(
+                rrc=rainfall_raster_config1, 
                 out_folder=self.out_folder,
                 target_crs_wkid=self.target_crs_wkid, 
                 target_raster=self.target_raster
             )
         # save the config to JSON
-        self.gp.msg("Saving configuration file")
+        rrc = RainfallRasterConfigSchema().dump(asdict(rainfall_raster_config2))
         with open(self.out_path, 'w') as fp:
-            json.dump(
-                RainfallRasterConfigSchema().dump(asdict(rainfall_raster_config)),
-                fp
-            )
-        self.results = rainfall_raster_config
+            json.dump(rrc, fp)
+            self.gp.msg(f"Saving configuration file to: {self.out_path}")
+        self.results = rainfall_raster_config2
         return self.results
 
 

@@ -12,6 +12,7 @@ from dataclasses import asdict
 # dependencies
 import petl as etl
 import requests
+from codetiming import Timer
 from tqdm import tqdm
 
 # application
@@ -258,11 +259,11 @@ def retrieve_noaa_rainfall_rasters(
     c = RainfallRasterConfig(root=out_folder)
     out_path = Path(out_folder)
 
-    for freq in tqdm(frequencies):
-
+    # for freq in tqdm(frequencies):
+    for freq in frequencies:
         # assemble the kwargs for the request
         data = deepcopy(post_kwargs)
-        data["freq"] = "{}yr".format(freq)
+        data["freq"] = f"{freq}yr"
 
         # make the request
         r = requests.post(url, data=data, stream=True)

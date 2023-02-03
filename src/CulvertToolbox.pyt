@@ -263,7 +263,8 @@ class NoaaRainfallEtlPytTool(object):
             arcpy.Parameter(displayName="Output Folder", name="out_folder",datatype="DEFolder", parameterType='Required', direction='Input'),
             arcpy.Parameter(displayName="Output Rainfall Configuration File Name", name="out_file_name",datatype="GPString", parameterType='Optional', direction='Output'),
         ]
-        parameters[3].value = "culvert_toolbox_rainfall_config"
+        # default for the output file name
+        parameters[3].value = "culvert_toolbox_rainfall_config.json"
         return parameters
 
     def isLicensed(self):
@@ -286,19 +287,6 @@ class NoaaRainfallEtlPytTool(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-
-        # kwargs = {}
-        # for p in parameters:
-        #     arcpy.AddMessage(f"{p.name} | {p.datatype}")
-        #     if p.parameterType != 'Derived':
-        #         if p.value:
-        #             if p.datatype in ('Feature Layer', 'Raster Layer'):
-        #                 kwargs[p.name] = p.value.dataSource
-        #             elif p.datatype == 'Feature Class':
-        #                 kwargs[p.name] = p.value.value
-        #             else:
-        #                 kwargs[p.name] = p.value.value
-
         # required parameters
         kwargs = dict(
             aoi_geo=parameters[0].value.dataSource,
@@ -314,8 +302,11 @@ class NoaaRainfallEtlPytTool(object):
             kwargs.update(dict(
                 out_file_name=parameters[3].value
             ))
-        arcpy.AddMessage(kwargs)
+
+        # arcpy.AddMessage(kwargs)
+        messages.AddMessage("Retrieving NOAA rainfall rasters for the area of interest...")
         rdg = RainfallDataGetter(**kwargs)
+        arcpy.AddMessage("Completed")
         return
 
     def postExecute(self, parameters):
