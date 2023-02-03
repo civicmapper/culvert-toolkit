@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Project Structure - Culvert Analysis Toolkit</title>
+        <title>Analysis Best Practices - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -34,16 +34,10 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="navitem">
-                                <a href=".." class="nav-link">Culvert Analysis Toolkit</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../installation/" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../toolbox/" class="nav-link">Toolbox</a>
+                                <a href="../install/" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Preparation Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -72,7 +66,7 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../analysis-overview/" class="dropdown-item">Overview</a>
+    <a href="../analysis-overview/" class="dropdown-item">Toolbox Overview</a>
 </li>
                                     
 <li>
@@ -84,17 +78,9 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Calculators <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="../dev-setup/" class="dropdown-item">Setup Anaconda Python and dependencies</a>
-</li>
-                                    
-<li>
-    <a href="./" class="dropdown-item active">Project Structure</a>
-</li>
                                     
 <li>
     <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
@@ -105,6 +91,9 @@
 </li>
                                 </ul>
                             </li>
+                            <li class="navitem">
+                                <a href="../dev/" class="nav-link">Develop</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -113,16 +102,6 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../dev-setup/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="../peak-flow/" class="nav-link">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
                     </ul>
                 </div>
             </div>
@@ -141,49 +120,9 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#project-structure" class="nav-link">Project Structure</a>
+            <li class="nav-item" data-level="1"><a href="#analysis-best-practices" class="nav-link">Analysis Best Practices</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#src" class="nav-link">src/</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#srcdrainit" class="nav-link">src/drainit/</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#workflowspy" class="nav-link">workflows.py</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#clipy" class="nav-link">cli.py</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#configpy-and-settingspy" class="nav-link">config.py and settings.py</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#modelspy" class="nav-link">models.py</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#calculators" class="nav-link">calculators/</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#services" class="nav-link">services/</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#esri" class="nav-link">esri/</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#scripts-noaa-and-naaccc" class="nav-link">Scripts: noaa and naaccc</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#tests" class="nav-link">tests/</a>
+            <li class="nav-item" data-level="2"><a href="#model-input-consideration" class="nav-link">Model Input Consideration</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -194,49 +133,15 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="project-structure">Project Structure</h1>
-<p>The project is structure so there is a fairly clear separation of concerns between the code that handles</p>
+<h1 id="analysis-best-practices">Analysis Best Practices</h1>
+<p><em>Using the tools; best practices for working with large datasets and basins</em></p>
+<h2 id="model-input-consideration">Model Input Consideration</h2>
+<p>Balancing DEM hydrologic and NAACC location-correctedness</p>
 <ul>
-<li>the science behind the calculators</li>
-<li>the geoprocessing tools used to derive spatial statistics from the various map layers</li>
-<li>the specific i/o requirements and interfaces expected in end-user workflows</li>
+<li>Full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery</li>
+<li>snap culverts to available hydro steam lines, burn the lines into the DEMs</li>
 </ul>
-<h2 id="src">src/</h2>
-<p>The folder contains external-facing interfaces that use the <code>drainit</code> package. It includes:</p>
-<ul>
-<li><code>CulvertToolbox.pyt</code> and associated <code>xml</code> metadata.</li>
-<li>legacy <code>drainit.tbx</code> file (replaced by <code>CulvertToolbox.pyt</code>)</li>
-<li><code>tbx_*.py</code> scripts, which are workflow-specific and map 1:1 with tools in the ArcGIS Pro toolbox <code>drainit.tbx</code>.</li>
-</ul>
-<h2 id="srcdrainit">src/drainit/</h2>
-<p>This is the top-level package.</p>
-<p>It contains a few scripts:</p>
-<h3 id="workflowspy">workflows.py</h3>
-<p>Contains the code for executing analytical workflows at the highest level of abstraction. A single workflow is represented by a single python class. </p>
-<p>All workflow classes inherit from a base class that contains properties and methods for reading/writing workflow state to a JSON configuration file.</p>
-<h3 id="clipy">cli.py</h3>
-<p>Command line interface to the scripting tools (WIP).</p>
-<h3 id="configpy-and-settingspy">config.py and settings.py</h3>
-<p>Constants used for script execution.</p>
-<h3 id="modelspy">models.py</h3>
-<p>Internal data models used throughout the package. </p>
-<h3 id="calculators">calculators/</h3>
-<p>Module containing the science and business logic of the various calculators available in the package: </p>
-<ul>
-<li><a href="../peak-flow/">runoff/peak flow</a></li>
-<li><a href="../culvert-capacity/">culvert capacity</a></li>
-</ul>
-<h3 id="services">services/</h3>
-<p>Scripts for interacting with third-party domain-specific data sources (e.g., NOAA rainfall data, NAACC culvert data) and geoprocessing tools (e.g., Esri ArcPy, Whitebox tools).</p>
-<h4 id="gp">gp/</h4>
-<p>Geoprocessing services designed on specific provider tools (e.g., ESRI, Whitebox) and exposed through a generic class that is called by the workflow tools. This ensures <code>workflow.py</code> can run GP tools without needing to know exactly what underlying geoprocessing library is being used.</p>
-<h3 id="esri">esri/</h3>
-<p>This folder contains the built ArcGIS Pro Python toolbox, its metadata, and an <code>arcpy</code> interface script. </p>
-<p>These are automatically created during the build process and do not need to be manually edited under normal circumstances.</p>
-<h3 id="scripts-noaa-and-naaccc">Scripts: <code>noaa</code> and <code>naaccc</code></h3>
-<p>These are data provider-specific scripts that do that work </p>
-<h2 id="tests">tests/</h2>
-<p>Integration tests for workflows and tasks within workflows.</p></div>
+<p>Depends on the use case!</p></div>
             </div>
         </div>
 

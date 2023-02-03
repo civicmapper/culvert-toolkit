@@ -34,16 +34,10 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="navitem">
-                                <a href=".." class="nav-link">Culvert Analysis Toolkit</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../installation/" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem active">
-                                <a href="./" class="nav-link">Toolbox</a>
+                                <a href="../install/" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Preparation Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -72,7 +66,7 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../analysis-overview/" class="dropdown-item">Overview</a>
+    <a href="../analysis-overview/" class="dropdown-item">Toolbox Overview</a>
 </li>
                                     
 <li>
@@ -85,16 +79,8 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Calculators <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="../dev-setup/" class="dropdown-item">Setup Anaconda Python and dependencies</a>
-</li>
-                                    
-<li>
-    <a href="../dev-project-structure/" class="dropdown-item">Project Structure</a>
-</li>
                                     
 <li>
     <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
@@ -105,6 +91,9 @@
 </li>
                                 </ul>
                             </li>
+                            <li class="navitem">
+                                <a href="../dev/" class="nav-link">Develop</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -113,16 +102,6 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../installation/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="../data-overview/" class="nav-link">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
                     </ul>
                 </div>
             </div>
@@ -168,13 +147,14 @@
 
 <h1 id="toolbox">Toolbox</h1>
 <p>The Culvert Analysis Toolkit is currently implemented as ArcToolbox for use in ArcGIS Pro</p>
-<p><img alt="Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane" src="../toolbox-01.png" /></p>
+<!-- ![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png) -->
+
 <p>Each tool in the toolbox contains built-in help text to explain tool functionality, inputs, and outputs. Summaries of tool usage follow.</p>
 <h2 id="noaa-rainfall-raster-data-downloader">NOAA Rainfall Raster Data Downloader</h2>
 <p>The <em>NOAA Rainfall Raster Data Downloader</em> does just that: it downloads rainfall rasters for your study area from <a href="https://hdsc.nws.noaa.gov/hdsc/pfds/">NOAA's National Weather Service - Hydrometeorological Design Studies Center - Precipitation Frequency Data Server (PFDS)</a>. </p>
 <p>By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 years. All rasters are saved to a user-specified folder. </p>
 <p>This tool creates a precipitation source configuration <code>JSON</code> file in the output folder. The <code>JSON</code> file is used as a required input to other tools&mdash;specifically those that calculate runoff/peak-flow.</p>
-<p>Note that NOAA Atlas 14 precip values are in millimeters; the capacity calculator an other tools convert the values to cm on-the-fly.</p>
+<p>Note that NOAA Atlas 14 precip values are in <em>1000ths of an inch</em>; the capacity calculator an other tools convert the values to <em>centimeters</em> on-the-fly.</p>
 <p>NOAA rainfall rasters cover a large geographic area, so you may only need to use this tool occassionally.</p>
 <h2 id="naacc-table-ingest">NAACC Table Ingest</h2>
 <p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., a file geodatabase feature class) for use in other culvert analysis tools, like the NAACC Culvert Capacity Calculator</p>

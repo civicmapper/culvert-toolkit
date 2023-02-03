@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Installation - Culvert Analysis Toolkit</title>
+        <title>Install - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -33,17 +33,11 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="navitem">
-                                <a href=".." class="nav-link">Culvert Analysis Toolkit</a>
-                            </li>
                             <li class="navitem active">
-                                <a href="./" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../toolbox/" class="nav-link">Toolbox</a>
+                                <a href="./" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Preparation Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -72,7 +66,7 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../analysis-overview/" class="dropdown-item">Overview</a>
+    <a href="../analysis-overview/" class="dropdown-item">Toolbox Overview</a>
 </li>
                                     
 <li>
@@ -85,16 +79,8 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Calculators <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="../dev-setup/" class="dropdown-item">Setup Anaconda Python and dependencies</a>
-</li>
-                                    
-<li>
-    <a href="../dev-project-structure/" class="dropdown-item">Project Structure</a>
-</li>
                                     
 <li>
     <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
@@ -105,6 +91,9 @@
 </li>
                                 </ul>
                             </li>
+                            <li class="navitem">
+                                <a href="../dev/" class="nav-link">Develop</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -114,12 +103,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href=".." class="nav-link">
+                                <a rel="prev" class="nav-link disabled">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../toolbox/" class="nav-link">
+                                <a rel="next" href="../data-overview/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -141,13 +130,13 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#installation" class="nav-link">Installation</a>
+            <li class="nav-item" data-level="1"><a href="#installing-in-arcgis-pro" class="nav-link">Installing in ArcGIS Pro</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#1-download-the-culvert-analysis-toolkit-installation-file" class="nav-link">1. Download the Culvert Analysis Toolkit installation file</a>
+            <li class="nav-item" data-level="2"><a href="#1-create-a-dedicated-python-environment-in-arcgis-pro" class="nav-link">1. Create a dedicated Python environment in ArcGIS Pro</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#2-create-a-dedicated-python-environment-in-arcgis-pro" class="nav-link">2. Create a dedicated Python environment in ArcGIS Pro</a>
+            <li class="nav-item" data-level="2"><a href="#2-download-the-culvert-analysis-toolkit-installation-file" class="nav-link">2. Download the Culvert Analysis Toolkit installation file</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -162,26 +151,30 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="installation">Installation</h1>
-<h2 id="1-download-the-culvert-analysis-toolkit-installation-file">1. Download the Culvert Analysis Toolkit installation file</h2>
-<p>Head to the <a href="https://github.com/civicmapper/culvert-toolkit/releases">Releases page (github.com/civicmapper/culvert-toolkit/releases)</a> and download the <code>.whl</code> file from the latest version of the tool.</p>
-<h2 id="2-create-a-dedicated-python-environment-in-arcgis-pro">2. Create a dedicated Python environment in ArcGIS Pro</h2>
-<p>To use this package, you'll need to install it a custom Python environment for ArcGIS Pro.</p>
+<h1 id="installing-in-arcgis-pro">Installing in ArcGIS Pro</h1>
+<p>The Culvert Analysis Toolkit currently requires ArcGIS Pro.</p>
+<h2 id="1-create-a-dedicated-python-environment-in-arcgis-pro">1. Create a dedicated Python environment in ArcGIS Pro</h2>
+<p>To use the toolkit, you'll need to install it a custom Python environment for ArcGIS Pro.</p>
 <ol>
 <li><a href="https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/clone-an-environment.htm">Clone the default ArcGIS Pro conda environment</a>.</li>
 <li><a href="https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/activate-an-environment.htm">Switch the current ArcGIS Pro conda environment to the cloned environment using the Python Package Manager</a>.</li>
 </ol>
 <p>For more information on working with Python environments in ArcGIS Pro, see <a href="https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/what-is-conda.htm">Esri's documentation</a>.</p>
 <p>Once you've done this, close ArcGIS Pro.</p>
+<h2 id="2-download-the-culvert-analysis-toolkit-installation-file">2. Download the Culvert Analysis Toolkit installation file</h2>
+<p>Download the latest install "wheel" <a href="../releases/culvert_toolkit-0.1.2-py3-none-any.whl">here</a>.</p>
+<!-- Head to the [Releases page (github.com/civicmapper/culvert-toolkit/releases)](https://github.com/civicmapper/culvert-toolkit/releases) and download the `.whl` file from the latest version of the tool. -->
+
 <h2 id="3-install">3. Install</h2>
 <p>Now that you have the installation file and the custom Python environment, you can install the toolbox.</p>
 <p>ArcGIS Pro comes with a <strong>"Python Command Prompt"</strong> shortcut available, which runs a batch script that automatically starts a command prompt with ArcGIS Pro's active Conda environment available. </p>
 <p>Typically this gets added to your Windows Start Menu alongside the shortcut to ArcGIS Pro.</p>
 <ol>
 <li>Open the Python Command Prompt that came with your ArcGIS Pro installation.</li>
-<li>In the command prompt, run <code>pip install &lt;path-to-the-whl-file\drainit.whl&gt;</code>. You'll replace <code>&lt;path-to-the-whl-file\drainit.whl&gt;</code> with the full path to the wheel file you downloaded in the previous step.</li>
+<li>In the command prompt, run <code>pip install "&lt;path-to-the-whl-file\drainit.whl&gt;"</code>. You'll replace <code>"&lt;path-to-the-whl-file\drainit.whl&gt;"</code> with the full path to the wheel file you downloaded in the previous step. Include the quotes <code>"</code>.</li>
 </ol>
-<p>After that you should see a <code>Culvert Analysis Toolkit</code> toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro. You may need to restart ArcGIS Pro before you see it.</p></div>
+<p>Restart ArcGIS Pro. Open an existing or new project, and open the Geoprocessing you should see a <code>Culvert Analysis Toolkit</code> toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro:</p>
+<p><img alt="Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane" src="../toolbox-01.png" /></p></div>
             </div>
         </div>
 

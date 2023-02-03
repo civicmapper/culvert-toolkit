@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Overview - Culvert Analysis Toolkit</title>
+        <title>Toolbox Overview - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -34,16 +34,10 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="navitem">
-                                <a href=".." class="nav-link">Culvert Analysis Toolkit</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../installation/" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../toolbox/" class="nav-link">Toolbox</a>
+                                <a href="../install/" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Preparation Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -72,7 +66,7 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active">Overview</a>
+    <a href="./" class="dropdown-item active">Toolbox Overview</a>
 </li>
                                     
 <li>
@@ -85,16 +79,8 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Calculators <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="../dev-setup/" class="dropdown-item">Setup Anaconda Python and dependencies</a>
-</li>
-                                    
-<li>
-    <a href="../dev-project-structure/" class="dropdown-item">Project Structure</a>
-</li>
                                     
 <li>
     <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
@@ -104,6 +90,9 @@
     <a href="../culvert-capacity/" class="dropdown-item">Culvert Capacity Calculator</a>
 </li>
                                 </ul>
+                            </li>
+                            <li class="navitem">
+                                <a href="../dev/" class="nav-link">Develop</a>
                             </li>
                         </ul>
 
@@ -141,18 +130,22 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#overview" class="nav-link">Overview</a>
+            <li class="nav-item" data-level="1"><a href="#toolbox-overview" class="nav-link">Toolbox Overview</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#model-input-consideration" class="nav-link">Model Input Consideration</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#naacc-culvert-data-accuracy-spatial-and-temporal" class="nav-link">NAACC culvert data accuracy (spatial and temporal)</a>
+            <li class="nav-item" data-level="2"><a href="#noaa-rainfall-raster-data-downloader" class="nav-link">NOAA Rainfall Raster Data Downloader</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="3"><a href="#hydrologically-corrected-digital-elevation-models-dems" class="nav-link">Hydrologically-corrected Digital Elevation Models (DEMs)</a>
+            <li class="nav-item" data-level="2"><a href="#naacc-table-ingest" class="nav-link">NAACC Table Ingest</a>
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#naacc-culvert-capacity" class="nav-link">NAACC Culvert Capacity</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#peak-flow-calculator" class="nav-link">Peak-Flow Calculator</a>
+              <ul class="nav flex-column">
               </ul>
             </li>
               </ul>
@@ -162,19 +155,30 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="overview">Overview</h1>
-<p><em>Using the tools; best practices for working with large datasets and basins</em></p>
-<h2 id="model-input-consideration">Model Input Consideration</h2>
-<p>Balancing DEM hydrologic and NAACC location-correctedness</p>
+<h1 id="toolbox-overview">Toolbox Overview</h1>
+<p>The Culvert Analysis Toolkit is currently implemented as ArcToolbox for use in ArcGIS Pro</p>
+<!-- ![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png) -->
+
+<p>Each tool in the toolbox contains built-in help text to explain tool functionality, inputs, and outputs. Summaries of tool usage follow.</p>
+<h2 id="noaa-rainfall-raster-data-downloader">NOAA Rainfall Raster Data Downloader</h2>
+<p>The <em>NOAA Rainfall Raster Data Downloader</em> does just that: it downloads rainfall rasters for your study area from <a href="https://hdsc.nws.noaa.gov/hdsc/pfds/">NOAA's National Weather Service - Hydrometeorological Design Studies Center - Precipitation Frequency Data Server (PFDS)</a>. </p>
+<p>By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 years. All rasters are saved to a user-specified folder. </p>
+<p>This tool creates a precipitation source configuration <code>JSON</code> file in the output folder. The <code>JSON</code> file is used as a required input to other tools&mdash;specifically those that calculate runoff/peak-flow.</p>
+<p>Note that NOAA Atlas 14 precip values are in <em>1000ths of an inch</em>; the capacity calculator an other tools convert the values to <em>centimeters</em> on-the-fly.</p>
+<p>NOAA rainfall rasters cover a large geographic area, so you may only need to use this tool occassionally.</p>
+<h2 id="naacc-table-ingest">NAACC Table Ingest</h2>
+<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., a file geodatabase feature class) for use in other culvert analysis tools, like the NAACC Culvert Capacity Calculator</p>
+<h2 id="naacc-culvert-capacity">NAACC Culvert Capacity</h2>
+<p>The <em>NAACC Culvert Capacity</em> tool measure the capacity of culverts to handle storm events using the TR-55 model. It does this by: </p>
 <ul>
-<li>Full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery</li>
-<li>snap culverts to available hydro steam lines, burn the lines into the DEMs</li>
+<li>calculating the capacity of the culvert(s) at a crossing</li>
+<li>calculating peak flow at the culvert over a hydrologically corrected digital elevation model for 24 hour storm events with frequencies of 1 to 1000 years</li>
+<li>comparing capacity of individual culverts and all culverts at a crossing to each peak-flow, and flagging the event at which the culverts and crossings exceed capacity.</li>
 </ul>
-<p>Depends on the use case!</p>
-<h3 id="naacc-culvert-data-accuracy-spatial-and-temporal">NAACC culvert data accuracy (spatial and temporal)</h3>
-<p>...</p>
-<h3 id="hydrologically-corrected-digital-elevation-models-dems">Hydrologically-corrected Digital Elevation Models (DEMs)</h3>
-<p>...</p></div>
+<p>Culvert location data must be NAACC schema-compliant. </p>
+<h2 id="peak-flow-calculator">Peak-Flow Calculator</h2>
+<p>(planned; currently implemented with the NAACC Culvert Capacity tool)</p>
+<p>Calculate peak-flow for one or more points over a hydrologically corrected DEM. Points do not need comply with any predefined data model (such as NAACC).</p></div>
             </div>
         </div>
 
