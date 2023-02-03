@@ -49,8 +49,8 @@ def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, r
         raise e
 
 @gptooldoc('NaaccEtlPytTool_CulvertToolkit', None)
-def NaaccEtlPytTool(naacc_src_table=None, output_folder=None, output_fc=None, alt_geom_table=None, alt_geom_table_join_field=None):
-    """NaaccEtlPytTool_CulvertToolkit(naacc_src_table, output_folder, output_fc, {alt_geom_table}, {alt_geom_table_join_field})
+def NaaccEtlPytTool(naacc_src_table=None, output_fc=None):
+    """NaaccEtlPytTool_CulvertToolkit(naacc_src_table, output_fc)
 
         Read in, validate, and extend a NAACC-compliant source table, saving
         the output as geodata (e.g., a file geodatabase feature class) for use
@@ -60,20 +60,14 @@ def NaaccEtlPytTool(naacc_src_table=None, output_folder=None, output_fc=None, al
       naacc_src_table (File / Feature Class):
           Path to CSV, SHP, or FGDB feature class containing data with a
           NAACC-compliant schema.
-      alt_geom_table {Feature Class}:
-          Alternative Geometry Reference Table
-      alt_geom_table_join_field {Feature Class}:
-          Survey ID Field in Alt. Geometry Ref. Table 
 
      OUTPUTS:
-      output_folder (Folder):
-          the path to the folder where outputs will be saved
       output_fc (Feature Class):
           Output Feature Class"""
     from arcpy.geoprocessing._base import gp, gp_fixargs
     from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
     try:
-        retval = convertArcObjectToPythonObject(gp.NaaccEtlPytTool_CulvertToolkit(*gp_fixargs((naacc_src_table, output_folder, output_fc, alt_geom_table, alt_geom_table_join_field), True)))
+        retval = convertArcObjectToPythonObject(gp.NaaccEtlPytTool_CulvertToolkit(*gp_fixargs((naacc_src_table, output_fc), True)))
         return retval
     except Exception as e:
         raise e
@@ -83,14 +77,14 @@ def NaaccSnappingPytTool(naacc_points_table=None, naacc_points_table_join_field=
     """NaaccSnappingPytTool_CulvertToolkit(naacc_points_table, naacc_points_table_join_field, geometry_source_table, geometry_source_table_join_field, output_fc)
 
      INPUTS:
-      naacc_points_table (Feature Layer / Feature Class):
-          Input NAACC culvert feature class
+      naacc_points_table (Feature Class):
+          feature class
       naacc_points_table_join_field (Field):
-          Input NAACC culvert feature class - crossing/survey ID field
-      geometry_source_table (Feature Layer / Feature Class):
-          Input snapped NAACC crossing feature class
+          crossing/survey ID field
+      geometry_source_table (Feature Class):
+          NAACC crossing feature class
       geometry_source_table_join_field (Field):
-          Input snapped NAACC crossing feature class - crossing/survey ID field
+          NAACC crossing/survey ID field
 
      OUTPUTS:
       output_fc (Feature Class):
@@ -105,7 +99,7 @@ def NaaccSnappingPytTool(naacc_points_table=None, naacc_points_table_join_field=
 
 @gptooldoc('NoaaRainfallEtlPytTool_CulvertToolkit', None)
 def NoaaRainfallEtlPytTool(aoi_geo=None, target_raster=None, out_folder=None, out_file_name=None):
-    """NoaaRainfallEtlPytTool_CulvertToolkit(aoi_geo, {target_raster}, out_folder, out_file_name)
+    """NoaaRainfallEtlPytTool_CulvertToolkit(aoi_geo, {target_raster}, out_folder, {out_file_name})
 
         Download rainfall rasters for your study area from NOAA. By
         default, this tool acquires rainfall data for 24hr events for
@@ -133,7 +127,7 @@ def NoaaRainfallEtlPytTool(aoi_geo=None, target_raster=None, out_folder=None, ou
           every delineation project!
 
      OUTPUTS:
-      out_file_name (String):
+      out_file_name {String}:
           Output Rainfall Configuration File Name"""
     from arcpy.geoprocessing._base import gp, gp_fixargs
     from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
