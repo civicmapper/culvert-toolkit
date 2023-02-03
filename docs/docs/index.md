@@ -2,7 +2,20 @@
 
 ***This documentation is a work-in-progress***
 
-The Culvert Analysis Toolkit is an inlet and culvert peak-flow and capacity calculator that uses a TR-55 Model and parameters derived from geospatial data. It analyzes how culverts perform within their watershed and reports out their capacity to handle storm events of increasing frequencies, and identifies the storms that might cause them to fail.
+The Culvert Analysis Toolkit is a collection of GIS tools designed to support analysis of culvert performance within their watershed. It uses a [TR-55 Model](https://www.nrcs.usda.gov/Internet/FSE_DOCUMENTS/stelprdb1044171.pdf) and parameters derived from geospatial data to calculate peak-flow and culvert capacity.
+
+This software has been developed by [CivicMapper](https://www.civicmapper.com) in collaboration with [GroundPoint Engineering](https://groundpoint-engineering.com/), and encompasses work from a collaboration with the Cornell Soil & Water Lab (on GitHub @ [github.com/SoilWaterLab](https://github.com/SoilWaterLab)). See [Credits/Contributors](index.md#creditscontributors) for more information.
+
+---
+
+## Getting Started
+
+1. [Installation](installation.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
+2. [The Toolbox](agp-python-toolbox.md): an overview of the tools and what they do.
+3. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
+4. [Analysis Guide](analysis-guide-overview.md): using the tool and working with the results
+
+---
 
 ## Who is this toolkit for?
 
@@ -15,17 +28,8 @@ The toolkit is designed to support understanding the efficacy of stormwater culv
 
 This toolkit is not:
 
-* a replacement engineering tools like HEC-RAS or SWMM
+* a replacement for engineering tools like HEC-RAS or SWMM
 * appropriate for supporting the design and engineering of indivdual culverts
-
----
-
-## Getting Started
-
-1. [Installation](installation.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
-2. [The Toolbox](agp-python-toolbox.md): an overview of the tools and what they do.
-3. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
-4. [Analysis Guide](analysis-guide-overview.md): using the tool and working with the results
 
 ---
 

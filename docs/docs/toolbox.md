@@ -2,7 +2,7 @@
 
 The Culvert Analysis Toolkit is currently implemented as ArcToolbox for use in ArcGIS Pro
 
-![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png)
+<!-- ![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png) -->
 
 Each tool in the toolbox contains built-in help text to explain tool functionality, inputs, and outputs. Summaries of tool usage follow.
 
@@ -14,7 +14,7 @@ By default, this tool acquires rainfall data for 24hr events for frequencies fro
 
 This tool creates a precipitation source configuration `JSON` file in the output folder. The `JSON` file is used as a required input to other tools&mdash;specifically those that calculate runoff/peak-flow.
 
-Note that NOAA Atlas 14 precip values are in millimeters; the capacity calculator an other tools convert the values to cm on-the-fly.
+Note that NOAA Atlas 14 precip values are in *1000ths of an inch*; the capacity calculator an other tools convert the values to *centimeters* on-the-fly.
 
 NOAA rainfall rasters cover a large geographic area, so you may only need to use this tool occassionally.
 

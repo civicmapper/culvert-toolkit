@@ -412,7 +412,8 @@ class CurveNumberMaker(WorkflowManager):
     Output:
         * a curve number raster
     """
-    pass
+    def __init__(self):  
+        pass
 
 
 # ------------------------------------------------------------------------------

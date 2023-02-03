@@ -1,9 +1,8 @@
 site_name: Culvert Analysis Toolkit
 nav: 
-  - index.md
-  - installation.md
-  - toolbox.md
-  - Data Preparation Guide:
+  # - index.md
+  - Install: install.md
+  - Data Prep Guide:
     - data-overview.md
     - naacc-table.md
     - noaa-rainfall.md
@@ -13,11 +12,11 @@ nav:
     - analysis-overview.md
     - run-one.md
     - run-batch.md
-  - Development:
-    - dev-setup.md
-    - dev-project-structure.md
+  - Calculators:
     - peak-flow.md
     - culvert-capacity.md
+  - Develop: dev.md
+
 theme:
   name: mkdocs
   navigation_depth: 3

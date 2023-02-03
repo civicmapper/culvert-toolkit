@@ -2,9 +2,9 @@
 
 *NOTE: this repository is work-in-progress* 
 
-The Culvert Analysis Toolkit is an Inlet + Culvert Peak-Flow and Capacity Calculator that runs in ArcGIS Pro and uses a TR-55 Model and parameters derived from geospatial data.
+The Culvert Analysis Toolkit is a collection of GIS tools designed to support analysis of culvert performance within their watershed. It uses a [TR-55 Model](https://www.nrcs.usda.gov/Internet/FSE_DOCUMENTS/stelprdb1044171.pdf) and parameters derived from geospatial data to calculate peak-flow and culvert capacity.
 
-This software encompasses work originally developed by the Cornell Soil & Water Lab (on GitHub @ [github.com/SoilWaterLab](https://github.com/SoilWaterLab))
+This software encompasses work originally developed by the Cornell Soil & Water Lab (on GitHub @ https://github.com/SoilWaterLab)
 
 ## Installation and Use
 
@@ -24,4 +24,4 @@ Made in collaboration with the Cornell S&W lab, this repository includes additio
 * Fork, refactor, and creation of CLI and ArcMap interfaces by Christian Gass @ CivicMapper, Fall 2017, as [peak-flow-calculator](https://github.com/civicmapper/peak-flow-calculator/)
 * Updates for use within ArcGIS Pro by Christian Gass @ CivicMapper, Spring/Summer 2019, in [peak-flow-calculator](https://github.com/civicmapper/peak-flow-calculator/)
 * [CulvertModel_2.1](https://github.com/SoilWaterLab/CulvertModel_2.1)by Jo Archibald in 2019
-* Drain-It repository by CivicMapper, 2021-2022
+* Drain-It / Culvert Analysis Toolkit repository by CivicMapper, 2021-present
