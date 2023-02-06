@@ -841,8 +841,11 @@ class GP:
 
     def update_geodata_geoms_with_other_geodata(self, target_feature_class, target_join_field,  source_feature_class, source_join_field, output_feature_class, crs_wkid=4326):
 
+        # read features classes into PETL table objects
         target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=False)
         source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
+
+        # derive the CRS WKID from the new source geometry table
         sr = DaDescribe(source_feature_class).get('spatialReference')
         if sr:
             if sr.PCSCode:
@@ -851,9 +854,16 @@ class GP:
                 crs_wkid = sr.GCSCode
             else:
                 # crs_wkid will default to 4326
-                pass        
-
-        geometry_table = etl.cut(source_table, *[source_join_field, "x", "y"])
+                pass
+        
+        # clean up fields in the source geometry table, including casting
+        # the join field values to text
+        geometry_table = etl\
+            .cut(source_table, *[source_join_field, "x", "y"])\
+            .convert(source_join_field, str)
+        
+        # also cast target join field values to text
+        target_table = etl.convert(target_table, target_join_field, str)
 
         t = etl.leftjoin(
             left=target_table, 

@@ -197,6 +197,9 @@ class NaaccSnappingPytTool(object):
         ]
         self.params = params
 
+        params[1].value = "Survey_Id"
+        params[3].value = "Survey_Id"
+
         return params
 
     def isLicensed(self):
@@ -211,11 +214,11 @@ class NaaccSnappingPytTool(object):
         validation is performed.  This method is called whenever a parameter
         has been changed."""
 
-        if parameters[0].value:
-            parameters[1] = arcpy.Describe(parameters[0].value).fields
+        # if parameters[0].value:
+        #     parameters[1] = arcpy.Describe(parameters[0].value).fields
 
-        if parameters[2].value:
-            parameters[3] = arcpy.Describe(parameters[2].value).fields
+        # if parameters[2].value:
+        #     parameters[3] = arcpy.Describe(parameters[2].value).fields
 
         return
 
