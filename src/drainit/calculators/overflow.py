@@ -33,7 +33,7 @@ def max_return_calculator(list_of_overflows:List[float], list_of_frequencies: Li
                 handled_return_periods.append(freq)
     if len(handled_return_periods) > 0:
         return max(handled_return_periods)
-    return None
+    return 0
 
 
 @dataclass
