@@ -1632,7 +1632,8 @@ class GP:
         # else:
 
         # for each Point in the input points list
-        for point in tqdm(points):
+        # for point in tqdm(points):
+        for point in points:
 
             self.msg("--------------------------------")
             
