@@ -6,17 +6,7 @@ geoprocessing tasks with Esri Arcpy
 '''
 
 # __all__ = [
-#     'create_workspace',
-#     'detect_data_type',
-#     'create_petl_table_from_geodata',
-#     'create_dicts_from_geodata',
-#     'create_point_objects_from_geodata'
-#     'create_geodata_from_petl_table',
-#     'create_geotiffs_from_noaa_rasters',
-#     'get_centroid_of_feature_envelope',
-#     'delineation_and_analysis_in_parallel',    
-#     'msg',
-#     'so'
+#     'GP'
 # ]
 
 # standard library
@@ -371,12 +361,12 @@ class GP:
 
         Convert an Esri Feature Class to a PETL table object.
 
-        :param feature_class: [description]
-        :type feature_class: [type]
-        :param include_geom: [description], defaults to False
+        :param feature_class: path to feature class
+        :type feature_class: str
+        :param include_geom: include the feature geometry in the table.  Defaults to False
         :param include_geom: bool, optional
-        :return: tuple containing an PETL Table object and FeatureSet
-        :rtype: Tuple(petl.Table, FeatureSet)
+        :return: tuple containing a PETL Table object, FeatureSet, and the WKID of the feature_class CRS
+        :rtype: Tuple(petl.Table, FeatureSet, int)
         """
         # print("Reading {0} into a PETL table object".format(feature_class))
         
@@ -543,8 +533,8 @@ class GP:
             # field_types_lookup and crosswalked to the ArcPy field type args. 
             # Fallback to a string type if the field in the table isn't in the
             # lookup. Handle `validation_errors` field separately.
-            # TODO - do this in a more generic way (e.g., a better field_lookup 
-            # format)
+            # TODO - do this in a more generic way (e.g., a schema-agnostic 
+            # field_lookup format)
             fields_to_add = []
             for h in etl.header(petl_table):
                 if h == 'validation_errors':
@@ -850,7 +840,15 @@ class GP:
         
         return rrc
 
-    def update_geodata_geoms_with_other_geodata(self, target_feature_class, target_join_field,  source_feature_class, source_join_field, output_feature_class, crs_wkid=4326):
+    def update_geodata_geoms_with_other_geodata(
+        self, 
+        target_feature_class, 
+        target_join_field,  
+        source_feature_class, 
+        source_join_field, 
+        output_feature_class, 
+        crs_wkid=4326
+        ):
 
         # read features classes into PETL table objects
         target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=True)
@@ -891,8 +889,6 @@ class GP:
             .convert('x', lambda v,r: v if v is not None else r['shape@x'], pass_row=True)\
             .convert('y', lambda v,r: v if v is not None else r['shape@y'], pass_row=True)\
             .cutout('shape@x', 'shape@y')
-
-        print(etl.vis.look(t))
 
         self.create_geodata_from_petl_table(t,"x","y",output_feature_class, crs_wkid)
         
