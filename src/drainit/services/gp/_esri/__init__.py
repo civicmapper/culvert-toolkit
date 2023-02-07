@@ -407,10 +407,17 @@ class GP:
         table = etl.fromdicts(fs['features'])
 
         if etl.nrows(table) > 0:
-            table = etl.unpackdict(table, 'attributes').cut(*attr_fields)
+            table = etl\
+                .unpackdict(table, 'attributes')\
+                .cut(*attr_fields)
 
             if include_geom:
-                table = etl.unpackdict(table, 'geometry')
+                # remove existing x/y fields if any, unpack the geometry dict
+                fields_to_keep = [f for f in etl.header(table) if f not in ["x", "y"]]
+                table = etl\
+                    .cut(table, fields_to_keep)\
+                    .unpackdict('geometry')
+
             return table, feature_set, crs_wkid
         else:
             self.msg("The feature class is empty.", 'warning', echo=True)
@@ -468,7 +475,7 @@ class GP:
         Returns:
             [type]: [description]
         """
-
+        print(petl_table)
         # Remove system fields look-alikes that may have snuck through;
         # e.g., 'OBJECTID' may not be the actual oid field, but a duplicate
         # due to whatever happend to the data before hand. It's presence here
@@ -557,8 +564,12 @@ class GP:
                 for idx, row in enumerate(list(etl.records(petl_table))):
                     # print(idx, row['Survey_Id'])
                     r = [self._fallback_to_json_str(v) for v in row] # all field values
-                    r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
-                    cursor.insertRow(r)
+                    try:
+                        r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
+                        cursor.insertRow(r)
+                    except TypeError as e:
+                        self.msg(f"NULL geometry for row {idx}")
+                        pass
 
         # print("temp_feature_class", int(GetCount(temp_feature_class).getOutput(0)))
         if output_featureclass:
@@ -842,7 +853,7 @@ class GP:
     def update_geodata_geoms_with_other_geodata(self, target_feature_class, target_join_field,  source_feature_class, source_join_field, output_feature_class, crs_wkid=4326):
 
         # read features classes into PETL table objects
-        target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=False)
+        target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=True)
         source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
 
         # derive the CRS WKID from the new source geometry table
@@ -855,6 +866,14 @@ class GP:
             else:
                 # crs_wkid will default to 4326
                 pass
+
+        # clean up fields in the target table, removing any x y (possibly from
+        # previous run); also cast target join field values to text
+        # fields_to_keep = [f for f in etl.header(target_table) if f not in ["x", "y"]]
+        target_table_clean = etl\
+            .rename(target_table, {"x": "shape@x", "y": "shape@y"})\
+            .convert(target_join_field, str)
+
         
         # clean up fields in the source geometry table, including casting
         # the join field values to text
@@ -862,15 +881,18 @@ class GP:
             .cut(source_table, *[source_join_field, "x", "y"])\
             .convert(source_join_field, str)
         
-        # also cast target join field values to text
-        target_table = etl.convert(target_table, target_join_field, str)
+        t = etl\
+            .leftjoin(
+                left=target_table_clean, 
+                right=geometry_table, 
+                lkey=target_join_field, 
+                rkey=source_join_field
+            )\
+            .convert('x', lambda v,r: v if v is not None else r['shape@x'], pass_row=True)\
+            .convert('y', lambda v,r: v if v is not None else r['shape@y'], pass_row=True)\
+            .cutout('shape@x', 'shape@y')
 
-        t = etl.leftjoin(
-            left=target_table, 
-            right=geometry_table, 
-            lkey=target_join_field, 
-            rkey=source_join_field
-        )
+        print(etl.vis.look(t))
 
         self.create_geodata_from_petl_table(t,"x","y",output_feature_class, crs_wkid)
         
