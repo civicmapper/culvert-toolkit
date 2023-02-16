@@ -2,7 +2,7 @@
 
 The Culvert Analysis Toolkit is currently implemented as ArcToolbox for use in ArcGIS Pro
 
-<!-- ![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png) -->
+![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](assets/toolbox-02.png)
 
 Each tool in the toolbox contains built-in help text to explain tool functionality, inputs, and outputs. Summaries of tool usage follow.
 

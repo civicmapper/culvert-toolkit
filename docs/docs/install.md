@@ -1,6 +1,6 @@
 # Installing in ArcGIS Pro
 
-The Culvert Analysis Toolkit currently requires ArcGIS Pro.
+The Culvert Analysis Toolkit currently requires ArcGIS Pro version 3.
 
 ## 1. Create a dedicated Python environment in ArcGIS Pro
 
@@ -32,4 +32,4 @@ Typically this gets added to your Windows Start Menu alongside the shortcut to A
 
 Restart ArcGIS Pro. Open an existing or new project, and open the Geoprocessing you should see a `Culvert Analysis Toolkit` toolbox listed alongside other toolboxes in the ArcToolbox pane of ArcGIS Pro:
 
-![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png)
+![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](assets/toolbox-02.png)

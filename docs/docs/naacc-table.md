@@ -8,11 +8,14 @@
 * Delete headers (first eight rows)
 * Save as CSV
 
-### Optionally: 
+### Optionally: Pre-Process the NAACC table
 
 While the [*NAACC Table Ingest* (described below)](#run-the-naacc-table-ingest-tool) will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest.
 
-You may want to remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements. Or, you may need to import this table into GIS, and move features to streams or flow lines on a digital elevation model. 
+You may want to:
+
+* remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.
+* import this table into GIS, and move features to streams or flow lines on a digital elevation model
 
 Regardless, as long as the NAACC schema is preserved, subsequent tools will be able to use it.
 

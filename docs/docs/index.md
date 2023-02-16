@@ -10,10 +10,10 @@ This software has been developed by [CivicMapper](https://www.civicmapper.com) i
 
 ## Getting Started
 
-1. [Installation](installation.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
-2. [The Toolbox](agp-python-toolbox.md): an overview of the tools and what they do.
-3. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
-4. [Analysis Guide](analysis-guide-overview.md): using the tool and working with the results
+1. [Installation](install.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
+2. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
+3. [Analysis Guide](analysis-overview.md): an overview of the tools and what they do. using the tool and working with the results
+4. Calculators: an explanation of the [peak-flow](calcs-peak-flow.md) and [capacity](calcs-culvert-capacity.md) calculators, with links to the underlying calculation code on GitHub
 
 ---
 
