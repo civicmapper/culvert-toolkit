@@ -38,7 +38,7 @@ class CulvertCapacityPytTool(object):
         params=[
             arcpy.Parameter(category="Culverts", displayName="Culvert Points", name="points_filepath", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(category="DEM", displayName="Flow Direction", name="raster_flowdir_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(category="DEM", displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Optional', direction='Input'),
             arcpy.Parameter(category="DEM", displayName="Slope", name="raster_slope_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(category="Curve Number", displayName="Curve Number", name="raster_curvenumber_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(category="Rainfall", displayName="Precipitation Configuration File", name="precip_src_config_filepath", datatype="DEFile", parameterType='Required', direction='Input'),
@@ -89,11 +89,14 @@ class CulvertCapacityPytTool(object):
             arcpy.AddMessage(f"{p.name} | {p.datatype}")
             if p.parameterType != 'Derived':
                 if p.datatype in ('Feature Layer', 'Raster Layer'):
-                    kwargs[p.name] = p.value.dataSource
+                    if p.value:
+                        kwargs[p.name] = p.value.dataSource
                 elif p.datatype == 'Feature Class':
-                    kwargs[p.name] = p.value.value
+                    if p.value:
+                        kwargs[p.name] = p.value.value
                 else:
-                    kwargs[p.name] = p.value.value
+                    if p.value:
+                        kwargs[p.name] = p.value.value
 
             # try:
             #     arcpy.AddMessage(f"{p.name} >>> {p.value.__class__.__name__}")
