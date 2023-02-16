@@ -37,7 +37,7 @@
                                 <a href="../install/" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guides <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -62,7 +62,7 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guides <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -70,11 +70,11 @@
 </li>
                                     
 <li>
-    <a href="../run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+    <a href="../capacitycalc-run-one/" class="dropdown-item">Running the Capacity Calculator</a>
 </li>
                                     
 <li>
-    <a href="../run-batch/" class="dropdown-item">Batch Running the Capacity Calculator</a>
+    <a href="../capacitycalc-results/" class="dropdown-item">Working with Capacity Calculator Results</a>
 </li>
                                 </ul>
                             </li>
@@ -83,11 +83,11 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
+    <a href="../calcs-peak-flow/" class="dropdown-item">Peak Flow</a>
 </li>
                                     
 <li>
-    <a href="../culvert-capacity/" class="dropdown-item">Culvert Capacity Calculator</a>
+    <a href="../calcs-culvert-capacity/" class="dropdown-item">Culvert Capacity</a>
 </li>
                                 </ul>
                             </li>
@@ -134,7 +134,7 @@
               <ul class="nav flex-column">
             <li class="nav-item" data-level="2"><a href="#initial-download-and-clean-up" class="nav-link">Initial Download and Clean-Up</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#optionally" class="nav-link">Optionally:</a>
+            <li class="nav-item" data-level="3"><a href="#optionally-pre-process-the-naacc-table" class="nav-link">Optionally: Pre-Process the NAACC table</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -163,9 +163,13 @@
 <li>Delete headers (first eight rows)</li>
 <li>Save as CSV</li>
 </ul>
-<h3 id="optionally">Optionally:</h3>
+<h3 id="optionally-pre-process-the-naacc-table">Optionally: Pre-Process the NAACC table</h3>
 <p>While the <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest.</p>
-<p>You may want to remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements. Or, you may need to import this table into GIS, and move features to streams or flow lines on a digital elevation model. </p>
+<p>You may want to:</p>
+<ul>
+<li>remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.</li>
+<li>import this table into GIS, and move features to streams or flow lines on a digital elevation model</li>
+</ul>
 <p>Regardless, as long as the NAACC schema is preserved, subsequent tools will be able to use it.</p>
 <h2 id="run-the-naacc-table-ingest-tool">Run the <em>NAACC Table Ingest</em> tool</h2>
 <p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., an Esri file geodatabase feature class).</p>

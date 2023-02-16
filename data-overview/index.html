@@ -37,7 +37,7 @@
                                 <a href="../install/" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guides <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -62,7 +62,7 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guides <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -70,11 +70,11 @@
 </li>
                                     
 <li>
-    <a href="../run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+    <a href="../capacitycalc-run-one/" class="dropdown-item">Running the Capacity Calculator</a>
 </li>
                                     
 <li>
-    <a href="../run-batch/" class="dropdown-item">Batch Running the Capacity Calculator</a>
+    <a href="../capacitycalc-results/" class="dropdown-item">Working with Capacity Calculator Results</a>
 </li>
                                 </ul>
                             </li>
@@ -83,11 +83,11 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
+    <a href="../calcs-peak-flow/" class="dropdown-item">Peak Flow</a>
 </li>
                                     
 <li>
-    <a href="../culvert-capacity/" class="dropdown-item">Culvert Capacity Calculator</a>
+    <a href="../calcs-culvert-capacity/" class="dropdown-item">Culvert Capacity</a>
 </li>
                                 </ul>
                             </li>
@@ -132,6 +132,14 @@
             
             <li class="nav-item" data-level="1"><a href="#overview" class="nav-link">Overview</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#getting-data" class="nav-link">Getting Data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#considerations-for-preparing-data" class="nav-link">Considerations for Preparing Data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -140,13 +148,22 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="overview">Overview</h1>
+<h2 id="getting-data">Getting Data</h2>
+<p><img alt="" src="../assets/workflow.png" /></p>
 <p><em>Preparing data for use in the tools</em></p>
 <ul>
 <li>Get DEM, derive rasters</li>
 <li>Get Curve Number data</li>
 <li>Get Rainfall data</li>
 <li>Get NAACC data</li>
-</ul></div>
+</ul>
+<h2 id="considerations-for-preparing-data">Considerations for Preparing Data</h2>
+<p>You'll need to determine the the trade-off between speed and accuracy based on your use case:</p>
+<ul>
+<li>Ideal: full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery</li>
+<li>Workable: fill sinks in DEM; burn hydro lines into the DEMs; snap culverts to available hydro steam lines; </li>
+</ul>
+<p>The best approach for determining DEM hydrologic-accuracy and NAACC location-correctedness depends on your use case.</p></div>
             </div>
         </div>
 

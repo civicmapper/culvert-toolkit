@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Batch Running the Capacity Calculator - Culvert Analysis Toolkit</title>
+        <title>Working with Capacity Calculator Results - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -37,7 +37,7 @@
                                 <a href="../install/" class="nav-link">Install</a>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guides <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -62,7 +62,7 @@
                                 </ul>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guide <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guides <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
@@ -70,11 +70,11 @@
 </li>
                                     
 <li>
-    <a href="../run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+    <a href="../capacitycalc-run-one/" class="dropdown-item">Running the Capacity Calculator</a>
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Batch Running the Capacity Calculator</a>
+    <a href="./" class="dropdown-item active">Working with Capacity Calculator Results</a>
 </li>
                                 </ul>
                             </li>
@@ -83,11 +83,11 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../peak-flow/" class="dropdown-item">Peak Flow Calculator</a>
+    <a href="../calcs-peak-flow/" class="dropdown-item">Peak Flow</a>
 </li>
                                     
 <li>
-    <a href="../culvert-capacity/" class="dropdown-item">Culvert Capacity Calculator</a>
+    <a href="../calcs-culvert-capacity/" class="dropdown-item">Culvert Capacity</a>
 </li>
                                 </ul>
                             </li>
@@ -103,12 +103,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../run-one/" class="nav-link">
+                                <a rel="prev" href="../capacitycalc-run-one/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../peak-flow/" class="nav-link">
+                                <a rel="next" href="../calcs-peak-flow/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -130,7 +130,7 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#batch-running-the-capacity-calculator" class="nav-link">Batch Running the Capacity Calculator</a>
+            <li class="nav-item" data-level="1"><a href="#working-with-capacity-calculator-results" class="nav-link">Working with Capacity Calculator Results</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -139,8 +139,13 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="batch-running-the-capacity-calculator">Batch Running the Capacity Calculator</h1>
-<p><em>approaches for batching analysis for large areas</em></p></div>
+<h1 id="working-with-capacity-calculator-results">Working with Capacity Calculator Results</h1>
+<p>Esri Arcade:</p>
+<pre><code class="language-javascript">var fs = FeatureSetByName($datastore, &quot;&lt;name of output layer here&gt;&quot;)
+var max_return_period_normalized = ($feature.max_return_period - MIN(fs, &quot;max_return_period&quot;)) / (MAX(fs, &quot;max_return_period&quot;) - MIN(fs, &quot;max_return_period&quot;));
+var shed_area_sqkm_normalized = ($feature.shed_area_sqkm - MIN(fs, &quot;shed_area_sqkm&quot;)) / (MAX(fs, &quot;shed_area_sqkm&quot;) - MIN(fs, &quot;shed_area_sqkm&quot;));
+return max_return_period_normalized / shed_area_sqkm_normalized;
+</code></pre></div>
             </div>
         </div>
 
