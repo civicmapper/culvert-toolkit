@@ -132,12 +132,32 @@
             
             <li class="nav-item" data-level="1"><a href="#overview" class="nav-link">Overview</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#getting-data" class="nav-link">Getting Data</a>
+            <li class="nav-item" data-level="2"><a href="#types-of-datasets-used-as-inputs" class="nav-link">Types of Datasets Used as Inputs</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#naacc-culvertcrossing-records" class="nav-link">NAACC culvert/crossing records</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#considerations-for-preparing-data" class="nav-link">Considerations for Preparing Data</a>
+            <li class="nav-item" data-level="3"><a href="#digital-elevation-model-dem" class="nav-link">Digital Elevation Model (DEM)</a>
               <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#curve-number" class="nav-link">Curve Number</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#rainfall" class="nav-link">Rainfall</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#preparing-data" class="nav-link">Preparing Data</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#considerations-for-preparing-data" class="nav-link">Considerations for Preparing Data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
               </ul>
@@ -148,16 +168,49 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="overview">Overview</h1>
-<h2 id="getting-data">Getting Data</h2>
-<p><img alt="" src="../assets/workflow.png" /></p>
-<p><em>Preparing data for use in the tools</em></p>
+<p>The calculators provided by the Culvert Toolkit rely on specific spatial datasets to derive location-specific parameters that are then used as inputs to stormwater runoff and culvert capacity models.</p>
+<hr />
+<h2 id="types-of-datasets-used-as-inputs">Types of Datasets Used as Inputs</h2>
+<p>The section describes what, where, and how to acquire the various inputs required to run the tool. </p>
+<p>Note that a number of these inputs require some basic competency in GIS to create, as they are not necessarily available off-the-shelf (depending on your area of interest).</p>
+<h3 id="naacc-culvertcrossing-records"><em>NAACC culvert/crossing records</em></h3>
+<p>The culvert/crossing records available from NAACC provide the starting point for the analysis.</p>
+<p>See <em><a href="../naacc-table/">Working with NAACC Culvert Data</a></em> for more information.</p>
+<h3 id="digital-elevation-model-dem"><em>Digital Elevation Model (DEM)</em></h3>
+<p>The DEM provides the data for determining what is upstream of a culvert/crossing, as well as some characteristics of that area that are important to calculating peak flow.</p>
+<p>Sources for a DEM could be:</p>
 <ul>
-<li>Get DEM, derive rasters</li>
-<li>Get Curve Number data</li>
-<li>Get Rainfall data</li>
-<li>Get NAACC data</li>
+<li>Elevation raster</li>
+<li>Elevation TIN</li>
+<li>Elevation point clouds (i.e., from LiDAR)</li>
 </ul>
-<h2 id="considerations-for-preparing-data">Considerations for Preparing Data</h2>
+<p>From any of those sources, derive the following rasters for your area of interest.</p>
+<ul>
+<li>slope</li>
+<li>flow direction</li>
+<li>flow length (optional)</li>
+</ul>
+<h3 id="curve-number"><em>Curve Number</em></h3>
+<p>The curve number represents the runoff potential of the contributing watershed above a culvert. It is derived from a combination of landcover and soil condition data.</p>
+<p>Sources:</p>
+<ul>
+<li>Soils</li>
+<li>Landcover</li>
+<li>TR-55 Manual Table 2.1</li>
+</ul>
+<p>Derive a single curve number raster for your area of interest</p>
+<h3 id="rainfall"><em>Rainfall</em></h3>
+<p>See <em><a href="../noaa-rainfall/">Getting NOAA Rainfall Data</a></em> for more information.</p>
+<p>Sources: </p>
+<ul>
+<li>NOAA rainfall rasters for your area of interest</li>
+</ul>
+<h4 id="note">Note:</h4>
+<p>(Re)Enable support NOAA precipation table in the future.</p>
+<hr />
+<h2 id="preparing-data">Preparing Data</h2>
+<p><img alt="" src="../assets/workflow.png" /></p>
+<h3 id="considerations-for-preparing-data">Considerations for Preparing Data</h3>
 <p>You'll need to determine the the trade-off between speed and accuracy based on your use case:</p>
 <ul>
 <li>Ideal: full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery</li>
