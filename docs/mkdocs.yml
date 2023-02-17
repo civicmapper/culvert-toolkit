@@ -3,10 +3,10 @@ nav:
   - Install: install.md
   - Data Prep Guides:
     - data-overview.md
-    - naacc-table.md
-    - noaa-rainfall.md
-    - curve-number-raster.md
-    - dem-rasters.md
+    - data-naacc-table.md
+    - data-noaa-rainfall.md
+    - data-curve-number-raster.md
+    - data-dem.md
   - Analysis Guides:
     - analysis-overview.md
     - capacitycalc-run-one.md

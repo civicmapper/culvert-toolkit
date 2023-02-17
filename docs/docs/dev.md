@@ -48,8 +48,8 @@ Internal data models used throughout the package.
 
 Module containing the science and business logic of the various calculators available in the package: 
 
-* [runoff/peak flow](peak-flow.md)
-* [culvert capacity](culvert-capacity.md)
+* [runoff/peak flow](calcs-peak-flow.md)
+* [culvert capacity](calcs-culvert-capacity.md)
 
 #### services/
 

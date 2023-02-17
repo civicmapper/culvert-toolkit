@@ -3,7 +3,7 @@
 The calculators provided by the Culvert Toolkit rely on specific spatial datasets to derive location-specific parameters that are then used as inputs to stormwater runoff and culvert capacity models.
 
 ---
-## Types of Datasets Used as Inputs
+## Types of Input Datasets
 
 The section describes what, where, and how to acquire the various inputs required to run the tool. 
 
@@ -13,7 +13,7 @@ Note that a number of these inputs require some basic competency in GIS to creat
 
 The culvert/crossing records available from NAACC provide the starting point for the analysis.
 
-See *[Working with NAACC Culvert Data](naacc-table.md)* for more information.
+See *[Working with NAACC Culvert Data](data-naacc-table.md)* for more information.
 
 ### *Digital Elevation Model (DEM)*
 
@@ -25,11 +25,13 @@ Sources for a DEM could be:
 * Elevation TIN
 * Elevation point clouds (i.e., from LiDAR)
 
-From any of those sources, derive the following rasters for your area of interest.
+From any of those sources, the analytical tools require one or more of the following rasters for your area of interest.
 
 * slope
 * flow direction
 * flow length (optional)
+
+See *[Digital Elevation Model-derived Data](data-dem.md)* for more information.
 
 ### *Curve Number*
 
@@ -45,7 +47,7 @@ Derive a single curve number raster for your area of interest
 
 ### *Rainfall*
 
-See *[Getting NOAA Rainfall Data](noaa-rainfall.md)* for more information.
+See *[Getting NOAA Rainfall Data](data-noaa-rainfall.md)* for more information.
 
 Sources: 
 
