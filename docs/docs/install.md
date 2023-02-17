@@ -29,6 +29,9 @@ ArcGIS Pro comes with a **"Python Command Prompt"** shortcut available, which ru
 
 Typically this gets added to your Windows Start Menu alongside the shortcut to ArcGIS Pro.
 
+![](assets/python-command-prompt-search.png)
+
+
 1. Open the Python Command Prompt that came with your ArcGIS Pro installation.
 3. In the command prompt, run `pip install "<path-to-the-whl-file\drainit.whl>"`. You'll replace `"<path-to-the-whl-file\drainit.whl>"` with the full path to the wheel file you downloaded in the previous step. Include the quotes `"`.
 
@@ -36,10 +39,12 @@ Restart ArcGIS Pro. Open an existing or new project, and open the Geoprocessing 
 
 ![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](assets/toolbox-02.png)
 
-# Upgrading the toolkit
+# Handling Upgrades 
+
+## Upgrading the toolkit
 
 When a new release of the toolkit is available, you won't need to create a new dedicated Python environment as described in step #1 above. Download the new release (#2) and install (#3) in your existing custom environment to replace the older version of the toolkit.
 
-# Upgrades to ArcGIS Pro
+## Upgrades to ArcGIS Pro
 
-Since version 3.0, ArcGIS Pro provides [a path for upgrading custom Python environments](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/upgrade-an-environment.htm) made with previous versions. Depending on the changes to the Python version, that upgrade may or may not affect the toolbox.
+Since version 3.0, ArcGIS Pro provides [a path for upgrading custom Python environments](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/upgrade-an-environment.htm) made with previous versions. Depending on the changes to the Python version, that upgrade may or may not affect the toolbox. 
