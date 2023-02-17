@@ -45,19 +45,19 @@
 </li>
                                     
 <li>
-    <a href="../naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
+    <a href="../data-naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
 </li>
                                     
 <li>
-    <a href="../noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
 </li>
                                     
 <li>
-    <a href="../curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
+    <a href="../data-curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
 </li>
                                     
 <li>
-    <a href="../dem-rasters/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
 </li>
                                 </ul>
                             </li>
@@ -108,7 +108,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../naacc-table/" class="nav-link">
+                                <a rel="next" href="../data-naacc-table/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -132,7 +132,7 @@
             
             <li class="nav-item" data-level="1"><a href="#overview" class="nav-link">Overview</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#types-of-datasets-used-as-inputs" class="nav-link">Types of Datasets Used as Inputs</a>
+            <li class="nav-item" data-level="2"><a href="#types-of-input-datasets" class="nav-link">Types of Input Datasets</a>
               <ul class="nav flex-column">
             <li class="nav-item" data-level="3"><a href="#naacc-culvertcrossing-records" class="nav-link">NAACC culvert/crossing records</a>
               <ul class="nav flex-column">
@@ -170,12 +170,12 @@
 <h1 id="overview">Overview</h1>
 <p>The calculators provided by the Culvert Toolkit rely on specific spatial datasets to derive location-specific parameters that are then used as inputs to stormwater runoff and culvert capacity models.</p>
 <hr />
-<h2 id="types-of-datasets-used-as-inputs">Types of Datasets Used as Inputs</h2>
+<h2 id="types-of-input-datasets">Types of Input Datasets</h2>
 <p>The section describes what, where, and how to acquire the various inputs required to run the tool. </p>
 <p>Note that a number of these inputs require some basic competency in GIS to create, as they are not necessarily available off-the-shelf (depending on your area of interest).</p>
 <h3 id="naacc-culvertcrossing-records"><em>NAACC culvert/crossing records</em></h3>
 <p>The culvert/crossing records available from NAACC provide the starting point for the analysis.</p>
-<p>See <em><a href="../naacc-table/">Working with NAACC Culvert Data</a></em> for more information.</p>
+<p>See <em><a href="../data-naacc-table/">Working with NAACC Culvert Data</a></em> for more information.</p>
 <h3 id="digital-elevation-model-dem"><em>Digital Elevation Model (DEM)</em></h3>
 <p>The DEM provides the data for determining what is upstream of a culvert/crossing, as well as some characteristics of that area that are important to calculating peak flow.</p>
 <p>Sources for a DEM could be:</p>
@@ -184,12 +184,13 @@
 <li>Elevation TIN</li>
 <li>Elevation point clouds (i.e., from LiDAR)</li>
 </ul>
-<p>From any of those sources, derive the following rasters for your area of interest.</p>
+<p>From any of those sources, the analytical tools require one or more of the following rasters for your area of interest.</p>
 <ul>
 <li>slope</li>
 <li>flow direction</li>
 <li>flow length (optional)</li>
 </ul>
+<p>See <em><a href="../data-dem/">Digital Elevation Model-derived Data</a></em> for more information.</p>
 <h3 id="curve-number"><em>Curve Number</em></h3>
 <p>The curve number represents the runoff potential of the contributing watershed above a culvert. It is derived from a combination of landcover and soil condition data.</p>
 <p>Sources:</p>
@@ -200,7 +201,7 @@
 </ul>
 <p>Derive a single curve number raster for your area of interest</p>
 <h3 id="rainfall"><em>Rainfall</em></h3>
-<p>See <em><a href="../noaa-rainfall/">Getting NOAA Rainfall Data</a></em> for more information.</p>
+<p>See <em><a href="../data-noaa-rainfall/">Getting NOAA Rainfall Data</a></em> for more information.</p>
 <p>Sources: </p>
 <ul>
 <li>NOAA rainfall rasters for your area of interest</li>

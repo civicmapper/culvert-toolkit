@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Working with NAACC Culvert Data - Culvert Analysis Toolkit</title>
+        <title>Digital Elevation Model-derived Data - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -45,19 +45,19 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Working with NAACC Culvert Data</a>
+    <a href="../data-naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
 </li>
                                     
 <li>
-    <a href="../noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
 </li>
                                     
 <li>
-    <a href="../curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
+    <a href="../data-curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
 </li>
                                     
 <li>
-    <a href="../dem-rasters/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+    <a href="./" class="dropdown-item active">Digital Elevation Model-derived Data</a>
 </li>
                                 </ul>
                             </li>
@@ -103,12 +103,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../data-overview/" class="nav-link">
+                                <a rel="prev" href="../data-curve-number-raster/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../noaa-rainfall/" class="nav-link">
+                                <a rel="next" href="../analysis-overview/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -130,24 +130,8 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#working-with-naacc-culvert-data" class="nav-link">Working with NAACC Culvert Data</a>
+            <li class="nav-item" data-level="1"><a href="#digital-elevation-model-derived-data" class="nav-link">Digital Elevation Model-derived Data</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#initial-download-and-clean-up" class="nav-link">Initial Download and Clean-Up</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#optionally-pre-process-the-naacc-table" class="nav-link">Optionally: Pre-Process the NAACC table</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#run-the-naacc-table-ingest-tool" class="nav-link">Run the NAACC Table Ingest tool</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#optionally-run-the-naacc-data-snapping-tool" class="nav-link">Optionally: Run the NAACC Data Snapping tool</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
               </ul>
             </li>
         </ul>
@@ -155,29 +139,8 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="working-with-naacc-culvert-data">Working with NAACC Culvert Data</h1>
-<p>(Notes NAACC culvert data accuracy (spatial and temporal))</p>
-<h2 id="initial-download-and-clean-up">Initial Download and Clean-Up</h2>
-<ul>
-<li>Download the XLSX file from NAACC</li>
-<li>Delete headers (first eight rows)</li>
-<li>Save as CSV</li>
-</ul>
-<h3 id="optionally-pre-process-the-naacc-table">Optionally: Pre-Process the NAACC table</h3>
-<p>While the <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest.</p>
-<p>You may want to:</p>
-<ul>
-<li>remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.</li>
-<li>import this table into GIS, and move features to streams or flow lines on a digital elevation model</li>
-</ul>
-<p>Regardless, as long as the NAACC schema is preserved, subsequent tools will be able to use it.</p>
-<h2 id="run-the-naacc-table-ingest-tool">Run the <em>NAACC Table Ingest</em> tool</h2>
-<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., an Esri file geodatabase feature class).</p>
-<p>Use the prepared CSV above as an input. If you've imported that CSV to a file geodatabase feature class already, that feature class will also work.</p>
-<h2 id="optionally-run-the-naacc-data-snapping-tool">Optionally: Run the <em>NAACC Data Snapping</em> tool</h2>
-<p>Depending on your needs, you may find that the location precision of the supplied NAACC data was not adequate compared to the accuracy of your <a href="../dem-rasters/">hydrologically corrected DEM</a>. In that case, you may have moved culverts manually or snapped points to streams.</p>
-<p>If you need to update your NAACC table with better location data from an external table, use the <em>NAACC Data Snapping tool</em> to update the input NAACC-compliant source table with locations from another table.</p>
-<p>(This tool basically runs a reverse 1-to-many join, replacing geometry in one or more feature class records with a single geometry from feature in a reference table using a column-based match)</p></div>
+<h1 id="digital-elevation-model-derived-data">Digital Elevation Model-derived Data</h1>
+<p>(Notes on Hydrologically-corrected Digital Elevation Models (DEMs))</p></div>
             </div>
         </div>
 

@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Generating a Curve Number Raster - Culvert Analysis Toolkit</title>
+        <title>Getting NOAA Rainfall Data - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -45,19 +45,19 @@
 </li>
                                     
 <li>
-    <a href="../naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
+    <a href="../data-naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
 </li>
                                     
 <li>
-    <a href="../noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+    <a href="./" class="dropdown-item active">Getting NOAA Rainfall Data</a>
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Generating a Curve Number Raster</a>
+    <a href="../data-curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
 </li>
                                     
 <li>
-    <a href="../dem-rasters/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
 </li>
                                 </ul>
                             </li>
@@ -103,12 +103,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../noaa-rainfall/" class="nav-link">
+                                <a rel="prev" href="../data-naacc-table/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../dem-rasters/" class="nav-link">
+                                <a rel="next" href="../data-curve-number-raster/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -130,8 +130,12 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#generating-a-curve-number-raster" class="nav-link">Generating a Curve Number Raster</a>
+            <li class="nav-item" data-level="1"><a href="#getting-noaa-rainfall-data" class="nav-link">Getting NOAA Rainfall Data</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#noaa-rainfall-raster-downloader" class="nav-link">NOAA Rainfall Raster Downloader</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -139,7 +143,15 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="generating-a-curve-number-raster">Generating a Curve Number Raster</h1></div>
+<h1 id="getting-noaa-rainfall-data">Getting NOAA Rainfall Data</h1>
+<p>Location-specific rainfall measurements from NOAA are required inputs for the tool. Specifically: rainfall rasters from <a href="https://hdsc.nws.noaa.gov/hdsc/pfds/">NOAA's National Weather Service - Hydrometeorological Design Studies Center - Precipitation Frequency Data Server (PFDS)</a> are used to calculate average rainfall over the upstream contributing area to a culvert, which is used to calculate peak-flow at the culvert.</p>
+<h2 id="noaa-rainfall-raster-downloader">NOAA Rainfall Raster Downloader</h2>
+<p>The Culvert Analysis Toolkit includes a tool that automatically downloads the correct rasters for your area of interest: <strong>NOAA Rainfall Raster Downloader</strong>.</p>
+<p>The NOAA Rainfall Raster Data Downloader does just that: it downloads rainfall rasters for your study area from NOAA's National Weather Service - Hydrometeorological Design Studies Center - Precipitation Frequency Data Server (PFDS).</p>
+<p>By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 years. All rasters are saved to a user-specified folder.</p>
+<p>This tool creates a precipitation source configuration JSON file in the output folder. The JSON file is used as a required input to other tools—specifically those that calculate runoff/peak-flow.</p>
+<p>Note that NOAA Atlas 14 precip values are in 1000ths of an inch; the capacity calculator an other tools convert the values to centimeters on-the-fly.</p>
+<p>NOAA rainfall rasters cover a large geographic area, so you may only need to use this tool occassionally.</p></div>
             </div>
         </div>
 

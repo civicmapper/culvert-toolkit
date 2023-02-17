@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Getting NOAA Rainfall Data - Culvert Analysis Toolkit</title>
+        <title>Working with NAACC Culvert Data - Culvert Analysis Toolkit</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -45,19 +45,19 @@
 </li>
                                     
 <li>
-    <a href="../naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
+    <a href="./" class="dropdown-item active">Working with NAACC Culvert Data</a>
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Getting NOAA Rainfall Data</a>
+    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
 </li>
                                     
 <li>
-    <a href="../curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
+    <a href="../data-curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
 </li>
                                     
 <li>
-    <a href="../dem-rasters/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
 </li>
                                 </ul>
                             </li>
@@ -103,12 +103,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../naacc-table/" class="nav-link">
+                                <a rel="prev" href="../data-overview/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../curve-number-raster/" class="nav-link">
+                                <a rel="next" href="../data-noaa-rainfall/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -130,10 +130,30 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#getting-noaa-rainfall-data" class="nav-link">Getting NOAA Rainfall Data</a>
+            <li class="nav-item" data-level="1"><a href="#working-with-naacc-culvert-data" class="nav-link">Working with NAACC Culvert Data</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#noaa-rainfall-raster-downloader" class="nav-link">NOAA Rainfall Raster Downloader</a>
+            <li class="nav-item" data-level="2"><a href="#initial-download-and-clean-up" class="nav-link">Initial Download and Clean-Up</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#optionally-pre-process-the-naacc-table" class="nav-link">Optionally: Pre-Process the NAACC table</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#run-the-naacc-table-ingest-tool" class="nav-link">Run the NAACC Table Ingest tool</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#what-is-changed-in-the-data-by-this-tool" class="nav-link">What is changed in the data by this tool:</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#optionally-run-the-naacc-data-snapping-tool" class="nav-link">Optionally: Run the NAACC Data Snapping tool</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="3"><a href="#what-is-changed-in-the-data-by-this-tool_1" class="nav-link">What is changed in the data by this tool:</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
               </ul>
@@ -143,15 +163,57 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="getting-noaa-rainfall-data">Getting NOAA Rainfall Data</h1>
-<p>Location-specific rainfall measurements from NOAA are required inputs for the tool. Specifically: rainfall rasters from <a href="https://hdsc.nws.noaa.gov/hdsc/pfds/">NOAA's National Weather Service - Hydrometeorological Design Studies Center - Precipitation Frequency Data Server (PFDS)</a> are used to calculate average rainfall over the upstream contributing area to a culvert, which is used to calculate peak-flow at the culvert.</p>
-<h2 id="noaa-rainfall-raster-downloader">NOAA Rainfall Raster Downloader</h2>
-<p>The Culvert Analysis Toolkit includes a tool that automatically downloads the correct rasters for your area of interest: <strong>NOAA Rainfall Raster Downloader</strong>.</p>
-<p>The NOAA Rainfall Raster Data Downloader does just that: it downloads rainfall rasters for your study area from NOAA's National Weather Service - Hydrometeorological Design Studies Center - Precipitation Frequency Data Server (PFDS).</p>
-<p>By default, this tool acquires rainfall data for 24hr events for frequencies from 1 to 1000 years. All rasters are saved to a user-specified folder.</p>
-<p>This tool creates a precipitation source configuration JSON file in the output folder. The JSON file is used as a required input to other tools—specifically those that calculate runoff/peak-flow.</p>
-<p>Note that NOAA Atlas 14 precip values are in 1000ths of an inch; the capacity calculator an other tools convert the values to centimeters on-the-fly.</p>
-<p>NOAA rainfall rasters cover a large geographic area, so you may only need to use this tool occassionally.</p></div>
+<h1 id="working-with-naacc-culvert-data">Working with NAACC Culvert Data</h1>
+<p>(Notes NAACC culvert data accuracy (spatial and temporal))</p>
+<h2 id="initial-download-and-clean-up">Initial Download and Clean-Up</h2>
+<ul>
+<li>Download the XLSX file from NAACC</li>
+<li>Delete headers (first eight rows)</li>
+<li>Save as CSV</li>
+</ul>
+<h3 id="optionally-pre-process-the-naacc-table">Optionally: Pre-Process the NAACC table</h3>
+<p>While the <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest.</p>
+<p>You may want to:</p>
+<ul>
+<li>remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.</li>
+<li>import this table into GIS, and move features to streams or flow lines on a digital elevation model</li>
+</ul>
+<p>Regardless, as long as the NAACC schema is preserved, subsequent tools will be able to use it.</p>
+<h2 id="run-the-naacc-table-ingest-tool">Run the <em>NAACC Table Ingest</em> tool</h2>
+<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., an Esri file geodatabase feature class).</p>
+<p>Use the prepared CSV above as an input. If you've imported that CSV to a file geodatabase feature class already, that feature class will also work.</p>
+<h3 id="what-is-changed-in-the-data-by-this-tool">What is changed in the data by this tool:</h3>
+<ul>
+<li>new fields related to data validation: </li>
+<li><code>include</code> </li>
+<li><code>validation_errors</code></li>
+<li>new fields for storing transformed copies of capacity model-specific attributes (e.g. values with unit conversion applied). </li>
+<li><em>NAACC field: new field</em></li>
+<li><code>Material</code>: <code>culv_mat</code></li>
+<li><code>Inlet_Type</code>: <code>in_type</code></li>
+<li><code>Inlet_Structure_Type</code>: <code>in_shape</code></li>
+<li><code>Inlet_Width</code>: <code>in_a</code></li>
+<li><code>Inlet_Height</code>: <code>in_b</code></li>
+<li><code>Road_Fill_Height</code>: <code>hw</code></li>
+<li><code>Slope_Percent</code>: <code>slope</code></li>
+<li><code>Crossing_Structure_Length</code>: <code>length</code></li>
+<li><code>Outlet_Structure_Type</code>: <code>out_shape</code></li>
+<li><code>Outlet_Width</code>: <code>out_a</code></li>
+<li><code>Outlet_Height</code>: <code>out_b</code></li>
+<li><code>Crossing_Type</code>: <code>crossing_type</code></li>
+<li><code>Crossing_Comment</code>: <code>comments</code></li>
+<li>new fields for storing calculator results:</li>
+<li></li>
+</ul>
+<h2 id="optionally-run-the-naacc-data-snapping-tool">Optionally: Run the <em>NAACC Data Snapping</em> tool</h2>
+<p>Depending on your needs, you may find that the location precision of the supplied NAACC data was not adequate compared to the accuracy of your <a href="../data-dem/">hydrologically corrected DEM</a>. In that case, you may have moved culverts manually or snapped points to streams.</p>
+<p>If you need to update your NAACC table with better location data from an external table, use the <em>NAACC Data Snapping tool</em> to update the input NAACC-compliant source table with locations from another table.</p>
+<p>(This tool basically runs a reverse 1-to-many join, replacing geometry in one or more feature class records with a single geometry from feature in a reference table using a column-based match).</p>
+<h3 id="what-is-changed-in-the-data-by-this-tool_1">What is changed in the data by this tool:</h3>
+<ul>
+<li>updated geometry</li>
+<li>new field: <code>resnapped</code>: boolean field indicating if the record has been re-snapped based on the supplied reference geometry.</li>
+</ul></div>
             </div>
         </div>
 
