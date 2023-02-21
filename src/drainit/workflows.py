@@ -8,13 +8,13 @@ from dataclasses import asdict, replace, fields
 from typing import Tuple, List
 from tempfile import mkdtemp
 from collections import Counter, OrderedDict
-import pdb
 
 import petl as etl
 import click
 import pint
 from tqdm import tqdm
 from codetiming import Timer
+from marshmallow import INCLUDE
 
 from .models import (
     Analytics,
@@ -109,7 +109,7 @@ class WorkflowManager:
             with open(cjf) as fp:
                 config_as_dict = json.load(fp)
                 # print(config_as_dict)
-            self.config = WorkflowConfigSchema().load(config_as_dict, partial=True, unknown="INCLUDE")
+            self.config = WorkflowConfigSchema().load(config_as_dict, partial=True, unknown=INCLUDE)
 
         # ----------------------------------------------------------------------
         # Rainfall Raster Config (nested within the workflow config)
