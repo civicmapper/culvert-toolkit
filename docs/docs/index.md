@@ -2,7 +2,9 @@
 
 ***This documentation is a work-in-progress***
 
-The Culvert Analysis Toolkit is a collection of GIS tools designed to support analysis of culvert performance within their watershed. It uses a [TR-55 Model](https://www.nrcs.usda.gov/Internet/FSE_DOCUMENTS/stelprdb1044171.pdf) and parameters derived from geospatial data to calculate peak-flow and culvert capacity.
+<!-- ![](assets/header2.png) -->
+
+The Culvert Analysis Toolkit is a collection of GIS tools designed to support analysis of culvert performance within their watershed. It uses a [TR-55 Model](assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf) and parameters derived from geospatial data to calculate peak-flow and culvert capacity.
 
 This software has been developed by [CivicMapper](https://www.civicmapper.com) in collaboration with [GroundPoint Engineering](https://groundpoint-engineering.com/), and encompasses work from a collaboration with the Cornell Soil & Water Lab (on GitHub @ [github.com/SoilWaterLab](https://github.com/SoilWaterLab)). See [Credits/Contributors](index.md#creditscontributors) for more information.
 
@@ -10,10 +12,10 @@ This software has been developed by [CivicMapper](https://www.civicmapper.com) i
 
 ## Getting Started
 
-1. [Installation](installation.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
-2. [The Toolbox](agp-python-toolbox.md): an overview of the tools and what they do.
-3. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
-4. [Analysis Guide](analysis-guide-overview.md): using the tool and working with the results
+1. [Installation](install.md): get the Culvert Analysis Toolkit set up in ArcGIS Pro
+2. [Data Guides](data-overview.md): walk-throughs of the types inputs the tool requires and how to prepare them
+3. [Analysis Guide](analysis-overview.md): an overview of the tools and what they do. using the tool and working with the results
+4. Calculators: an explanation of the [peak-flow](calcs-peak-flow.md) and [capacity](calcs-culvert-capacity.md) calculators, with links to the underlying calculation code on GitHub
 
 ---
 

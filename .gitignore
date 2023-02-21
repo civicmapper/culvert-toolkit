@@ -16,3 +16,6 @@ docs/site/
 *.mxd
 .ipynb_checkpoints/
 
+# test data (that may have been extracted locally)
+tests/data/rainfall/sample_rainfall_rasters
+tests/data/landscape/sample_landscape_rasters

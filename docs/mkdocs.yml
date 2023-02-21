@@ -1,20 +1,19 @@
 site_name: Culvert Analysis Toolkit
 nav: 
-  # - index.md
   - Install: install.md
-  - Data Prep Guide:
+  - Data Prep Guides:
     - data-overview.md
-    - naacc-table.md
-    - noaa-rainfall.md
-    - curve-number-raster.md
-    - dem-rasters.md
-  - Analysis Guide:
+    - data-naacc-table.md
+    - data-noaa-rainfall.md
+    - data-curve-number-raster.md
+    - data-dem.md
+  - Analysis Guides:
     - analysis-overview.md
-    - run-one.md
-    - run-batch.md
+    - capacitycalc-run-one.md
+    - capacitycalc-results.md
   - Calculators:
-    - peak-flow.md
-    - culvert-capacity.md
+    - calcs-peak-flow.md
+    - calcs-culvert-capacity.md
   - Develop: dev.md
 
 theme:

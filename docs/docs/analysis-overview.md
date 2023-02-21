@@ -2,7 +2,7 @@
 
 The Culvert Analysis Toolkit is currently implemented as ArcToolbox for use in ArcGIS Pro
 
-<!-- ![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](toolbox-01.png) -->
+![Culvert Analysis Toolkit in the ArcGIS Pro geoprocessing pane](assets/toolbox-02.png)
 
 Each tool in the toolbox contains built-in help text to explain tool functionality, inputs, and outputs. Summaries of tool usage follow.
 
@@ -25,6 +25,10 @@ The *NAACC Table Ingest* tool will read in, validate, and extend a NAACC-complia
 ## NAACC Data Snapping
 
 The *NAACC Data Snapping* tool can be used to reposition features in a NAACC-compliant feature class to locations in another feature class; e.g., move the NAACC culvert records to point features that have been snapped to streams on a hydrologically corrected DEM.
+
+## Curve Number Generator
+
+(planned; previously implemented in the stand-alone [Peak Flow Calculator toolbox](https://github.com/civicmapper/peak-flow-calculator/))
 
 ## NAACC Culvert Capacity
 
