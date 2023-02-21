@@ -1,6 +1,6 @@
 # Peak Flow
 
-Runoff peak discharge of given point's watershed is determined using the SCS graphical curve number method. For more information on this method, see [Technical Release 55](assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf).
+Runoff peak discharge of given point's watershed is determined using the SCS graphical curve number method. For more information on this method, see [Technical Release 55](assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf). 
 
 ## In the code
 

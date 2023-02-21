@@ -1,3 +1,6 @@
 # Digital Elevation Model-derived Data
 
-(Notes on Hydrologically-corrected Digital Elevation Models (DEMs))
+Our notes on the process for creating Hydrologically-corrected Digital Elevation Models (DEMs) for culvert analysis can be downloaded here:
+
+[Stage 1 Documentation]()
+
