@@ -11,7 +11,7 @@ from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
 # Tools
 @gptooldoc('CulvertCapacityPytTool_CulvertToolkit', None)
 def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, raster_flowlen_filepath=None, raster_slope_filepath=None, raster_curvenumber_filepath=None, precip_src_config_filepath=None, output_points_filepath=None):
-    """CulvertCapacityPytTool_CulvertToolkit(points_filepath, raster_flowdir_filepath, raster_flowlen_filepath, raster_slope_filepath, raster_curvenumber_filepath, precip_src_config_filepath, output_points_filepath)
+    """CulvertCapacityPytTool_CulvertToolkit(points_filepath, raster_flowdir_filepath, {raster_flowlen_filepath}, raster_slope_filepath, raster_curvenumber_filepath, precip_src_config_filepath, output_points_filepath)
 
         Measure the capacity of culverts by calculating peak flow over a
         hydrologically corrected digital elevation model. Culvert location
@@ -23,7 +23,7 @@ def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, r
           NAACC Table Ingest tool to generate this data from NAACC downloads.
       raster_flowdir_filepath (Raster Layer):
           Flow direction raster, derived from hydrologically corrected DEM
-      raster_flowlen_filepath (Raster Layer):
+      raster_flowlen_filepath {Raster Layer}:
           Flow length raster, derived from hydrologically corrected DEM
       raster_slope_filepath (Raster Layer):
           Slope raster, derived from hydrologically corrected DEM

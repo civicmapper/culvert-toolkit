@@ -426,81 +426,182 @@ class CurveNumberMaker(WorkflowManager):
 #     """
 
 
-# class PeakFlowCore(WorkflowManager):
+class PeakFlowCore(WorkflowManager):
 
-#     def __init__(
-#         self, 
-#         precip_src_config_filepath,
-#         save_config_json_filepath=None,
-#         **kwargs
-#     ):
-#         """Core Peak Flow workflow.
+    def __init__(
+        self, 
+        precip_src_config_filepath,
+        save_config_json_filepath=None,
+        use_multiprocessing=False,
+        **kwargs
+    ):
+        """Core Peak Flow workflow.
 
-#         :param save_config_json_filepath: save workflow config to a file, defaults to None
-#         :type save_config_json_filepath: str, optional
-#         :param kwargs: relevant properties in the WorkflowConfig object
-#         :type kwargs: kwargs, optional 
-#         """
+        :param save_config_json_filepath: save workflow config to a file, defaults to None
+        :type save_config_json_filepath: str, optional
+        :param kwargs: relevant properties in the WorkflowConfig object
+        :type kwargs: kwargs, optional 
+        """
 
-#         super().__init__(**kwargs)
-#         self.save_config_json_filepath = save_config_json_filepath
-#         self.load_config(precip_src_config_filepath=precip_src_config_filepath)
+        super().__init__(**kwargs)
+        
+        if save_config_json_filepath:
+            self.save_config_json_filepath = save_config_json_filepath
+            self.load_config(config_json_filepath=save_config_json_filepath)
+        else:
+            self.save_config_json_filepath = f'{self.gp._so("drainit_config", suffix="", where="folder")}.json'
+            self.load_config()
+        
+        self.use_multiprocessing = use_multiprocessing
 
-#         # initialize the appropriate GP object with the config variables
-#         self.gp = GP(self.config)
+        self.gp = GP(self.config)   
+
+        self._run()
+
+    def load_points(self) -> Tuple[List[DrainItPoint], dict]:
+        """workflow-specific approach to ETL of source point dataset. Handles a 
+        points geodataset that matches the NAACC schema. Performs validation of 
+        the NAACC table and calculates capacity of the culverts when valid.
+        """
+        
+        points, points_features, points_spatial_ref_code = self.gp.create_drainitpoints_from_geodata(
+            points_filepath=self.config.points_filepath,
+            uid_field=self.config.points_id_fieldname,
+            group_id_field=None,
+            is_naacc=False,
+            # output_points_filepath=self.config.output_points_filepath
+        )
+        
+        # save those to the config
+        # ...as a list of Drain-It Point objects:
+        self.config.points = points
+        # ...as the geo/json (GeoJSON or Geoservices JSON depending on the GP module used)
+        self.config.points_features = points_features
+        # the spatial ref of the points
+        self.config.points_spatial_ref_code = points_spatial_ref_code
+
+        return self.config.points, self.config.points_features
+
+    def _analyze_all_points(self):
+        
+        # filter out points that we can't analyze
+        points_to_analyze: List[DrainItPoint] = [
+            pt for pt in self.config.points if pt.include
+        ]
+        self.gp.msg("--------------------------------")
+        self.gp.msg(f"analyzing {len(points_to_analyze)} points...")
+
+        # ----------------------------------------------------------------------
+        # ANALYZE all points individually
+
+        # for pt in tqdm(points_to_analyze, desc="analyzing points"):
+        for pt in points_to_analyze:
+        
+
+            # print(pt.uid, pt.group_id)
+
+            # Copy rainfall intervals from point.shed to point.analytics list.
+            # This is object is used for peak-flow and overflow calculations per
+            # rainfall frequency.
+            pt.derive_rainfall_analytics()
+
+            # ------------------
+            # CAPACITY
+            # Set crossing capacity equal to culvert capacity
+            # (later we re-evaluate if the point is part of a multi-culvert crossing)
+            pt.capacity.crossing_capacity = pt.capacity.culvert_capacity
+
+            # ------------------
+            # PEAK FLOW
+            # calculate time of concentration for the point's shed
+            pt.shed.calculate_tc()
+            # for each rainfall frequency
+            for freq in pt.analytics:
+                # print("freq", freq.frequency)
+                # instantiate a Runoff dataclass within 
+                freq.peakflow = runoff.Runoff()
+                # add in the tc that has already been calculated for the shed
+                freq.peakflow.time_of_concentration_hr = pt.shed.tc_hr
+                # calculate peak flow
+                freq.peakflow.calculate_peak_flow(
+                    mean_slope_pct=pt.shed.avg_slope_pct,
+                    max_flow_length_m=pt.shed.max_fl,
+                    avg_rainfall_cm=freq.avg_rainfall_cm,
+                    basin_area_sqkm=pt.shed.area_sqkm,
+                    avg_cn=pt.shed.avg_cn,
+                    tc_hr=pt.shed.tc_hr
+                )
+
+
+    def _export_culvert_featureclass(self) -> etl.Table:
+
+        # import and unpack the data structure
+        t = etl\
+            .fromdicts([DrainItPointSchema(partial=True).dump(pt) for pt in self.config.points])\
+            .addrownumbers(field='oid')\
+            .cutout(*['naacc', 'raw', 'notes'])\
+            .convert('validation_errors', lambda d: "; ".join(['{0} ({1})'.format(k, ",".join([i for i in v])) for k,v in d.items()]))\
+            .unpackdict('capacity', keys=list(self.capacity_field_map.keys()))\
+            .unpackdict('shed', keys=list(self.shed_field_map.keys()))\
+            .rename(self.shed_field_map)\
+            .unpack('analytics', self.frequency_fields)
+
+        # unpack the rainfall frequency-based analytics
+        t2 = deepcopy(t)
+
+        for ff in self.frequency_fields:
+            analytics_table = etl\
+                .cut(t2, ['oid', ff])\
+                .convert(ff, lambda d: dict(**d['overflow'], **d['peakflow']))\
+                .unpackdict(ff, list(self.analytics_field_map.keys()))\
+                .prefixheader(f'{ff}_')\
+                .rename(f'{ff}_oid', 'oid')
+            t2 = etl.join(t2, analytics_table, 'oid')
+            
+        # clean-up fields
+        t3 = etl.cutout(t2, *self.frequency_fields)
+        
+        # create a feature class from the table
+        self.gp.msg(f"saving output points to {self.config.output_points_filepath}")
+        self.gp.create_geodata_from_petl_table(
+            petl_table=t3, 
+            x_column='lng', 
+            y_column='lat', 
+            output_featureclass=self.config.output_points_filepath,
+            crs_wkid=self.config.points_spatial_ref_code
+        )
+        
+        return t3
     
-#     def load_points(self):
-#         self.gp.create_point_objects_from_geodata()
-#         pass
-    
-#     def run_core_workflow(self):
 
-#         self.load_points()
+    def _run(self):
+             
+        # load points
+        self.load_points() # updates self.config.points and self.config.points_features     
 
-#         # delineate watersheds
-#         self.gp.catchment_delineation_in_series()
-
-#         # derive data from catchments
-#         self.gp.derive_data_from_catchments()
-
-#         # calculate peak flow (t of c and flow per return period)
+        # delineate and analyze catchments for each point
+        self.config.points = self.gp.delineation_and_analysis_in_parallel(
+            points=self.config.points,
+            pour_point_field=self.config.points_id_fieldname,
+            flow_direction_raster=self.config.raster_flowdir_filepath,
+            slope_raster=self.config.raster_slope_filepath,
+            flow_length_raster=self.config.raster_flowlen_filepath,
+            curve_number_raster=self.config.raster_curvenumber_filepath,
+            precip_src_config=RainfallRasterConfigSchema().dump(self.config.precip_src_config),
+            out_shed_polygons=self.config.output_sheds_filepath,
+            out_shed_polygons_simplify=self.config.sheds_simplify,
+            override_skip=False, # will run regardless of validation,
+            use_multiprocessing=self.use_multiprocessing
+        )
+        # calculate peak flow (t of c and flow per return period)
         
 
-#         # save the config
-#         if self.save_config_json_filepath:
-#             self.save_config(self.save_config_json_filepath)        
+        # save the config
+        if self.save_config_json_filepath:
+            self.save_config(self.save_config_json_filepath)        
         
-#         return
+        return
 
-
-# class PeakFlow01(PeakFlowCore):
-#     """Peak flow calculator; derives needed rasters from the DEM.
-#     """
-#     def __init__(self, **kwargs):
-        
-#         super().__init__(**kwargs)
-
-#         # Serialize the parameters from workflow config that are applicable to 
-#         # this workflow -- make sure we have what we need
-#         errors = PeakFlow01Schema().validate(asdict(self.config))
-
-#         if errors:
-#             for k, v in errors:
-#                 print("errors for {0}: {1}".format(k, "; ".join(v)))
-#             self.validation_errors.append(errors)
-#             return
-
-#         # ETL the input points. We don't need NAACC for peak flow, just 
-#         # locations and UID
-#         self.gp.load_points()
-
-#         # derive the rasters from input DEM and save refs
-#         derived_rasters = self.gp.derive_analysis_rasters_from_dem(self.config.raster_dem_filepath)
-#         self.config.raster_flowdir_filepath = derived_rasters['flow_direction_raster']
-#         self.config.raster_slope_filepath = derived_rasters['slope_raster']
-
-#         # run the rest of the peak-flow-calc workflow
-#         self.run_core_workflow()
         
 
 
@@ -646,7 +747,8 @@ class CulvertCapacity(WorkflowManager):
         # ----------------------------------------------------------------------
         # ANALYZE all points individually
 
-        for pt in tqdm(points_to_analyze, desc="analyzing points"):
+        # for pt in tqdm(points_to_analyze, desc="analyzing points"):
+        for pt in points_to_analyze:
         
 
             # print(pt.uid, pt.group_id)

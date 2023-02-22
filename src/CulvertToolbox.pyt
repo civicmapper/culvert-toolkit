@@ -7,7 +7,8 @@ from drainit.workflows import (
     CulvertCapacity,
     NaaccDataIngest,
     NaaccDataSnapping,
-    RainfallDataGetter
+    RainfallDataGetter,
+    PeakFlow
 )
 
 class Toolbox(object):
@@ -30,6 +31,105 @@ class CulvertCapacityPytTool(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "NAACC Culvert Capacity"
+        self.description = CulvertCapacity.__doc__
+        self.canRunInBackground = True
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        params=[
+            arcpy.Parameter(category="Culverts", displayName="Culvert Points", name="points_filepath", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Flow Direction", name="raster_flowdir_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Optional', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Slope", name="raster_slope_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="Curve Number", displayName="Curve Number", name="raster_curvenumber_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="Rainfall", displayName="Precipitation Configuration File", name="precip_src_config_filepath", datatype="DEFile", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="Outputs", displayName="Result Points", name="output_points_filepath",datatype="DEFeatureClass", parameterType='Required', direction='Output'),
+            arcpy.Parameter(category="Outputs", displayName="Result Delineations", name="output_sheds_filepath",datatype="DEFeatureClass", parameterType='Derived', direction='Output'),
+        ]
+
+        params[0].filter.list = ['Point']
+
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+
+        try:
+            if arcpy.CheckExtension("Spatial") != "Available":
+                raise Exception
+        except Exception:
+            return False  # The tool cannot be run
+
+        return True  # The tool can be run
+
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+
+        # TODO: auto-set the output sheds filepath based on the output points 
+        # filepath, (which will be limited to a fgdb feature class)
+
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+
+        # TODO: validate the Precip Source config JSON file input
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+
+        kwargs = {}
+        for p in parameters:
+            arcpy.AddMessage(f"{p.name} | {p.datatype}")
+            if p.parameterType != 'Derived':
+                if p.datatype in ('Feature Layer', 'Raster Layer'):
+                    if p.value:
+                        kwargs[p.name] = p.value.dataSource
+                elif p.datatype == 'Feature Class':
+                    if p.value:
+                        kwargs[p.name] = p.value.value
+                else:
+                    if p.value:
+                        kwargs[p.name] = p.value.value
+
+            # try:
+            #     arcpy.AddMessage(f"{p.name} >>> {p.value.__class__.__name__}")
+            #     arcpy.AddMessage(f"\t{p.value.dataSource}")
+            #     kwargs[p.name] = p.value.dataSource
+            # except:
+            #     arcpy.AddMessage(f"{p.name} >>> {type(p.value)}")
+            #     arcpy.AddMessage(f"\t{p.value.value}")
+
+        kwargs['output_sheds_filepath'] = f"{kwargs['output_points_filepath']}_sheds"
+        
+        culvert_capacity_calc = CulvertCapacity(**kwargs)
+        # run the calculator
+        # * Internally this method calls the load_points method, which ETLs the feature class 
+        # at `points_filepath` to the internal data model and perform validation.
+        # * It then runs the delineations and derives the attributes required for peak flow.
+        # * With delineations complete, it calculates overflow
+        # * outputs are saved to the user-spec'd feature class
+        culvert_capacity_calc.run() 
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return
+
+
+class PeakFlowPytTool(object):
+
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Peak Flow Calculator"
         self.description = CulvertCapacity.__doc__
         self.canRunInBackground = True
 
