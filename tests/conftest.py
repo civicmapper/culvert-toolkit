@@ -102,7 +102,7 @@ def all_prepped_sample_inputs(
     return kwargs
 
 @pytest.fixture
-def sample_completed_delineation_config(tmp_path, all_sample_inputs):
+def sample_completed_delineation_config(tmp_path, all_prepped_sample_inputs):
 
     shutil.copyfile(
         TEST_DATA_DIR / 'config_completed_delineation.json',
