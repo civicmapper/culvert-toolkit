@@ -29,6 +29,10 @@ from .naacc_config import (
 
 units = pint.UnitRegistry()
 
+# pi. Note that Cornell source script used a precision 5 float instead of 
+# Python's available math.pi constant, the latter likely being more precise
+PI = 3.14159 #math.pi
+
 
 class NaaccEtl:
 
@@ -226,18 +230,38 @@ class NaaccEtl:
         # convert the incoming PETL.Record object to a dictionary
         row = OrderedDict({i[0]: i[1] for i in zip(row.flds, row)})
         
-        # skip if validation errors are present
+        # ----------------------------------------------------------------------
+        # safety valve: minimal processing if record is invalid
         if row['validation_errors'] is not None:
+
+            # -----------------------------------------------------
+            # imperial to metric conversions
+            # NAACC data uses imperial, these calculations use metric
+            for f in ["length", "in_a", "in_b", "hw", "out_a", "out_b"]:
+                try:
+                    # these measurements all should be positive
+                    if row[f] >= 0:
+                        row[f] = (row[f] * units.foot).to(units.meter).magnitude
+                    # if not, the source data was invalid anyway
+                    else:
+                        row[f] = None
+                except:
+                    # exceptions may be raised with NoneTypes
+                    pass
+
             return tuple(row.values())
+
+        # ----------------------------------------------------------------------
+        # proceed with unit conversion and derivation of capacity parameter
 
         try:
 
             # -----------------------------------------------------
             # constants 
 
-            # pi. Note that source script used a precision 5 float instead of 
+            # pi. Note: the Cornell source script used a precision 5 float instead of 
             # Python's available math.pi constant, the latter likely being more precise
-            pi = 3.14159 #math.pi
+            pi = PI
 
             # -----------------------------------------------------
             # imperial to metric conversions

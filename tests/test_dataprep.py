@@ -62,9 +62,7 @@ class TestNaaccETL:
         d = tmp_path
         results = workflows.NaaccDataIngest(
             naacc_src_table=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
-            output_folder=str(d),
-            output_workspace=str(d / "naacc.gdb"),
-            output_fc='naacc_points'
+            output_fc=str(d / "naacc.gdb" / 'naacc_points')
         )
         t = results.naacc_table # petl table
         
@@ -86,9 +84,7 @@ class TestNaaccETL:
         d = tmp_path
         results = workflows.NaaccDataIngest(
             naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points'),
-            output_folder=str(d),
-            output_workspace=str(d / "test_output_naacc.gdb"),
-            output_fc='naacc_points'
+            ooutput_fc=str(d / "naacc.gdb" / 'naacc_points')
         )
         t = results.naacc_table # petl table
         
@@ -102,6 +98,7 @@ class TestNaaccETL:
         # the results were saved as geodata; check we have 3 features
         f = results._testing_output_geodata()
         assert len(f) == 8
+
 
     def test_naacc_data_resnapping(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path

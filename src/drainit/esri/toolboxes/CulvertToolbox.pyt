@@ -38,7 +38,7 @@ class CulvertCapacityPytTool(object):
         params=[
             arcpy.Parameter(category="Culverts", displayName="Culvert Points", name="points_filepath", datatype="GPFeatureLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(category="DEM", displayName="Flow Direction", name="raster_flowdir_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
-            arcpy.Parameter(category="DEM", displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
+            arcpy.Parameter(category="DEM", displayName="Flow Length", name="raster_flowlen_filepath", datatype="GPRasterLayer", parameterType='Optional', direction='Input'),
             arcpy.Parameter(category="DEM", displayName="Slope", name="raster_slope_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(category="Curve Number", displayName="Curve Number", name="raster_curvenumber_filepath", datatype="GPRasterLayer", parameterType='Required', direction='Input'),
             arcpy.Parameter(category="Rainfall", displayName="Precipitation Configuration File", name="precip_src_config_filepath", datatype="DEFile", parameterType='Required', direction='Input'),
@@ -89,11 +89,14 @@ class CulvertCapacityPytTool(object):
             arcpy.AddMessage(f"{p.name} | {p.datatype}")
             if p.parameterType != 'Derived':
                 if p.datatype in ('Feature Layer', 'Raster Layer'):
-                    kwargs[p.name] = p.value.dataSource
+                    if p.value:
+                        kwargs[p.name] = p.value.dataSource
                 elif p.datatype == 'Feature Class':
-                    kwargs[p.name] = p.value.value
+                    if p.value:
+                        kwargs[p.name] = p.value.value
                 else:
-                    kwargs[p.name] = p.value.value
+                    if p.value:
+                        kwargs[p.name] = p.value.value
 
             # try:
             #     arcpy.AddMessage(f"{p.name} >>> {p.value.__class__.__name__}")
@@ -197,6 +200,9 @@ class NaaccSnappingPytTool(object):
         ]
         self.params = params
 
+        params[1].value = "Survey_Id"
+        params[3].value = "Survey_Id"
+
         return params
 
     def isLicensed(self):
@@ -211,11 +217,11 @@ class NaaccSnappingPytTool(object):
         validation is performed.  This method is called whenever a parameter
         has been changed."""
 
-        if parameters[0].value:
-            parameters[1] = arcpy.Describe(parameters[0].value).fields
+        # if parameters[0].value:
+        #     parameters[1] = arcpy.Describe(parameters[0].value).fields
 
-        if parameters[2].value:
-            parameters[3] = arcpy.Describe(parameters[2].value).fields
+        # if parameters[2].value:
+        #     parameters[3] = arcpy.Describe(parameters[2].value).fields
 
         return
 

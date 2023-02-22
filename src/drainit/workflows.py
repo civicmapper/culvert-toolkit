@@ -233,7 +233,7 @@ class NaaccDataIngest(WorkflowManager):
         # extract the NAACC-compliant table to a PETL table, validating all fields *and* calculating
         # culvert capacity on-the-fly
 
-        naacc.validate_extend_hydrate_naacc_table()
+        t = naacc.validate_extend_hydrate_naacc_table()
         self.naacc_table = naacc.table
         
         # specify which fields we'll carry over to the geodata using existing models
