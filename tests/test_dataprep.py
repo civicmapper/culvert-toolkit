@@ -62,7 +62,7 @@ class TestNaaccETL:
         d = tmp_path
         output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_ingest_from_csv")
         results = workflows.NaaccDataIngest(
-            naacc_src_table=str(TEST_DATA_DIR / 'culvets'/ 'test_naacc_sample.csv'),
+            naacc_src_table=str(TEST_DATA_DIR / 'culverts'/ 'test_naacc_sample.csv'),
             output_fc=str(d / "naacc.gdb" / 'naacc_points')
         )
         t = results.naacc_table # petl table

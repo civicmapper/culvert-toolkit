@@ -893,8 +893,7 @@ class GP:
                 rkey=source_join_field
             )\
             .convert('x', lambda v,r: v if v is not None else r['shape@x'], pass_row=True)\
-            .convert('y', lambda v,r: v if v is not None else r['shape@y'], pass_row=True)\
-            .cutout('shape@x', 'shape@y')\
+            .convert('y', lambda v,r: v if v is not None else r['shape@y'], pass_row=True)
         
         if include_moved_field:
             if moved_field in etl.header(t):
@@ -905,15 +904,20 @@ class GP:
                 .addfield(
                     t2, 
                     moved_field, 
-                    lambda r: any([r['x'] is not None, r['y'] is not None])
+                    lambda r: not all([
+                        # if these are the same, it means the feature wasn't moved
+                        r['x'] == r['shape@x'], r['y'] == r['shape@y']
+                    ])
                 )\
                 .convert(moved_field, bool)
         else:
             t3 = t
 
-        self.create_geodata_from_petl_table(t3,"x","y",output_feature_class, crs_wkid)
+        t4 = etl.cutout(t3, 'shape@x', 'shape@y')
+
+        self.create_geodata_from_petl_table(t4,"x","y",output_feature_class, crs_wkid)
         
-        return t3
+        return t4
         
 
     # --------------------------------------------------------------------------
