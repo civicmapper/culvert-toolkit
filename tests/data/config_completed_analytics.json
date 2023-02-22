@@ -1,6 +1,6 @@
 {
     "work_dir": null,
-    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points",
+    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points_snapped",
     "points_features": {
         "displayFieldName": "",
         "fieldAliases": {

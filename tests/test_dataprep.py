@@ -30,7 +30,7 @@ class TestRainfallETL:
 
     def test_e2e_rainfall_data_getter(self, tmp_path):
         # temp path for the test download
-        d = tmp_path / "rainfall"
+        d = tmp_path / "TestRainfallETL"
         d.mkdir()
         # tests the ETL workflow
         results = workflows.RainfallDataGetter(
@@ -60,8 +60,9 @@ class TestNaaccETL:
 
     def test_naacc_data_ingest_from_csv(self, tmp_path):
         d = tmp_path
+        output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_ingest_from_csv")
         results = workflows.NaaccDataIngest(
-            naacc_src_table=str(TEST_DATA_DIR / 'test_naacc_sample.csv'),
+            naacc_src_table=str(TEST_DATA_DIR / 'culvets'/ 'test_naacc_sample.csv'),
             output_fc=str(d / "naacc.gdb" / 'naacc_points')
         )
         t = results.naacc_table # petl table
@@ -82,9 +83,10 @@ class TestNaaccETL:
 
     def test_naacc_data_ingest_from_fgdb_fc(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path
+        output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_ingest_from_fgdb_fc")
         results = workflows.NaaccDataIngest(
-            naacc_src_table=str(sample_prepped_naacc_geodata / 'naacc_points'),
-            ooutput_fc=str(d / "naacc.gdb" / 'naacc_points')
+            naacc_src_table=str(sample_prepped_naacc_geodata / 'test_naacc_sample'),
+            output_fc=output_fc
         )
         t = results.naacc_table # petl table
         
@@ -102,13 +104,14 @@ class TestNaaccETL:
 
     def test_naacc_data_resnapping(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path
-        output_fc = str(d / "test_output_naacc.gdb" / "snapped_naacc")
-        tool = workflows.NaaccDataSnapping(
-            output_fc=str(output_fc),
-            naacc_points_table=str(sample_prepped_naacc_geodata / 'naacc_points_raw'),
+        output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_resnapping")
+        results = workflows.NaaccDataSnapping(
+            output_fc=output_fc,
+            naacc_points_table=str(sample_prepped_naacc_geodata / 'naacc_points'),
             geometry_source_table=str(sample_prepped_naacc_geodata / 'naacc_crossings_snapped'),
+            include_moved_field=True
         )
-        t = tool.output_table
+        t = results.output_table
         
         # evaluate the sample results:
         # 3 records
@@ -116,3 +119,8 @@ class TestNaaccETL:
 
         # 5 without validation errors
         assert etl.nrows(etl.selectnone(t, "validation_errors")) == 5
+
+        # check the moved field and its contents
+        assert "moved" in etl.header(t)
+        # assert all([isinstance(i, int) for i in etl.values(t, "moved")])
+

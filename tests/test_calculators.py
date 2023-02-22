@@ -47,10 +47,10 @@ class TestCalculators:
 
 class TestCapacityCalc:
 
-    def test_init_culvertcapacity(self, all_sample_inputs,tmp_path):
+    def test_init_culvertcapacity(self, all_prepped_sample_inputs,tmp_path):
         """test initialization of the core Culvert Capacity tool
         """
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
 
         # instantiate the class with the kwargs and run the load_points method
         cc = workflows.CulvertCapacity(**kw)
@@ -75,12 +75,12 @@ class TestCapacityCalc:
 
         assert output_config_filepath.exists()
 
-    def test_delineate_and_analyze_one_catchment(self, all_sample_inputs, tmp_path):
+    def test_delineate_and_analyze_one_catchment(self, all_prepped_sample_inputs, tmp_path):
         """run one good point through the single delineate/analyze function
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
@@ -120,12 +120,12 @@ class TestCapacityCalc:
         assert shed.max_fl is not None
         assert shed.area_sqkm is not None
 
-    def test_delineate_and_analyze_one_catchment_flowlen(self, all_sample_inputs, tmp_path):
+    def test_delineate_and_analyze_one_catchment_flowlen(self, all_prepped_sample_inputs, tmp_path):
         """run one good point through the single delineate/analyze function
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
@@ -165,14 +165,14 @@ class TestCapacityCalc:
         assert shed.max_fl is not None
         assert shed.area_sqkm is not None
 
-    def test_delineation_and_analysis_in_parallel_unit(self, all_sample_inputs, tmp_path):
+    def test_delineation_and_analysis_in_parallel_unit(self, all_prepped_sample_inputs, tmp_path):
         """runs the delineation/analysis loop function, which runs and collects 
         the results from the single delineation/analysis run over a list of 
         points.
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
@@ -213,14 +213,14 @@ class TestCapacityCalc:
         # bad_points = [p for p in cc.config.points if p.include == False]
         # assert len(bad_points) == 3
 
-    def test_delineation_and_analysis_in_parallel_flowlen_unit(self, all_sample_inputs, tmp_path):
+    def test_delineation_and_analysis_in_parallel_flowlen_unit(self, all_prepped_sample_inputs, tmp_path):
         """runs the delineation/analysis loop function, which runs and collects 
         the results from the single delineation/analysis run over a list of 
         points.
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.CulvertCapacity(**kw)
         cc.load_points()
 
@@ -261,12 +261,12 @@ class TestCapacityCalc:
         # bad_points = [p for p in cc.config.points if p.include == False]
         # assert len(bad_points) == 3        
 
-    # def test_delineation_and_analysis_in_mpire_parallel(self, all_sample_inputs, tmp_path):
+    # def test_delineation_and_analysis_in_mpire_parallel(self, all_prepped_sample_inputs, tmp_path):
     #     """runs the delineation/analysis using multi-processing.
     #     """
 
     #     # instantiate the class with the kwargs and run the load_points method
-    #     kw = all_sample_inputs
+    #     kw = all_prepped_sample_inputs
     #     cc = workflows.CulvertCapacity(**kw)
     #     cc.load_points()
 
@@ -345,9 +345,9 @@ class TestCapacityCalc:
         
         cc._export_culvert_featureclass()
 
-    def test_culvertcapacity_e2e(self, tmp_path, all_sample_inputs):
+    def test_culvertcapacity_e2e(self, tmp_path, all_prepped_sample_inputs):
         
-        cc = workflows.CulvertCapacity(**all_sample_inputs)
+        cc = workflows.CulvertCapacity(**all_prepped_sample_inputs)
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
 
@@ -359,11 +359,11 @@ class TestCapacityCalc:
 
         # pp(cc.config)
 
-    # def test_culvertcapacity_mp_e2e(self, tmp_path, all_sample_inputs):
+    # def test_culvertcapacity_mp_e2e(self, tmp_path, all_prepped_sample_inputs):
         
     #     cc = workflows.CulvertCapacity(
     #         use_multiprocessing=True, 
-    #         **all_sample_inputs
+    #         **all_prepped_sample_inputs
     #     )
 
     #     workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
@@ -377,10 +377,10 @@ class TestCapacityCalc:
 '''
 class TestPeakFlowCalc:
 
-    def test_init_culvertcapacity(self, all_sample_inputs,tmp_path):
+    def test_init_culvertcapacity(self, all_prepped_sample_inputs,tmp_path):
         """test initialization of the core Culvert Capacity tool
         """
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
 
         # instantiate the class with the kwargs and run the load_points method
         cc = workflows.PeakFlowCore(**kw)
@@ -405,12 +405,12 @@ class TestPeakFlowCalc:
 
         assert output_config_filepath.exists()
 
-    def test_delineate_and_analyze_one_catchment(self, all_sample_inputs, tmp_path):
+    def test_delineate_and_analyze_one_catchment(self, all_prepped_sample_inputs, tmp_path):
         """run one good point through the single delineate/analyze function
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.PeakFlowCore(**kw)
         cc.load_points()
 
@@ -448,12 +448,12 @@ class TestPeakFlowCalc:
         assert shed.max_fl is not None
         assert shed.area_sqkm is not None
 
-    def test_delineate_and_analyze_one_catchment_flowlen(self, all_sample_inputs, tmp_path):
+    def test_delineate_and_analyze_one_catchment_flowlen(self, all_prepped_sample_inputs, tmp_path):
         """run one good point through the single delineate/analyze function
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.PeakFlowCore(**kw)
         cc.load_points()
 
@@ -491,14 +491,14 @@ class TestPeakFlowCalc:
         assert shed.max_fl is not None
         assert shed.area_sqkm is not None
 
-    def test_delineation_and_analysis_in_parallel_unit(self, all_sample_inputs, tmp_path):
+    def test_delineation_and_analysis_in_parallel_unit(self, all_prepped_sample_inputs, tmp_path):
         """runs the delineation/analysis loop function, which runs and collects 
         the results from the single delineation/analysis run over a list of 
         points.
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.PeakFlowCore(**kw)
         cc.load_points()
 
@@ -539,14 +539,14 @@ class TestPeakFlowCalc:
         # bad_points = [p for p in cc.config.points if p.include == False]
         # assert len(bad_points) == 3
 
-    def test_delineation_and_analysis_in_parallel_flowlen_unit(self, all_sample_inputs, tmp_path):
+    def test_delineation_and_analysis_in_parallel_flowlen_unit(self, all_prepped_sample_inputs, tmp_path):
         """runs the delineation/analysis loop function, which runs and collects 
         the results from the single delineation/analysis run over a list of 
         points.
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.PeakFlowCore(**kw)
         cc.load_points()
 
@@ -587,12 +587,12 @@ class TestPeakFlowCalc:
         # bad_points = [p for p in cc.config.points if p.include == False]
         # assert len(bad_points) == 3        
 
-    def test_delineation_and_analysis_in_mpire_parallel(self, all_sample_inputs, tmp_path):
+    def test_delineation_and_analysis_in_mpire_parallel(self, all_prepped_sample_inputs, tmp_path):
         """runs the delineation/analysis using multi-processing.
         """
 
         # instantiate the class with the kwargs and run the load_points method
-        kw = all_sample_inputs
+        kw = all_prepped_sample_inputs
         cc = workflows.PeakFlowCore(**kw)
         cc.load_points()
 
@@ -659,9 +659,9 @@ class TestPeakFlowCalc:
         
         cc._export_culvert_featureclass()
 
-    def test_peakflowcore_e2e(self, tmp_path, all_sample_inputs):
+    def test_peakflowcore_e2e(self, tmp_path, all_prepped_sample_inputs):
         
-        cc = workflows.PeakFlowCore(**all_sample_inputs)
+        cc = workflows.PeakFlowCore(**all_prepped_sample_inputs)
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_peakflowcore_e2e')
 
@@ -673,11 +673,11 @@ class TestPeakFlowCalc:
 
         # pp(cc.config)
 
-    def test_peakflowcore_mp_e2e(self, tmp_path, all_sample_inputs):
+    def test_peakflowcore_mp_e2e(self, tmp_path, all_prepped_sample_inputs):
         
         cc = workflows.CulvertCapacity(
             use_multiprocessing=True, 
-            **all_sample_inputs
+            **all_prepped_sample_inputs
         )
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_peakflowcoree2e')

@@ -233,6 +233,8 @@ class GP:
             return "FLOAT"
         if t is str:
             return "TEXT"
+        if t is bool:
+            return "SHORT"
         return "TEXT"
 
     def _convert_dtypes_arcgis(self, df):
@@ -465,7 +467,7 @@ class GP:
         Returns:
             [type]: [description]
         """
-        print(petl_table)
+        # print(petl_table)
         # Remove system fields look-alikes that may have snuck through;
         # e.g., 'OBJECTID' may not be the actual oid field, but a duplicate
         # due to whatever happend to the data before hand. It's presence here
@@ -502,6 +504,8 @@ class GP:
                     field_types_lookup[h] = int
                 elif 'str' in ftypes:
                     field_types_lookup[h] = str
+                elif 'bool' in ftypes:
+                    field_types_lookup[h] = bool
                 else:
                     field_types_lookup[h] = str                    
 
@@ -847,10 +851,13 @@ class GP:
         source_feature_class, 
         source_join_field, 
         output_feature_class, 
-        crs_wkid=4326
+        crs_wkid=4326,
+        include_moved_field=True,
+        moved_field="moved"
         ):
 
         # read features classes into PETL table objects
+        # (this will remove any old fields named "x" or "y")
         target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=True)
         source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
 
@@ -867,7 +874,6 @@ class GP:
 
         # clean up fields in the target table, removing any x y (possibly from
         # previous run); also cast target join field values to text
-        # fields_to_keep = [f for f in etl.header(target_table) if f not in ["x", "y"]]
         target_table_clean = etl\
             .rename(target_table, {"x": "shape@x", "y": "shape@y"})\
             .convert(target_join_field, str)
@@ -888,11 +894,26 @@ class GP:
             )\
             .convert('x', lambda v,r: v if v is not None else r['shape@x'], pass_row=True)\
             .convert('y', lambda v,r: v if v is not None else r['shape@y'], pass_row=True)\
-            .cutout('shape@x', 'shape@y')
-
-        self.create_geodata_from_petl_table(t,"x","y",output_feature_class, crs_wkid)
+            .cutout('shape@x', 'shape@y')\
         
-        return t
+        if include_moved_field:
+            if moved_field in etl.header(t):
+                t2 = etl.cutout(t, moved_field)
+            else:
+                t2 = t
+            t3 = etl\
+                .addfield(
+                    t2, 
+                    moved_field, 
+                    lambda r: any([r['x'] is not None, r['y'] is not None])
+                )\
+                .convert(moved_field, bool)
+        else:
+            t3 = t
+
+        self.create_geodata_from_petl_table(t3,"x","y",output_feature_class, crs_wkid)
+        
+        return t3
         
 
     # --------------------------------------------------------------------------

@@ -77,22 +77,23 @@ def sample_landscape_data(tmp_path):
     # shutil.rmtree(d)
 
 @pytest.fixture
-def all_sample_inputs(
+def all_prepped_sample_inputs(
     sample_rainfall_data,
     sample_prepped_naacc_geodata,
     sample_landscape_data
     ):
     """combines results of multiple test data-unpacking fixtures into a 
-    dictionary for use in workflow tools
+    dictionary for use in workflow tools. Data included is ready for calculators.
     """
 
     # arguments for the culvert capacity tester
     kwargs = dict(
-        points_filepath=sample_prepped_naacc_geodata / "naacc_points",
+        points_filepath=sample_prepped_naacc_geodata / "naacc_points_snapped",
         precip_src_config_filepath=sample_rainfall_data[1],
         raster_flowdir_filepath=sample_landscape_data['flowdir'],
         raster_slope_filepath=sample_landscape_data['slope'],
         raster_curvenumber_filepath=sample_landscape_data['curveno'],
+        raster_flowlen_filepath=sample_landscape_data['flowlen']
         # output_points_filepath=str()
     )
     # convert what may be Path objects to strings for use in the tool

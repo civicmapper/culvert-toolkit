@@ -242,7 +242,7 @@ class NaaccDataIngest(WorkflowManager):
         field_types_lookup = {}
         field_types_lookup.update({f.name: get_type(f.type) for f in fields(NaaccCulvert)})
         field_types_lookup.update({f.name: get_type(f.type) for f in fields(capacity.Capacity)})
-        field_types_lookup.update({'validation_errors': str, 'include': str})
+        field_types_lookup.update({'validation_errors': str})#, 'include': int})
         
         # save the PETL-ified NAACC table to a geodata table (default: Esri FGDB feature class)
         featureset_json = self.gp.create_geodata_from_petl_table(
@@ -280,6 +280,7 @@ class NaaccDataSnapping(WorkflowManager):
         naacc_points_table_join_field:str="Survey_Id",
         geometry_source_table_join_field:str="Survey_Id",
         crs_wkid:int=4326,
+        include_moved_field=True,
         **kwargs
         ):
         """Move points in an existing ingested NAACC points table to new locations by referencing another table, and joining the geometry of features in that table based on a join ID. This tool is most useful after culverts have been snapped to raster flow lines, which typically results in only the crossing location being mapped.
@@ -302,6 +303,7 @@ class NaaccDataSnapping(WorkflowManager):
         self.geometry_source_table = geometry_source_table
         self.geometry_source_table_join_field = geometry_source_table_join_field
         self.crs_wkid = crs_wkid
+        self.include_moved_field = include_moved_field
 
         self.output_table = None
 
@@ -318,7 +320,8 @@ class NaaccDataSnapping(WorkflowManager):
             source_feature_class=self.geometry_source_table,
             source_join_field=self.geometry_source_table_join_field,
             output_feature_class=self.output_fc,
-            crs_wkid=self.crs_wkid
+            crs_wkid=self.crs_wkid,
+            include_moved_field=self.include_moved_field
         )
 
         return self.output_table

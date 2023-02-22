@@ -85,7 +85,7 @@
     "precip_noaa_csv_filepath": null,
     "points_spatial_ref_code": 4326,
     "raster_watershed_filepath": null,
-    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points",
+    "points_filepath": "naacc_gdb/naacc.gdb/naacc_points_snapped",
     "points": [
         {
             "lng": -73.60004425048828,
