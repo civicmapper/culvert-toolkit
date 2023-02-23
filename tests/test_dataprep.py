@@ -79,7 +79,26 @@ class TestNaaccETL:
         f = results._testing_output_geodata()
         assert len(f) == 8
 
-        # capacity calculated for 5 records
+    def test_naacc_data_ingest_from_csv_bad1(self, tmp_path):
+        d = tmp_path
+        output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_ingest_from_csv")
+        results = workflows.NaaccDataIngest(
+            naacc_src_table=str(TEST_DATA_DIR / 'culverts'/ 'test_naacc_sample_bad1.csv'),
+            output_fc=str(d / "naacc.gdb" / 'naacc_points')
+        )
+        t = results.naacc_table # petl table
+        
+        # evaluate the sample results:
+        # 8 records
+        assert etl.nrows(t) == 8
+        
+        # 3 with validation errors
+        assert etl.nrows(etl.selectfalse(t, "include")) == 3
+        assert etl.nrows(etl.selectnotnone(t, "validation_errors")) == 3
+
+        # the results were saved as geodata; check we have 8 features
+        f = results._testing_output_geodata()
+        assert len(f) == 8
 
     def test_naacc_data_ingest_from_fgdb_fc(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path

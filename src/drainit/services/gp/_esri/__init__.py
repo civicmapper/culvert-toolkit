@@ -561,8 +561,8 @@ class GP:
                     try:
                         r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
                         cursor.insertRow(r)
-                    except TypeError as e:
-                        self.msg(f"NULL geometry for row {idx}")
+                    except Exception as e:
+                        self.msg(f"Error creating row {idx} | {e}")
                         pass
 
         # print("temp_feature_class", int(GetCount(temp_feature_class).getOutput(0)))
