@@ -259,7 +259,7 @@ class GP:
 
     def _fallback_to_json_str(self, v):
         if isinstance(v, dict) or isinstance(v, list):
-            return json.dumps(v)#[:254]
+            return json.dumps(v)
         return v
 
     def _join_to_copy(self, in_data, out_data, join_table, in_field, join_field):
@@ -556,9 +556,9 @@ class GP:
             fields_to_insert.append("SHAPE@XY")
             with InsertCursor(temp_feature_class, fields_to_insert) as cursor:
                 for idx, row in enumerate(list(etl.records(petl_table))):
-                    # print(idx, row['Survey_Id'])
-                    r = [self._fallback_to_json_str(v) for v in row] # all field values
                     try:
+                        # convert any values that are dicts or lists to a stringified JSON:
+                        r = [self._fallback_to_json_str(v) for v in row] # all field values
                         r.append([float(row[x_column]), float(row[y_column])]) # "SHAPE@XY"
                         cursor.insertRow(r)
                     except Exception as e:

@@ -201,7 +201,7 @@ class NaaccDataIngest(WorkflowManager):
 
         # detect the input type.
         dt = self.gp.detect_data_type(self.naacc_src_table)
-        # self.gp._msg(f"data type detected: {dt}")
+        self.gp.msg(f"data type detected: {dt}")
         # handle different input types
         # CSVs end up here:
         if dt == 'TextFile':

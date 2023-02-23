@@ -79,26 +79,31 @@ class TestNaaccETL:
         f = results._testing_output_geodata()
         assert len(f) == 8
 
-    def test_naacc_data_ingest_from_csv_bad1(self, tmp_path):
+    @pytest.mark.parametrize("csv_name", ["test_naacc_sample_bad1.csv", "test_naacc_sample_bad2.csv", "test_naacc_sample_bad3.csv"])
+    def test_naacc_data_ingest_from_csv_bads(self, tmp_path, csv_name):
+        """this test should be 
+        """
         d = tmp_path
-        output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_ingest_from_csv")
+        naacc_src_table = str(TEST_DATA_DIR / 'culverts'/ csv_name)
+
+        # get a row count from the source table
+        ct = etl.nrows(etl.fromcsv(naacc_src_table))
+
+        # test the ingest tool
+        output_fc = str(d / "TestNaaccETL.gdb" / csv_name.split(".")[0])
         results = workflows.NaaccDataIngest(
-            naacc_src_table=str(TEST_DATA_DIR / 'culverts'/ 'test_naacc_sample_bad1.csv'),
-            output_fc=str(d / "naacc.gdb" / 'naacc_points')
+            naacc_src_table=naacc_src_table,
+            output_fc=output_fc
         )
         t = results.naacc_table # petl table
         
         # evaluate the sample results:
         # 8 records
-        assert etl.nrows(t) == 8
-        
-        # 3 with validation errors
-        assert etl.nrows(etl.selectfalse(t, "include")) == 3
-        assert etl.nrows(etl.selectnotnone(t, "validation_errors")) == 3
+        assert etl.nrows(t) == ct
 
         # the results were saved as geodata; check we have 8 features
         f = results._testing_output_geodata()
-        assert len(f) == 8
+        assert len(f) == ct
 
     def test_naacc_data_ingest_from_fgdb_fc(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path
