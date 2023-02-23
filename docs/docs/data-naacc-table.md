@@ -6,13 +6,25 @@ Follows is a process for getting
 
 ## Initial Download and Clean-Up
 
-Raw data from NAACC comes in the form of an Excel spreadsheet file (`xlsx`). The sheet includes headers. For it to be readable by the toolkit, we need it to be purely tabular.
+Raw data from NAACC comes in the form of an Excel spreadsheet file (`xls`). The sheet includes headers. For it to be readable by the toolkit, we need it to be purely tabular.
 
-1. Download the XLSX file from NAACC
-2. Delete headers (first eight rows)
-3. Save as a CSV file
+### 1. Download the Excel (`xls`) file from [NAACC's website](https://naacc.org/naacc_search_crossing.cfm)
 
-### Optionally: Pre-Process the NAACC table
+Select your area of interest:
+
+![](assets/naacc-download-form.png)
+
+Download the "detailed" type:
+
+![](assets/naacc-download-types.png)
+
+This will give you an `xls` file, which you can open in Excel or other spreadsheet software.
+
+**Do not download** the shapefile available from NAACC. It does not have all the fields required for modeling and is limited to crossing locations only.
+
+### 2. Delete headers (first four rows)
+
+#### Optionally: Pre-Process the NAACC table
 
 While the [*NAACC Table Ingest* (described below)](#run-the-naacc-table-ingest-tool) will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest or otherwise do some QA/QC on the raw NAACC data, such as:
 
@@ -21,6 +33,10 @@ While the [*NAACC Table Ingest* (described below)](#run-the-naacc-table-ingest-t
 * import this table into GIS and georeference it yourself, in order to move features to streams or flow lines on a digital elevation model
 
 Regardless, as long as the original NAACC schema is preserved through your process, subsequent tools will be able to use it.
+
+### 3. Save as a CSV file
+
+Subsequent tools work on CSV files or feature classes in 
 
 ## Run the *NAACC Table Ingest* tool
 
