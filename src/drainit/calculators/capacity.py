@@ -85,7 +85,7 @@ class Capacity:
     out_shape: Optional[str] = None
     out_a: Optional[float] = None
     out_b: Optional[float] = None
-    crossing_type: Optional[str] = None
+    xing_type: Optional[str] = None
         
     #flags: int = 1
 

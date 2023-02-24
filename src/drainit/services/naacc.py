@@ -90,7 +90,7 @@ class NaaccEtl:
         :param row: a single NAACC table row, where the table is from extract_naacc_table
         :type row: petl.Record
         :return: the row, w/ transformed or derived values
-        :rtype: tuple    
+        :rtype: tuple
         """
         
         r = OrderedDict({i[0]: i[1] for i in zip(row.flds, row)})

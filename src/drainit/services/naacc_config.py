@@ -24,7 +24,7 @@ NAACC_HEADER_XWALK = [
     # {'field_idx': 20, 'field_name': 'GIS_Latitude', 'field_short': 'lat', 'field_type': float},
     # {'field_idx': 19, 'field_name': 'GIS_Longitude', 'field_short': 'lng', 'field_type': float},
     # {'field_idx': 26, 'field_name': 'Road', 'field_short': 'rd_name'},
-    {'field_idx': 11, 'field_name': 'Crossing_Type', 'field_short': 'crossing_type'},
+    {'field_idx': 11, 'field_name': 'Crossing_Type', 'field_short': 'xing_type'},
     {'field_idx': 8,  'field_name': 'Crossing_Comment', 'field_short': 'comments'},
     {'field_idx': 39, 'field_name': 'Crossing_Structure_Length', 'field_short': 'length', 'field_type': float},
     {'field_idx': 22, 'field_name': 'Inlet_Type', 'field_short': 'in_type'},
