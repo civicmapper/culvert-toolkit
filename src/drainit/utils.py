@@ -1,6 +1,9 @@
 from collections.abc import Mapping, Iterable
 from dataclasses import is_dataclass, fields
 from functools import partial, wraps
+from chardet.universaldetector import UniversalDetector
+
+import petl as etl
 
 def fxio(preprocess=None, postprocess=None):
     """https://stackoverflow.com/q/55564330
@@ -122,3 +125,49 @@ def get_type(typ, fallback=str):
         else: 
             return fallback
     return typ
+
+
+def read_csv_with_petl(source, **kwargs):
+    """reads a CSV into PETL, handling different file encodings to ensure a
+    clean result (i.e., no BOM in the header).
+
+    Args:
+        source (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    file_encoding = None
+    detector = UniversalDetector()
+    file_open = open(source, 'rb')
+    for line in file_open.readlines():
+        detector.feed(line)
+        if detector.done: break
+    detector.close()
+    file_open.close()
+    file_encoding = detector.result['encoding']
+    
+    # with open(source, "rb") as file:
+    #     beginning = file.read(4)
+    #     # The order of these if-statements is important
+    #     # otherwise UTF32 LE may be detected as UTF16 LE
+    #     # or utf-8-sig may be detected as utf-8
+    #     if beginning ==         b'\xef\xbb\xbfS':
+    #         file_encoding =     "utf_8_sig"
+    #     if beginning ==         b'\x00\x00\xfe\xff':
+    #         file_encoding=      "utf_32_be"
+    #     elif beginning ==       b'\xff\xfe\x00\x00':
+    #         file_encoding =     "utf_32_le"
+    #     elif beginning[0:3] ==  b'\xef\xbb\xbf':
+    #         file_encoding =     "utf_8"
+    #     elif beginning[0:2] ==  b'\xff\xfe':
+    #         file_encoding =     "utf_16_le"
+    #     elif beginning[0:2] ==  b'\xfe\xff':
+    #         file_encoding ==    "utf_16_be"
+    #     else:
+    #         print("Unknown file encoding or no BOM")
+    print("CSV file encoding:", file_encoding)
+
+    return etl.fromcsv(source=source, encoding=file_encoding, **kwargs)
+       

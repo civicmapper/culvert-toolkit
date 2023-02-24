@@ -20,7 +20,11 @@ from ..calculators.capacity import (
     calc_culvert_capacity,
     CAPACITY_NUMERIC_FIELDS
 )
-from ..utils import validate_petl_record_w_schema, convert_value_via_xwalk
+from ..utils import (
+    validate_petl_record_w_schema, 
+    convert_value_via_xwalk,
+    read_csv_with_petl
+)
 from .naacc_config import (
     NAACC_HEADER_LOOKUP, 
     NAACC_INLET_SHAPE_CROSSWALK, 
@@ -634,7 +638,7 @@ class NaaccEtl:
             csv_name = ip.stem
 
             # read the file into a PETL table object
-            raw_table = etl.fromcsv(naacc_csv_file)
+            raw_table = read_csv_with_petl(naacc_csv_file)
 
         if naacc_petl_table:
             # use the provided PETL table object

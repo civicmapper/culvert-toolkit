@@ -98,7 +98,6 @@ class TestNaaccETL:
         t = results.naacc_table # petl table
         
         # evaluate the sample results:
-        # 8 records
         assert etl.nrows(t) == ct
 
         # the results were saved as geodata; check we have 8 features
