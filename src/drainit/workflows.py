@@ -388,7 +388,7 @@ class RainfallDataGetter(WorkflowManager):
             )
         # resample, reproject, and crop the downloaded rasters
         with Timer(name="Post-processing rainfall rasters", text="{name}: {:.1f} seconds", logger=self.gp.msg):
-            rainfall_raster_config2 = self.gp.create_geotiffs_from_rainfall_rasters(
+            rainfall_raster_config2 = self.gp.transform_rainfall_rasters(
                 rrc=rainfall_raster_config1, 
                 out_folder=self.out_folder,
                 target_crs_wkid=self.target_crs_wkid, 

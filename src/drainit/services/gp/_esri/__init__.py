@@ -50,7 +50,8 @@ from arcpy.sa import (
     ZonalStatisticsAsTable, 
     FlowDirection, 
     Con, 
-    CellStatistics
+    CellStatistics,
+    Arithmetic
 ) #, ZonalGeometryAsTable
 from arcpy.da import (
     SearchCursor, 
@@ -786,23 +787,44 @@ class GP:
             lat=centroid.centroid.Y
         )
 
-    def create_geotiffs_from_rainfall_rasters(
+    def transform_rainfall_rasters(
         self, 
         rrc: RainfallRasterConfig, 
         out_folder: str, 
         target_crs_wkid=None, 
         project_raster_kwargs=None, 
-        target_raster=None
+        target_raster=None,
+        convert_units_from="inches / 1000",
+        convert_units_to="cm"
         ) -> RainfallRasterConfig:
         """Converts all rasters in the rainfall rasters config to geotiffs; 
-        reprojects if a target crs is specified. Updates the path in the config 
-        object"""
+        reprojects if a target crs is specified. Converts units from 
+        1000/inch to centimeters.
+        
+        Updates the config object accordingly.
+
+        Args:
+            rrc (RainfallRasterConfig): Rainfall raster config object
+            out_folder (str): output folder
+            target_crs_wkid (_type_, optional): target CRS WKID for the raster. Defaults to None.
+            project_raster_kwargs (_type_, optional): keyword arguments passed to arcpy's ProjectRaster function. Defaults to None.
+            target_raster (_type_, optional): A reference raster used extent, snapping, and cell size. Defaults to None.
+            convert_units_from (str, optional): convert rainfall raster values from this unit, as a Pint-compatible string. Defaults to "inches / 1000".
+            convert_units_to (str, optional): convert rainfall raster values to this unit, as a Pint-compatible string. Defaults to "cm".
+
+        Returns:
+            RainfallRasterConfig: _description_
+        """
         for r in rrc.rasters:
 
             p = Path(r.path)
             n = f'{str(p.stem)}.tif'
             o = Path(out_folder) / n
             self.msg(f"creating {n}")
+
+            # if all([convert_units_from, convert_units_to]):
+                
+            #     Arithmetic(str(p), )
 
             if target_raster:
                 tsr = Raster(target_raster)
@@ -834,7 +856,7 @@ class GP:
                     kwargs.update(project_raster_kwargs)
                 ProjectRaster(**kwargs)
 
-            if not target_crs_wkid and not target_raster:
+            if not all([target_crs_wkid, target_raster]): #, convert_units_from, convert_units_to]):
                 CopyRaster(str(p),str(o))
 
             r.path = str(o)

@@ -672,9 +672,9 @@ class NaaccEtl:
             bad = etl.selectnotnone(validated_table, 'validation_errors')
             bad_ct = etl.nrows(bad)
             if bad_ct > 0:
-                click.echo("> {0} rows did not pass initial validation (NAACC schema)".format(bad_ct))
+                click.echo("> {0} rows did do not conform to the NAACC schema".format(bad_ct))
             else:
-                click.echo("> All rows passed initial validation (NAACC schema)")
+                click.echo("> All rows conform to the NAACC schema")
         # print(etl.vis.see(bad))
 
 
@@ -695,9 +695,9 @@ class NaaccEtl:
             bad2 = etl.selectnotnone(hydrated_table, 'validation_errors')
             bad2_ct = etl.nrows(bad2) - bad_ct
             if bad2_ct > 0:
-                click.echo("> {0} rows did not pass secondary validation (capacity schema)".format(bad2_ct))
+                click.echo("> {0} rows do not have all the data required for capacity calculations".format(bad2_ct))
             else:
-                click.echo("> All rows passed secondary validation (capacity schema)")
+                click.echo("> All rows have all the data required for capacity calculations")
 
         # print(etl.vis.see(bad2))
         
