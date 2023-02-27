@@ -88,7 +88,7 @@ If you need to update your NAACC table with better location data from an externa
 
 This tool basically runs a reverse 1-to-many join, replacing geometry in one or more feature class records with a single geometry from feature in a reference table using a column-based match.
 
-This tool generates a new feature class
+This tool generates a new feature class. An additional field `moved` is added indicating whether the culvert has been moved based on a match with the *Adjusted Geometry File*.
 
 ### What is changed in the data by this tool:
 
