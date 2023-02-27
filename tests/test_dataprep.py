@@ -98,6 +98,7 @@ class TestNaaccETL:
         t = results.naacc_table # petl table
         
         # evaluate the sample results:
+        # 8 records
         assert etl.nrows(t) == ct
 
         # the results were saved as geodata; check we have 8 features
@@ -124,7 +125,6 @@ class TestNaaccETL:
         f = results._testing_output_geodata()
         assert len(f) == 8
 
-
     def test_naacc_data_resnapping(self, tmp_path, sample_prepped_naacc_geodata):
         d = tmp_path
         output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_resnapping")
@@ -147,3 +147,19 @@ class TestNaaccETL:
         assert "moved" in etl.header(t)
         # assert all([isinstance(i, int) for i in etl.values(t, "moved")])
 
+    def test_naacc_data_sensitivity(self, tmp_path):
+        """Throwaway test that exists just for batch running and checking
+        capacity model calculations performed during NaaccETL.
+
+        Args:
+            tmp_path (_type_): _description_
+        """
+        d = tmp_path
+        output_fc = str(d / "TestNaaccETL.gdb" / "test_naacc_data_sensitivity")
+        results = workflows.NaaccDataIngest(
+            naacc_src_table=str(TEST_DATA_DIR / 'culverts'/ 'test_naacc_sample_sensitivity_testing.csv'),
+            output_fc=str(d / "naacc.gdb" / 'test_naacc_data_sensitivity')
+        )
+        t = results.naacc_table # petl table
+
+        assert True

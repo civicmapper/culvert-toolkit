@@ -310,18 +310,25 @@ class DrainItPoint:
         """Derive an initial calculator results object using the 
         geographically-derived data from the shed.
 
-        # NOTE: !!!
-        # NOAA Atlas 14 precip values are in 1000ths/inch, converted to 
-        # centimeters **here** using Pint
-        # TODO: put the unit conversion somewhere else
+        NOTE: NOAA Atlas 14 precip values are in 1000ths/inch, and can be 
+        converted with this function to target units (centimeters) using Pint.
+        This only saves the updated values to the Analytics model for use in
+        calculations, and does not update the values in the shed geodata.
 
         """
+        # NOTE: rainfall in centimeters required by the peak-flow calculator
+        TARGET_UNITS = 'cm'
+
         if not self.shed:
             return
         # copy rainfall analytics 
         for r in self.shed.avg_rainfall:
             if r.value:
-                avg_rainfall_cm = units.Quantity(f'{r.value} {r.units}').m_as('cm')
+                if r.units == TARGET_UNITS:
+                    avg_rainfall_cm = r.value
+                else:
+                    # convert from whatever unit is in the config file to cm
+                    avg_rainfall_cm = units.Quantity(f'{r.value} {r.units}').m_as(TARGET_UNITS)
             else:
                 avg_rainfall_cm = 0
             self.analytics.append(Analytics(

@@ -1,0 +1,13 @@
+Naacc_Culvert_Id,Survey_Id,GIS_Latitude,GIS_Longitude,Number_Of_Culverts,Crossing_Type,Crossing_Comment,Crossing_Structure_Length,Inlet_Type,Inlet_Structure_Type,Inlet_Width,Inlet_Height,Material,Outlet_Structure_Type,Outlet_Width,Outlet_Height,Road_Fill_Height,Slope_Percent
+64662,66742,42.10206985,-73.54853058,1,Bridge,,35,Headwall and Wingwalls,Box/Bridge with Abutments,64.5,6.8,Combination,Box/Bridge with Abutments,64.5,8,0,-1
+72498,75158,42.30724335,-73.70418549,2,Multiple Culvert,,25,Projecting,Box Culvert,8,6.8,Concrete,Box Culvert,8,6.3,1,0.9
+72499,75158,42.30724716,-73.70487213,2,Multiple Culvert,,25,Projecting,Box Culvert,8,6.8,Concrete,Box Culvert,8,6.3,1,1
+72500,75159,42.33268738,-73.61140442,1,Culvert,,90,Projecting,Round Culvert,1.5,1.2,Metal,Round Culvert,3,2.4,1.5,0.6
+72501,75160,42.29379272,-73.68276215,1,Culvert,,40,Projecting,Round Culvert,2.2,2,Concrete,Round Culvert,2,2,4,7
+72502,75161,42.34151459,-73.59632874,1,Culvert,,39,Headwall,Box Culvert,12,4.5,Concrete,Box Culvert,12,4.5,3.5,0.3
+100,75159,42.33268738,-73.61140442,1,Culvert,diam x2,90,Projecting,Round Culvert,3,3,Metal,Round Culvert,3,3,1.5,0.6
+101,75159,42.33268738,-73.61140442,1,Culvert,diam x4,90,Projecting,Round Culvert,6,6,Metal,Round Culvert,3,3,1.5,0.6
+102,75159,42.33268738,-73.61140442,1,Culvert,diam x 8,90,Projecting,Round Culvert,12,12,Metal,Round Culvert,3,3,1.5,0.6
+103,75159,42.33268738,-73.61140442,1,Culvert,HW x2,90,Projecting,Round Culvert,1.5,1.5,Metal,Round Culvert,3,3,3,0.6
+104,75159,42.33268738,-73.61140442,1,Culvert,Slope x2,90,Projecting,Round Culvert,3,3,Metal,Round Culvert,3,3,1.5,1.2
+72500,75159,42.33268738,-73.61140442,1,Culvert,Length / 2,45,Projecting,Round Culvert,1.5,1.2,Metal,Round Culvert,3,2.4,1.5,0.6
