@@ -60,7 +60,7 @@ New fields related to data validation:
 New fields for storing transformed copies of capacity model-specific attributes (e.g. values with unit conversion applied).
 
   * *NAACC field: new field*
-  * `Crossing_Type`: `crossing_type`
+  * `Crossing_Type`: `xing_type`
   * `Crossing_Comment`: `comments`
   * `Crossing_Structure_Length`: `length`
   * `Road_Fill_Height`: `hw`

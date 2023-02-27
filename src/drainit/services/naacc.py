@@ -141,15 +141,15 @@ class NaaccEtl:
         validation_errors = {}
 
         # -----------------------------
-        # check 1: only specific crossing_types
+        # check 1: only specific xing_types
         OK_CROSSING_TYPES = [i.lower() for i in [
             'Culvert', 
             'Multiple Culvert'
         ]]
 
-        if r.get("crossing_type","").lower() not in OK_CROSSING_TYPES:
+        if r.get("xing_type","").lower() not in OK_CROSSING_TYPES:
             r["include"] = False
-            validation_errors.setdefault('in_shape', []).append("Not a culvert or multi-culvert ({0})".format(r["in_shape"]))
+            validation_errors.setdefault('xing_type', []).append("Not a culvert or multi-culvert ({0})".format(r["in_shape"]))
 
         # -----------------------------
         # Check 2: bad geometry

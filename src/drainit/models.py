@@ -165,8 +165,8 @@ class NaaccCulvert:
     modeling
     """
 
-    Naacc_Culvert_Id: Union[int, str] = req_field() # 'field_short': 'NAACC_ID'
-    Survey_Id: Union[int, str] = req_field() # 'field_short': 'Survey_ID'
+    Naacc_Culvert_Id: int = req_field() # 'field_short': 'NAACC_ID'
+    Survey_Id: int = req_field() # 'field_short': 'Survey_ID'
 
     GIS_Latitude: float = req_field() # 'field_short': 'Lat'
     GIS_Longitude: float = req_field() # 'field_short': 'Long'

@@ -893,6 +893,18 @@ class GP:
             else:
                 # crs_wkid will default to 4326
                 pass
+        
+        # quick check: derive a type from target_join_field in target_table
+        # try:
+        ftype = etl\
+            .cut(target_table, target_join_field)\
+            .addfield("ftype", lambda rec: type(rec[target_join_field]))\
+            .aggregate('ftype', len)\
+            .sort('value')\
+            .values('ftype')[0]
+        self.msg(f"{target_join_field} | {ftype}")
+        # except:
+        #     ftype = str
 
         # clean up fields in the target table, removing any x y (possibly from
         # previous run); also cast target join field values to text
@@ -935,7 +947,9 @@ class GP:
         else:
             t3 = t
 
-        t4 = etl.cutout(t3, 'shape@x', 'shape@y')
+        t4 = etl\
+            .cutout(t3, 'shape@x', 'shape@y')\
+            .convert(target_join_field, ftype)
 
         self.create_geodata_from_petl_table(t4,"x","y",output_feature_class, crs_wkid)
         

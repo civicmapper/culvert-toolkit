@@ -76,11 +76,22 @@ class TestNaaccETL:
         assert etl.nrows(etl.selectnotnone(t, "validation_errors")) == 3
 
         # the results were saved as geodata; check we have 8 features
-        f = results._testing_output_geodata()
-        assert len(f) == 8
+        features = results._testing_output_geodata()
+        assert len(features) == 8
+
+        # that values in the Naacc_Culvert_Id and Survey_Id fields are either numbers or None, but not text
+        for fld in ['Naacc_Culvert_Id', 'Survey_Id']:
+            checks = [any([
+                isinstance(f.get('attributes',{}).get(fld), int),
+                isinstance(f.get('attributes',{}).get(fld), float)
+            ]) for f in features if f.get('attributes',{}).get(fld) is not None]
+            print(fld, checks)
+            assert all(checks)
+
+
 
     @pytest.mark.parametrize("csv_name", ["test_naacc_sample_bad1.csv", "test_naacc_sample_bad2.csv", "test_naacc_sample_bad3.csv"])
-    def test_naacc_data_ingest_from_csv_bads(self, tmp_path, csv_name):
+    def test_bad_naacc_data_ingest_from_csv(self, tmp_path, csv_name):
         """this test should be 
         """
         d = tmp_path

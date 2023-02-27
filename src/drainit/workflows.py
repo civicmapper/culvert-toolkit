@@ -576,7 +576,7 @@ class CulvertCapacity(WorkflowManager):
             "out_shape": "out_shape",
             "out_a": "out_a",
             "out_b": "out_b",
-            "crossing_type": "crossing_type",
+            "xing_type": "xing_type",
             "culvert_area_sqm": "culvert_area_sqm",
             "culvert_depth_m": "culvert_depth_m",
             "coefficient_c": "coefficient_c",
