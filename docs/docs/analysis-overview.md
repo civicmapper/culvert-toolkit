@@ -32,7 +32,7 @@ The *NAACC Data Snapping* tool can be used to reposition features in a NAACC-com
 
 ## NAACC Culvert Capacity
 
-The *NAACC Culvert Capacity* tool measure the capacity of culverts to handle storm events using the TR-55 model. It does this by: 
+The *NAACC Culvert Capacity* tool measure the capacity of culverts to handle storm events using a lightweight version of a TR-55 model. It does this by: 
 
 * calculating the capacity of the culvert(s) at a crossing
 * calculating peak flow at the culvert over a hydrologically corrected digital elevation model for 24 hour storm events with frequencies of 1 to 1000 years
