@@ -49,7 +49,7 @@
 </li>
                                     
 <li>
-    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+    <a href="./" class="dropdown-item active">Digital Elevation Model-derived Data</a>
 </li>
                                     
 <li>
@@ -57,7 +57,7 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Digital Elevation Model-derived Data</a>
+    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
 </li>
                                 </ul>
                             </li>
@@ -70,7 +70,7 @@
 </li>
                                     
 <li>
-    <a href="../capacitycalc-run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+    <a href="../capacitycalc-run-one/" class="dropdown-item">The Capacity Calculator Workflow</a>
 </li>
                                     
 <li>
@@ -103,12 +103,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../data-curve-number-raster/" class="nav-link">
+                                <a rel="prev" href="../data-naacc-table/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../analysis-overview/" class="nav-link">
+                                <a rel="next" href="../data-curve-number-raster/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -132,6 +132,18 @@
             
             <li class="nav-item" data-level="1"><a href="#digital-elevation-model-derived-data" class="nav-link">Digital Elevation Model-derived Data</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#sourcing-elevation-data" class="nav-link">Sourcing elevation data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#hydrologically-correct-dems" class="nav-link">Hydrologically-correct DEMs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#derived-data-for-use-in-the-tools" class="nav-link">Derived Data for use in the tools</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -140,7 +152,35 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="digital-elevation-model-derived-data">Digital Elevation Model-derived Data</h1>
-<p>(Notes on Hydrologically-corrected Digital Elevation Models (DEMs))</p></div>
+<p>A good digital elevation model (DEM) is key to good culvert model outputs, particular for estimating peak flow. This section covers sourcing elevation data, the importance of hydrological correction, and the kinds of data you can expect to need to derive from your elevation data.</p>
+<h2 id="sourcing-elevation-data">Sourcing elevation data</h2>
+<p>The sourcing of elevation data is typically locale-specific. The various tools in the Culvert Toolkit that use this data require them in raster format, and you may be able to acquire raster DEM data directly. If not, rasters derived from contour data or a LiDAR point cloud can suffice (though how to do that is beynod the scope of this help documentation).</p>
+<p>When acquiring elevation data for this toolkit, there are two primary considerations:</p>
+<ul>
+<li>the DEM must have complete watershed/basin coverage for you area of interest (otherwise the delineations may be cut-off); and,</li>
+<li>the spatial accuracy must consistent with other datasets</li>
+</ul>
+<h2 id="hydrologically-correct-dems">Hydrologically-correct DEMs</h2>
+<p>For the purposes of peak-flow modeling, the hydro-correctedness of the elevation data is important.</p>
+<p>You'll need to determine the the trade-off between speed and accuracy based on your use case:</p>
+<ul>
+<li>Ideal: full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery</li>
+<li>Workable: fill sinks in DEM; burn hydro lines into the DEMs; snap culverts to available hydro steam lines; </li>
+</ul>
+<p>The best approach for determining DEM hydrologic-accuracy and NAACC location-correctedness depends on your use case.</p>
+<!-- Our notes on the process for creating Hydrologically-corrected Digital Elevation Models (DEMs) for culvert analysis can be downloaded here:
+
+[Stage 1 Documentation]() -->
+
+<h2 id="derived-data-for-use-in-the-tools">Derived Data for use in the tools</h2>
+<p><img alt="" src="../assets/layers-dems.png" /></p>
+<p>The tools in this toolkit use the following rasters derived from the elevation raster:</p>
+<ul>
+<li>Flow Direction (derive from hydro-corrected DEM)</li>
+<li>Flow Length (derive from hydro-corrected DEM)</li>
+<li>Slope (use original, un-hydro-corrected DEM)</li>
+</ul>
+<p>When deriving these rasters, ensure that all rasters are "snapped" to their source: their extents, cell sizes, and positioning should match each <strong>exactly</strong>.</p></div>
             </div>
         </div>
 

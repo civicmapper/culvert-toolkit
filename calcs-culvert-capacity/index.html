@@ -49,7 +49,7 @@
 </li>
                                     
 <li>
-    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
 </li>
                                     
 <li>
@@ -57,7 +57,7 @@
 </li>
                                     
 <li>
-    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
 </li>
                                 </ul>
                             </li>
@@ -70,7 +70,7 @@
 </li>
                                     
 <li>
-    <a href="../capacitycalc-run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+    <a href="../capacitycalc-run-one/" class="dropdown-item">The Capacity Calculator Workflow</a>
 </li>
                                     
 <li>
@@ -144,7 +144,7 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="culvert-capacity">Culvert Capacity</h1>
-<p>Culvert Capacity is calculated using an equation from FHWA Eqn A.3, pg 191.</p>
+<p>Culvert Capacity is calculated using an equation from <a href="../assets/hif12026.pdf">USDOT FHA Publication No. FHWA-HIF-12-026, Equation A.3, pg 191</a>.</p>
 <p>The equation, expressed in <a href="https://www.python.org/">Python</a>, is as follows:</p>
 <pre><code class="language-python">capacity = (
     culvert_area_sqm * math.sqrt(

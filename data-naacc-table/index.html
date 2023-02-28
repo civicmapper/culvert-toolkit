@@ -49,7 +49,7 @@
 </li>
                                     
 <li>
-    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
 </li>
                                     
 <li>
@@ -57,7 +57,7 @@
 </li>
                                     
 <li>
-    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
 </li>
                                 </ul>
                             </li>
@@ -70,7 +70,7 @@
 </li>
                                     
 <li>
-    <a href="../capacitycalc-run-one/" class="dropdown-item">Running the Capacity Calculator</a>
+    <a href="../capacitycalc-run-one/" class="dropdown-item">The Capacity Calculator Workflow</a>
 </li>
                                     
 <li>
@@ -108,7 +108,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../data-noaa-rainfall/" class="nav-link">
+                                <a rel="next" href="../data-dem/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -134,7 +134,15 @@
               <ul class="nav flex-column">
             <li class="nav-item" data-level="2"><a href="#initial-download-and-clean-up" class="nav-link">Initial Download and Clean-Up</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#optionally-pre-process-the-naacc-table" class="nav-link">Optionally: Pre-Process the NAACC table</a>
+            <li class="nav-item" data-level="3"><a href="#1-download-the-excel-xls-file-from-naaccs-website" class="nav-link">1. Download the Excel (xls) file from NAACC's website</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#2-delete-headers-first-four-rows" class="nav-link">2. Delete headers (first four rows)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="3"><a href="#3-save-as-a-csv-file" class="nav-link">3. Save as a CSV file</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -164,55 +172,75 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="working-with-naacc-culvert-data">Working with NAACC Culvert Data</h1>
-<p>(Notes NAACC culvert data accuracy (spatial and temporal))</p>
+<p>NAACC provides a data standard for capturing culvert data. Much of this toolkit relies on input data having been provided according to that standard.</p>
+<p>Follows is a process for getting</p>
 <h2 id="initial-download-and-clean-up">Initial Download and Clean-Up</h2>
-<ul>
-<li>Download the XLSX file from NAACC</li>
-<li>Delete headers (first eight rows)</li>
-<li>Save as CSV</li>
-</ul>
-<h3 id="optionally-pre-process-the-naacc-table">Optionally: Pre-Process the NAACC table</h3>
-<p>While the <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest.</p>
-<p>You may want to:</p>
+<p>Raw data from NAACC comes in the form of an Excel spreadsheet file (<code>xls</code>). The sheet includes headers. For it to be readable by the toolkit, we need it to be purely tabular.</p>
+<h3 id="1-download-the-excel-xls-file-from-naaccs-website">1. Download the Excel (<code>xls</code>) file from <a href="https://naacc.org/naacc_search_crossing.cfm">NAACC's website</a></h3>
+<p>Select your area of interest:</p>
+<p><img alt="" src="../assets/naacc-download-form.png" /></p>
+<p>Download the "detailed" type:</p>
+<p><img alt="" src="../assets/naacc-download-types.png" /></p>
+<p>This will give you an <code>xls</code> file, which you can open in Excel or other spreadsheet software.</p>
+<p><strong>Do not download</strong> the shapefile available from NAACC. It does not have all the fields required for modeling and is limited to crossing locations only.</p>
+<h3 id="2-delete-headers-first-four-rows">2. Delete headers (first four rows)</h3>
+<h4 id="optionally-pre-process-the-naacc-table">Optionally: Pre-Process the NAACC table</h4>
+<p>While the <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest or otherwise do some QA/QC on the raw NAACC data, such as:</p>
 <ul>
 <li>remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.</li>
-<li>import this table into GIS, and move features to streams or flow lines on a digital elevation model</li>
+<li>remove multiple older surveys for crossing locations, or pick the survey with the most complete information</li>
+<li>import this table into GIS and georeference it yourself, in order to move features to streams or flow lines on a digital elevation model</li>
 </ul>
-<p>Regardless, as long as the NAACC schema is preserved, subsequent tools will be able to use it.</p>
+<p>Regardless, as long as the original NAACC schema is preserved through your process, subsequent tools will be able to use it.</p>
+<h3 id="3-save-as-a-csv-file">3. Save as a CSV file</h3>
+<p>Subsequent tools work on CSV files or feature classes in </p>
 <h2 id="run-the-naacc-table-ingest-tool">Run the <em>NAACC Table Ingest</em> tool</h2>
-<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata (e.g., an Esri file geodatabase feature class).</p>
-<p>Use the prepared CSV above as an input. If you've imported that CSV to a file geodatabase feature class already, that feature class will also work.</p>
-<h3 id="what-is-changed-in-the-data-by-this-tool">What is changed in the data by this tool:</h3>
+<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata, i.e., an Esri file geodatabase feature class.</p>
+<p>Use your prepared CSV as an input. Note that if you've imported that CSV to a file geodatabase table or feature class already, that feature class will also work as an input.</p>
+<p>This tool will: </p>
 <ul>
-<li>new fields related to data validation: </li>
+<li>validate the records (e.g., check if the measurements for dimensional fields are positive numbers)</li>
+<li>flag those that aren't valid inputs to the tool (either they aren't the right kind of infrastructure or they have invalid field values)</li>
+<li>add new toolkit-specific fields and extract-transform-load individual values to those fields, typically doing either a unit conversion (imperial to metric) or a text-based crosswalk (for certain descriptive fields like crossing, inlet, and outlet types)</li>
+</ul>
+<h3 id="what-is-changed-in-the-data-by-this-tool">What is changed in the data by this tool:</h3>
+<p>New fields related to data validation: </p>
+<ul>
 <li><code>include</code> </li>
 <li><code>validation_errors</code></li>
-<li>new fields for storing transformed copies of capacity model-specific attributes (e.g. values with unit conversion applied). </li>
+</ul>
+<p>New fields for storing transformed copies of capacity model-specific attributes (e.g. values with unit conversion applied).</p>
+<ul>
 <li><em>NAACC field: new field</em></li>
-<li><code>Material</code>: <code>culv_mat</code></li>
+<li><code>Crossing_Type</code>: <code>xing_type</code></li>
+<li><code>Crossing_Comment</code>: <code>comments</code></li>
+<li><code>Crossing_Structure_Length</code>: <code>length</code></li>
+<li><code>Road_Fill_Height</code>: <code>hw</code></li>
 <li><code>Inlet_Type</code>: <code>in_type</code></li>
 <li><code>Inlet_Structure_Type</code>: <code>in_shape</code></li>
 <li><code>Inlet_Width</code>: <code>in_a</code></li>
 <li><code>Inlet_Height</code>: <code>in_b</code></li>
-<li><code>Road_Fill_Height</code>: <code>hw</code></li>
+<li><code>Material</code>: <code>culv_mat</code></li>
 <li><code>Slope_Percent</code>: <code>slope</code></li>
-<li><code>Crossing_Structure_Length</code>: <code>length</code></li>
 <li><code>Outlet_Structure_Type</code>: <code>out_shape</code></li>
 <li><code>Outlet_Width</code>: <code>out_a</code></li>
 <li><code>Outlet_Height</code>: <code>out_b</code></li>
-<li><code>Crossing_Type</code>: <code>crossing_type</code></li>
-<li><code>Crossing_Comment</code>: <code>comments</code></li>
-<li>new fields for storing calculator results:</li>
-<li></li>
+</ul>
+<p>New fields for storing calculator results:</p>
+<ul>
+<li><code>culvert_capacity</code>: the capacity of the culvert</li>
+<li><code>crossing_capacity</code>: the total capacity of the crossing (of which this culvert record may be one of many culverts). If just one culvert in the crossing, this is the same as <code>culvert_capacity</code>, otherwise it is the sum of <code>culvert_capacity</code> for all culverts in the crossing</li>
+<li><code>max_return_period</code>: the max return period for the crossing</li>
 </ul>
 <h2 id="optionally-run-the-naacc-data-snapping-tool">Optionally: Run the <em>NAACC Data Snapping</em> tool</h2>
 <p>Depending on your needs, you may find that the location precision of the supplied NAACC data was not adequate compared to the accuracy of your <a href="../data-dem/">hydrologically corrected DEM</a>. In that case, you may have moved culverts manually or snapped points to streams.</p>
-<p>If you need to update your NAACC table with better location data from an external table, use the <em>NAACC Data Snapping tool</em> to update the input NAACC-compliant source table with locations from another table.</p>
-<p>(This tool basically runs a reverse 1-to-many join, replacing geometry in one or more feature class records with a single geometry from feature in a reference table using a column-based match).</p>
+<p>If you need to update your NAACC table with better location data from an external table--a <em>Adjusted Geometry File</em>--use the <em>NAACC Data Snapping tool</em> to update the input NAACC-compliant source table with locations from another table.</p>
+<p>This tool basically runs a reverse 1-to-many join, replacing geometry in one or more feature class records with a single geometry from feature in a reference table using a column-based match.</p>
+<p>This tool generates a new feature class. An additional field <code>moved</code> is added indicating whether the culvert has been moved based on a match with the <em>Adjusted Geometry File</em>.</p>
 <h3 id="what-is-changed-in-the-data-by-this-tool_1">What is changed in the data by this tool:</h3>
 <ul>
 <li>updated geometry</li>
-<li>new field: <code>resnapped</code>: boolean field indicating if the record has been re-snapped based on the supplied reference geometry.</li>
+<li>new field: <code>moved</code>: a boolean field indicating if the record has been re-snapped based on the supplied reference geometry.</li>
 </ul></div>
             </div>
         </div>
