@@ -366,7 +366,7 @@ class TestCapacityCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
@@ -384,7 +384,7 @@ class TestCapacityCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
@@ -682,7 +682,7 @@ class TestPeakFlowCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_peakflowcore_e2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
@@ -699,7 +699,7 @@ class TestPeakFlowCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_peakflowcoree2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 

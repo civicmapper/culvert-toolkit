@@ -212,7 +212,7 @@ class NaaccCrossing:
     """a model for representing multiple Culverts NaaccPoints
     """
 
-    crossing_id: str
+    crossing_id: int
     culverts: List[NaaccCulvert]
 
 NaaccCrossingSchema = class_schema(NaaccCrossing)
@@ -268,7 +268,7 @@ class DrainItPoint:
     # "pour_point_field". For NAACC-based culvert modeling, this is the
     # NAACC `Naacc_Culvert_Id` field...though some NAACC data doesn't
     # have this, so it has to be optional.
-    uid: Optional[str]
+    uid: Optional[int]
 
     # geometry
     lat: float = None
@@ -278,7 +278,7 @@ class DrainItPoint:
     # a group id field. non-unique ID field that indicates groups of related
     # outlets. Used primarily for NAACC-based culvert modeling, this is the
     # NAACC `Survey_Id` field
-    group_id: Optional[str] = None
+    group_id: Optional[int] = None
 
     # optionally extend with NAACC attributes
     naacc: Optional[NaaccCulvert] = None
