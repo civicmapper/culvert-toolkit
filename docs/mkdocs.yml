@@ -4,9 +4,9 @@ nav:
   - Data Prep Guides:
     - data-overview.md
     - data-naacc-table.md
-    - data-noaa-rainfall.md
-    - data-curve-number-raster.md
     - data-dem.md
+    - data-curve-number-raster.md
+    - data-noaa-rainfall.md
   - Analysis Guides:
     - analysis-overview.md
     - capacitycalc-run-one.md

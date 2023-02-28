@@ -15,11 +15,20 @@ When acquiring elevation data for this toolkit, there are two primary considerat
 
 For the purposes of peak-flow modeling, the hydro-correctedness of the elevation data is important.
 
-Our notes on the process for creating Hydrologically-corrected Digital Elevation Models (DEMs) for culvert analysis can be downloaded here:
+You'll need to determine the the trade-off between speed and accuracy based on your use case:
 
-[Stage 1 Documentation]()
+* Ideal: full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery
+* Workable: fill sinks in DEM; burn hydro lines into the DEMs; snap culverts to available hydro steam lines; 
+
+The best approach for determining DEM hydrologic-accuracy and NAACC location-correctedness depends on your use case.
+
+<!-- Our notes on the process for creating Hydrologically-corrected Digital Elevation Models (DEMs) for culvert analysis can be downloaded here:
+
+[Stage 1 Documentation]() -->
 
 ## Derived Data for use in the tools
+
+![](assets/layers-dems.png)
 
 The tools in this toolkit use the following rasters derived from the elevation raster:
 

@@ -40,6 +40,8 @@ The *NAACC Culvert Capacity* tool measure the capacity of culverts to handle sto
 
 Culvert location data must be NAACC schema-compliant. 
 
+See the [Worfklow Guide](capacitycalc-run-one.md) for more information on using this tool.
+
 ## Peak-Flow Calculator
 
 (planned; currently implemented with the NAACC Culvert Capacity tool)

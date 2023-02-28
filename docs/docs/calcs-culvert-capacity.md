@@ -1,6 +1,6 @@
 # Culvert Capacity
 
-Culvert Capacity is calculated using an equation from FHWA Eqn A.3, pg 191.
+Culvert Capacity is calculated using an equation from [USDOT FHA Publication No. FHWA-HIF-12-026, Equation A.3, pg 191](assets/hif12026.pdf).
 
 The equation, expressed in [Python](https://www.python.org/), is as follows:
 
