@@ -22,11 +22,22 @@ This will give you an `xls` file, which you can open in Excel or other spreadshe
 
 **Do not download** the shapefile available from NAACC. It does not have all the fields required for modeling and is limited to crossing locations only.
 
-### 2. Delete headers (first four rows)
+#### Identification
 
-#### Optionally: Pre-Process the NAACC table
+* `Survey_Id` is the ID of the crossing
+* `Naacc_Culvert_Id` is the ID of the culvert
 
-While the [*NAACC Table Ingest* (described below)](#run-the-naacc-table-ingest-tool) will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest or otherwise do some QA/QC on the raw NAACC data, such as:
+Both of these values together are used through the remainder of the tools to differentiate and aggregrate records where necessary. To make compatible with some other GIS tools (specifically, raster process tools), we store IDs as integers (not text).
+
+### 2. Clean-Up
+
+Minmially, delete the file header (the first four rows) from the XLS file. The table needs to be in purely tabular format in order to be read and validated by other tools.
+
+![](assets/naacc-detail-header.png) *Remove rows 1-4 containing the notice about crossing record structure. The column names should end up in row 1.*
+
+#### Optionally: Pre-process the NAACC records
+
+You may want to pair back the download to records of interest or otherwise do some QA/QC on the raw NAACC data; for example:
 
 * remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.
 * remove multiple older surveys for crossing locations, or pick the survey with the most complete information
@@ -34,15 +45,17 @@ While the [*NAACC Table Ingest* (described below)](#run-the-naacc-table-ingest-t
 
 Regardless, as long as the original NAACC schema is preserved through your process, subsequent tools will be able to use it.
 
+The [*NAACC Table Ingest* (described below)](#run-the-naacc-table-ingest-tool) will automatically flag records that aren't valid for capacity calculations, including those that aren't culverts or multi-culverts, or are missing measurements and classifications required for calculating capacity.
+
 ### 3. Save as a CSV file
 
 Subsequent tools work on CSV files or feature classes in 
 
 ## Run the *NAACC Table Ingest* tool
 
-The *NAACC Table Ingest* tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata, i.e., an Esri file geodatabase feature class.
+The *NAACC Table Ingest* tool will read in, validate, and extend a NAACC-compliant source table, and save the output as geodata, i.e., an Esri file geodatabase feature class.
 
-Use your prepared CSV as an input. Note that if you've imported that CSV to a file geodatabase table or feature class already, that feature class will also work as an input.
+Use your prepared CSV as an input. Note that if you've imported that `CSV` to a file geodatabase table or feature class already, that feature class will also work as an input.
 
 This tool will: 
 

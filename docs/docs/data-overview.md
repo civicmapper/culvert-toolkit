@@ -9,6 +9,8 @@ The section describes what, where, and how to acquire the various inputs require
 
 Note that a number of these inputs require some basic competency in GIS to create, as they are not necessarily available off-the-shelf (depending on your area of interest).
 
+![](assets/layer-stack.png)
+
 ### *NAACC culvert/crossing records*
 
 The culvert/crossing records available from NAACC provide the starting point for the analysis.
@@ -41,18 +43,16 @@ Sources:
 
 * Soils
 * Landcover
-* TR-55 Manual Table 2.1
+* [TR-55 Manual Table 2.1](assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf)
 
-Derive a single curve number raster for your area of interest
+See *[Digital Elevation Model-derived Data](data-curve-number-raster.md)* for more information.
 
 ### *Rainfall*
+
+Rainfall data is required in order to estimate peak flow.
 
 See *[Getting NOAA Rainfall Data](data-noaa-rainfall.md)* for more information.
 
 Sources: 
 
 * NOAA rainfall rasters for your area of interest
-
-#### Note:
-
-We will enable support for the NOAA precipation table and constant values in the future.
