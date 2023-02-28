@@ -138,7 +138,7 @@
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="3"><a href="#2-delete-headers-first-four-rows" class="nav-link">2. Delete headers (first four rows)</a>
+            <li class="nav-item" data-level="3"><a href="#2-clean-up" class="nav-link">2. Clean-Up</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -183,20 +183,29 @@
 <p><img alt="" src="../assets/naacc-download-types.png" /></p>
 <p>This will give you an <code>xls</code> file, which you can open in Excel or other spreadsheet software.</p>
 <p><strong>Do not download</strong> the shapefile available from NAACC. It does not have all the fields required for modeling and is limited to crossing locations only.</p>
-<h3 id="2-delete-headers-first-four-rows">2. Delete headers (first four rows)</h3>
-<h4 id="optionally-pre-process-the-naacc-table">Optionally: Pre-Process the NAACC table</h4>
-<p>While the <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will flag records that aren't valid for capacity calculations, you may want to pair back to download to records of interest or otherwise do some QA/QC on the raw NAACC data, such as:</p>
+<h4 id="identification">Identification</h4>
+<ul>
+<li><code>Survey_Id</code> is the ID of the crossing</li>
+<li><code>Naacc_Culvert_Id</code> is the ID of the culvert</li>
+</ul>
+<p>Both of these values together are used through the remainder of the tools to differentiate and aggregrate records where necessary. To make compatible with some other GIS tools (specifically, raster process tools), we store IDs as integers (not text).</p>
+<h3 id="2-clean-up">2. Clean-Up</h3>
+<p>Minmially, delete the file header (the first four rows) from the XLS file. The table needs to be in purely tabular format in order to be read and validated by other tools.</p>
+<p><img alt="" src="../assets/naacc-detail-header.png" /> <em>Remove rows 1-4 containing the notice about crossing record structure. The column names should end up in row 1.</em></p>
+<h4 id="optionally-pre-process-the-naacc-records">Optionally: Pre-process the NAACC records</h4>
+<p>You may want to pair back the download to records of interest or otherwise do some QA/QC on the raw NAACC data; for example:</p>
 <ul>
 <li>remove certain types of culvert, e.g., bridges, fords, or ones that don't have any capacity measurements.</li>
 <li>remove multiple older surveys for crossing locations, or pick the survey with the most complete information</li>
 <li>import this table into GIS and georeference it yourself, in order to move features to streams or flow lines on a digital elevation model</li>
 </ul>
 <p>Regardless, as long as the original NAACC schema is preserved through your process, subsequent tools will be able to use it.</p>
+<p>The <a href="#run-the-naacc-table-ingest-tool"><em>NAACC Table Ingest</em> (described below)</a> will automatically flag records that aren't valid for capacity calculations, including those that aren't culverts or multi-culverts, or are missing measurements and classifications required for calculating capacity.</p>
 <h3 id="3-save-as-a-csv-file">3. Save as a CSV file</h3>
 <p>Subsequent tools work on CSV files or feature classes in </p>
 <h2 id="run-the-naacc-table-ingest-tool">Run the <em>NAACC Table Ingest</em> tool</h2>
-<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, saving the output as geodata, i.e., an Esri file geodatabase feature class.</p>
-<p>Use your prepared CSV as an input. Note that if you've imported that CSV to a file geodatabase table or feature class already, that feature class will also work as an input.</p>
+<p>The <em>NAACC Table Ingest</em> tool will read in, validate, and extend a NAACC-compliant source table, and save the output as geodata, i.e., an Esri file geodatabase feature class.</p>
+<p>Use your prepared CSV as an input. Note that if you've imported that <code>CSV</code> to a file geodatabase table or feature class already, that feature class will also work as an input.</p>
 <p>This tool will: </p>
 <ul>
 <li>validate the records (e.g., check if the measurements for dimensional fields are positive numbers)</li>
