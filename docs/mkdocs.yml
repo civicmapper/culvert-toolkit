@@ -1,5 +1,6 @@
 site_name: Culvert Analysis Toolkit
 nav: 
+  - Overview: index.md
   - Install: install.md
   - Data Prep Guides:
     - data-overview.md
@@ -19,4 +20,32 @@ theme:
   name: mkdocs
   navigation_depth: 3
 plugins:
-    - with-pdf
+    - with-pdf:
+        author: Christian Gass and Benjamin Houston
+        cover_title: Culvert Analysis Toolkit
+        cover_subtitle: User Guide
+        copyright: CivicMapper and GroundPoint Engineering, 2023
+        #custom_template_path: TEMPLATES PATH
+        #toc_title: TOC TITLE TEXT
+        #heading_shift: false
+        #toc_level: 3
+        #ordered_chapter_level: 2
+        #excludes_children:
+        #    - 'release-notes/:upgrading'
+        #    - 'release-notes/:changelog'
+        #exclude_pages:
+        #    - 'bugs/'
+        #    - 'appendix/contribute/'
+        #convert_iframe:
+        #    - src: IFRAME SRC
+        #      img: POSTER IMAGE URL
+        #      text: ALTERNATE TEXT
+        #    - src: ...
+        #two_columns_level: 3
+        #render_js: true
+        #headless_chrome_path: headless-chromium
+        #output_path: any-place/document.pdf
+        #enabled_if_env: ENABLE_PDF_EXPORT
+        #debug_html: true
+        #show_anchors: true
+        #verbose: true
