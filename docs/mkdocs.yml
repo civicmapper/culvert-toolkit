@@ -15,7 +15,8 @@ nav:
     - calcs-peak-flow.md
     - calcs-culvert-capacity.md
   - Develop: dev.md
-
 theme:
   name: mkdocs
   navigation_depth: 3
+plugins:
+    - with-pdf
