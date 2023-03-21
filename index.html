@@ -1,157 +1,143 @@
 <!DOCTYPE html>
+
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="None">
-        
-        
-        <link rel="shortcut icon" href="img/favicon.ico">
-        <title>Culvert Analysis Toolkit</title>
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
-        <link href="css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
-
-        <script src="js/jquery-1.10.2.min.js" defer></script>
-        <script src="js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
-    </head>
-
-    <body class="homepage">
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href=".">Culvert Analysis Toolkit</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="navitem">
-                                <a href="install/" class="nav-link">Install</a>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guides <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="data-overview/" class="dropdown-item">Overview</a>
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="None" name="description"/>
+<link href="img/favicon.ico" rel="shortcut icon"/>
+<title>Culvert Analysis Toolkit</title>
+<link href="css/bootstrap.min.css" rel="stylesheet"/>
+<link href="css/font-awesome.min.css" rel="stylesheet"/>
+<link href="css/base.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script defer="" src="js/jquery-1.10.2.min.js"></script>
+<script defer="" src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<link href="pdf\document.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<body class="homepage">
+<div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand" href=".">Culvert Analysis Toolkit</a>
+<!-- Expander button -->
+<button class="navbar-toggler" data-target="#navbar-collapse" data-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<!-- Expanded navigation -->
+<div class="navbar-collapse collapse" id="navbar-collapse">
+<!-- Main navigation -->
+<ul class="nav navbar-nav">
+<li class="navitem active">
+<a class="nav-link" href=".">Overview</a>
 </li>
-                                    
-<li>
-    <a href="data-naacc-table/" class="dropdown-item">Working with NAACC Culvert Data</a>
+<li class="navitem">
+<a class="nav-link" href="install/">Install</a>
 </li>
-                                    
+<li class="dropdown">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Data Prep Guides <b class="caret"></b></a>
+<ul class="dropdown-menu">
 <li>
-    <a href="data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+<a class="dropdown-item" href="data-overview/">Overview</a>
 </li>
-                                    
 <li>
-    <a href="data-curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
+<a class="dropdown-item" href="data-naacc-table/">Working with NAACC Culvert Data</a>
 </li>
-                                    
 <li>
-    <a href="data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+<a class="dropdown-item" href="data-dem/">Digital Elevation Model-derived Data</a>
 </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guides <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    
 <li>
-    <a href="analysis-overview/" class="dropdown-item">Toolbox Overview</a>
+<a class="dropdown-item" href="data-curve-number-raster/">Generating a Curve Number Raster</a>
 </li>
-                                    
 <li>
-    <a href="capacitycalc-run-one/" class="dropdown-item">The Capacity Calculator Workflow</a>
+<a class="dropdown-item" href="data-noaa-rainfall/">Getting NOAA Rainfall Data</a>
 </li>
-                                    
+</ul>
+</li>
+<li class="dropdown">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Analysis Guides <b class="caret"></b></a>
+<ul class="dropdown-menu">
 <li>
-    <a href="capacitycalc-results/" class="dropdown-item">Working with Capacity Calculator Results</a>
+<a class="dropdown-item" href="analysis-overview/">Toolbox Overview</a>
 </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Calculators <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    
 <li>
-    <a href="calcs-peak-flow/" class="dropdown-item">Peak Flow</a>
+<a class="dropdown-item" href="capacitycalc-run-one/">The Capacity Calculator Workflow</a>
 </li>
-                                    
 <li>
-    <a href="calcs-culvert-capacity/" class="dropdown-item">Culvert Capacity</a>
+<a class="dropdown-item" href="capacitycalc-results/">Working with Capacity Calculator Results</a>
 </li>
-                                </ul>
-                            </li>
-                            <li class="navitem">
-                                <a href="dev/" class="nav-link">Develop</a>
-                            </li>
-                        </ul>
-
-                    <ul class="nav navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
-                                <i class="fa fa-search"></i> Search
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
-
-    
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-level="1"><a href="#culvert-analysis-toolkit" class="nav-link">Culvert Analysis Toolkit</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#getting-started" class="nav-link">Getting Started</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#who-is-this-toolkit-for" class="nav-link">Who is this toolkit for?</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#what-this-toolkit-is-not" class="nav-link">What this toolkit is not</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#creditscontributors" class="nav-link">Credits/Contributors</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-        </ul>
-    </div>
+</ul>
+</li>
+<li class="dropdown">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Calculators <b class="caret"></b></a>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item" href="calcs-peak-flow/">Peak Flow</a>
+</li>
+<li>
+<a class="dropdown-item" href="calcs-culvert-capacity/">Culvert Capacity</a>
+</li>
+</ul>
+</li>
+<li class="navitem">
+<a class="nav-link" href="dev/">Develop</a>
+</li>
+</ul>
+<ul class="nav navbar-nav ml-auto">
+<li class="nav-item">
+<a class="nav-link disabled" rel="prev">
+<i class="fa fa-arrow-left"></i> Previous
+                                </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="install/" rel="next">
+                                    Next <i class="fa fa-arrow-right"></i>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="container">
+<div class="row">
+<div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+<div class="navbar-header">
+<button class="navbar-toggler collapsed" data-target="#toc-collapse" data-toggle="collapse" title="Table of Contents" type="button">
+<span class="fa fa-angle-down"></span>
+</button>
+</div>
+<div class="navbar-collapse collapse card bg-secondary" id="toc-collapse">
+<ul class="nav flex-column">
+<li class="nav-item" data-level="1"><a class="nav-link" href="#culvert-analysis-toolkit">Culvert Analysis Toolkit</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-level="2"><a class="nav-link" href="#getting-started">Getting Started</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#who-is-this-toolkit-for">Who is this toolkit for?</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-level="3"><a class="nav-link" href="#what-this-toolkit-is-not">What this toolkit is not</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#creditscontributors">Credits/Contributors</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
 </div></div>
-                    <div class="col-md-9" role="main">
-
+<div class="col-md-9" role="main">
 <h1 id="culvert-analysis-toolkit">Culvert Analysis Toolkit</h1>
 <p><strong><em>This documentation is a work-in-progress</em></strong></p>
-<!-- ![](assets/header2.png) -->
-
 <p>The Culvert Analysis Toolkit is a collection of GIS tools designed to support analysis of culvert performance within their watershed. It uses a lightweight version of a <a href="assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf">TR-55 Model</a> that leverages inputs derived from geospatial data to calculate peak-flow and culvert capacity.</p>
 <p>This software has been developed by <a href="https://www.civicmapper.com">CivicMapper</a> in collaboration with <a href="https://groundpoint-engineering.com/">GroundPoint Engineering</a>, and encompasses work from a collaboration with the Cornell Soil &amp; Water Lab (on GitHub @ <a href="https://github.com/SoilWaterLab">github.com/SoilWaterLab</a>) on their TR-55-based peak flow model. See <a href="./#creditscontributors">Credits/Contributors</a> for more information.</p>
-<hr />
+<hr/>
 <h2 id="getting-started">Getting Started</h2>
 <ol>
 <li><a href="install/">Installation</a>: get the Culvert Analysis Toolkit set up in ArcGIS Pro</li>
@@ -159,7 +145,7 @@
 <li><a href="analysis-overview/">Analysis Guide</a>: an overview of the tools and what they do. using the tool and working with the results</li>
 <li>Calculators: an explanation of the <a href="calcs-peak-flow/">peak-flow</a> and <a href="calcs-culvert-capacity/">capacity</a> calculators, with links to the underlying calculation code on GitHub</li>
 </ol>
-<hr />
+<hr/>
 <h2 id="who-is-this-toolkit-for">Who is this toolkit for?</h2>
 <p>The toolkit is designed to support understanding the efficacy of stormwater culvert infrastructure at a broad scale for planning purposes. To that end, the tool has two audiences:</p>
 <ul>
@@ -172,7 +158,7 @@
 <li>a replacement for engineering tools like HEC-RAS or SWMM</li>
 <li>appropriate for supporting the design and engineering of indivdual culverts</li>
 </ul>
-<hr />
+<hr/>
 <h2 id="creditscontributors">Credits/Contributors</h2>
 <p>This software encompasses work originally developed by the Cornell Soil &amp; Water Lab (on GitHub @ <a href="https://github.com/SoilWaterLab">github.com/SoilWaterLab</a>)</p>
 <p>This repository represents an evolution of a previous effort, the <a href="https://github.com/civicmapper/peak-flow-calculator/">Peak-Flow Calculator</a>, which was a hard fork of the Water Lab's <a href="https://github.com/SoilWaterLab/CulvertEvaluation">CulvertEvalution</a> repository. </p>
@@ -188,85 +174,60 @@
 <li><a href="https://github.com/SoilWaterLab/CulvertModel_2.1">CulvertModel_2.1</a>by Jo Archibald in 2019</li>
 <li>Drain-It repository by CivicMapper, 2021-2022</li>
 </ul></div>
-            </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script>
+</div>
+</div>
+<footer class="col-md-12">
+<hr/>
+<p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+</footer>
+<script>
             var base_url = ".",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="js/base.js" defer></script>
-        <script src="search/main.js" defer></script>
-
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-                <p>From here you can search these documents. Enter your search terms below.</p>
-                <form>
-                    <div class="form-group">
-                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
+<script defer="" src="js/base.js"></script>
+<div aria-hidden="true" aria-labelledby="keyboardModalLabel" class="modal" id="mkdocs_keyboard_modal" role="dialog" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+<button class="close" data-dismiss="modal" type="button"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
 </div>
-
-    </body>
+<div class="modal-body">
+<table class="table">
+<thead>
+<tr>
+<th style="width: 20%;">Keys</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="help shortcut"><kbd>?</kbd></td>
+<td>Open this help</td>
+</tr>
+<tr>
+<td class="next shortcut"><kbd>n</kbd></td>
+<td>Next page</td>
+</tr>
+<tr>
+<td class="prev shortcut"><kbd>p</kbd></td>
+<td>Previous page</td>
+</tr>
+<tr>
+<td class="search shortcut"><kbd>s</kbd></td>
+<td>Search</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="modal-footer">
+</div>
+</div>
+</div>
+</div>
+</body>
 </html>
-
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-02-28 16:09:35.298196+00:00
+Build Date UTC : 2023-03-21 20:35:40.412533+00:00
 -->

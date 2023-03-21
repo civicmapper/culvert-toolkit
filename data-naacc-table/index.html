@@ -1,176 +1,153 @@
 <!DOCTYPE html>
+
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        
-        
-        <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Working with NAACC Culvert Data - Culvert Analysis Toolkit</title>
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
-        <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
-
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
-    </head>
-
-    <body>
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="..">Culvert Analysis Toolkit</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="navitem">
-                                <a href="../install/" class="nav-link">Install</a>
-                            </li>
-                            <li class="dropdown active">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Data Prep Guides <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="../data-overview/" class="dropdown-item">Overview</a>
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>Working with NAACC Culvert Data - Culvert Analysis Toolkit</title>
+<link href="../css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../css/font-awesome.min.css" rel="stylesheet"/>
+<link href="../css/base.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script defer="" src="../js/jquery-1.10.2.min.js"></script>
+<script defer="" src="../js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<link href="..\pdf\document.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<body>
+<div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand" href="..">Culvert Analysis Toolkit</a>
+<!-- Expander button -->
+<button class="navbar-toggler" data-target="#navbar-collapse" data-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<!-- Expanded navigation -->
+<div class="navbar-collapse collapse" id="navbar-collapse">
+<!-- Main navigation -->
+<ul class="nav navbar-nav">
+<li class="navitem">
+<a class="nav-link" href="..">Overview</a>
 </li>
-                                    
-<li>
-    <a href="./" class="dropdown-item active">Working with NAACC Culvert Data</a>
+<li class="navitem">
+<a class="nav-link" href="../install/">Install</a>
 </li>
-                                    
+<li class="dropdown active">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Data Prep Guides <b class="caret"></b></a>
+<ul class="dropdown-menu">
 <li>
-    <a href="../data-dem/" class="dropdown-item">Digital Elevation Model-derived Data</a>
+<a class="dropdown-item" href="../data-overview/">Overview</a>
 </li>
-                                    
 <li>
-    <a href="../data-curve-number-raster/" class="dropdown-item">Generating a Curve Number Raster</a>
+<a class="dropdown-item active" href="./">Working with NAACC Culvert Data</a>
 </li>
-                                    
 <li>
-    <a href="../data-noaa-rainfall/" class="dropdown-item">Getting NOAA Rainfall Data</a>
+<a class="dropdown-item" href="../data-dem/">Digital Elevation Model-derived Data</a>
 </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Analysis Guides <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    
 <li>
-    <a href="../analysis-overview/" class="dropdown-item">Toolbox Overview</a>
+<a class="dropdown-item" href="../data-curve-number-raster/">Generating a Curve Number Raster</a>
 </li>
-                                    
 <li>
-    <a href="../capacitycalc-run-one/" class="dropdown-item">The Capacity Calculator Workflow</a>
+<a class="dropdown-item" href="../data-noaa-rainfall/">Getting NOAA Rainfall Data</a>
 </li>
-                                    
+</ul>
+</li>
+<li class="dropdown">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Analysis Guides <b class="caret"></b></a>
+<ul class="dropdown-menu">
 <li>
-    <a href="../capacitycalc-results/" class="dropdown-item">Working with Capacity Calculator Results</a>
+<a class="dropdown-item" href="../analysis-overview/">Toolbox Overview</a>
 </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Calculators <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    
 <li>
-    <a href="../calcs-peak-flow/" class="dropdown-item">Peak Flow</a>
+<a class="dropdown-item" href="../capacitycalc-run-one/">The Capacity Calculator Workflow</a>
 </li>
-                                    
 <li>
-    <a href="../calcs-culvert-capacity/" class="dropdown-item">Culvert Capacity</a>
+<a class="dropdown-item" href="../capacitycalc-results/">Working with Capacity Calculator Results</a>
 </li>
-                                </ul>
-                            </li>
-                            <li class="navitem">
-                                <a href="../dev/" class="nav-link">Develop</a>
-                            </li>
-                        </ul>
-
-                    <ul class="nav navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
-                                <i class="fa fa-search"></i> Search
-                            </a>
-                        </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../data-overview/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
+</ul>
+</li>
+<li class="dropdown">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Calculators <b class="caret"></b></a>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item" href="../calcs-peak-flow/">Peak Flow</a>
+</li>
+<li>
+<a class="dropdown-item" href="../calcs-culvert-capacity/">Culvert Capacity</a>
+</li>
+</ul>
+</li>
+<li class="navitem">
+<a class="nav-link" href="../dev/">Develop</a>
+</li>
+</ul>
+<ul class="nav navbar-nav ml-auto">
+<li class="nav-item">
+<a class="nav-link" href="../data-overview/" rel="prev">
+<i class="fa fa-arrow-left"></i> Previous
                                 </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="../data-dem/" class="nav-link">
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../data-dem/" rel="next">
                                     Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
-
-    
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-level="1"><a href="#working-with-naacc-culvert-data" class="nav-link">Working with NAACC Culvert Data</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#initial-download-and-clean-up" class="nav-link">Initial Download and Clean-Up</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#1-download-the-excel-xls-file-from-naaccs-website" class="nav-link">1. Download the Excel (xls) file from NAACC's website</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#2-clean-up" class="nav-link">2. Clean-Up</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="3"><a href="#3-save-as-a-csv-file" class="nav-link">3. Save as a CSV file</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#run-the-naacc-table-ingest-tool" class="nav-link">Run the NAACC Table Ingest tool</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#what-is-changed-in-the-data-by-this-tool" class="nav-link">What is changed in the data by this tool:</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#optionally-run-the-naacc-data-snapping-tool" class="nav-link">Optionally: Run the NAACC Data Snapping tool</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-level="3"><a href="#what-is-changed-in-the-data-by-this-tool_1" class="nav-link">What is changed in the data by this tool:</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-              </ul>
-            </li>
-        </ul>
-    </div>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="container">
+<div class="row">
+<div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+<div class="navbar-header">
+<button class="navbar-toggler collapsed" data-target="#toc-collapse" data-toggle="collapse" title="Table of Contents" type="button">
+<span class="fa fa-angle-down"></span>
+</button>
+</div>
+<div class="navbar-collapse collapse card bg-secondary" id="toc-collapse">
+<ul class="nav flex-column">
+<li class="nav-item" data-level="1"><a class="nav-link" href="#working-with-naacc-culvert-data">Working with NAACC Culvert Data</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-level="2"><a class="nav-link" href="#initial-download-and-clean-up">Initial Download and Clean-Up</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-level="3"><a class="nav-link" href="#1-download-the-excel-xls-file-from-naaccs-website">1. Download the Excel (xls) file from NAACC's website</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="3"><a class="nav-link" href="#2-clean-up">2. Clean-Up</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-level="3"><a class="nav-link" href="#3-save-as-a-csv-file">3. Save as a CSV file</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#run-the-naacc-table-ingest-tool">Run the NAACC Table Ingest tool</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-level="3"><a class="nav-link" href="#what-is-changed-in-the-data-by-this-tool">What is changed in the data by this tool:</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-level="2"><a class="nav-link" href="#optionally-run-the-naacc-data-snapping-tool">Optionally: Run the NAACC Data Snapping tool</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-level="3"><a class="nav-link" href="#what-is-changed-in-the-data-by-this-tool_1">What is changed in the data by this tool:</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
 </div></div>
-                    <div class="col-md-9" role="main">
-
+<div class="col-md-9" role="main">
 <h1 id="working-with-naacc-culvert-data">Working with NAACC Culvert Data</h1>
 <p>NAACC provides a data standard for capturing culvert data. Much of this toolkit relies on input data having been provided according to that standard.</p>
 <p>Follows is a process for getting</p>
@@ -178,9 +155,9 @@
 <p>Raw data from NAACC comes in the form of an Excel spreadsheet file (<code>xls</code>). The sheet includes headers. For it to be readable by the toolkit, we need it to be purely tabular.</p>
 <h3 id="1-download-the-excel-xls-file-from-naaccs-website">1. Download the Excel (<code>xls</code>) file from <a href="https://naacc.org/naacc_search_crossing.cfm">NAACC's website</a></h3>
 <p>Select your area of interest:</p>
-<p><img alt="" src="../assets/naacc-download-form.png" /></p>
+<p><img alt="" src="../assets/naacc-download-form.png"/></p>
 <p>Download the "detailed" type:</p>
-<p><img alt="" src="../assets/naacc-download-types.png" /></p>
+<p><img alt="" src="../assets/naacc-download-types.png"/></p>
 <p>This will give you an <code>xls</code> file, which you can open in Excel or other spreadsheet software.</p>
 <p><strong>Do not download</strong> the shapefile available from NAACC. It does not have all the fields required for modeling and is limited to crossing locations only.</p>
 <h4 id="identification">Identification</h4>
@@ -191,7 +168,7 @@
 <p>Both of these values together are used through the remainder of the tools to differentiate and aggregrate records where necessary. To make compatible with some other GIS tools (specifically, raster process tools), we store IDs as integers (not text).</p>
 <h3 id="2-clean-up">2. Clean-Up</h3>
 <p>Minmially, delete the file header (the first four rows) from the XLS file. The table needs to be in purely tabular format in order to be read and validated by other tools.</p>
-<p><img alt="" src="../assets/naacc-detail-header.png" /> <em>Remove rows 1-4 containing the notice about crossing record structure. The column names should end up in row 1.</em></p>
+<p><img alt="" src="../assets/naacc-detail-header.png"/> <em>Remove rows 1-4 containing the notice about crossing record structure. The column names should end up in row 1.</em></p>
 <h4 id="optionally-pre-process-the-naacc-records">Optionally: Pre-process the NAACC records</h4>
 <p>You may want to pair back the download to records of interest or otherwise do some QA/QC on the raw NAACC data; for example:</p>
 <ul>
@@ -251,80 +228,56 @@
 <li>updated geometry</li>
 <li>new field: <code>moved</code>: a boolean field indicating if the record has been re-snapped based on the supplied reference geometry.</li>
 </ul></div>
-            </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script>
+</div>
+</div>
+<footer class="col-md-12">
+<hr/>
+<p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+</footer>
+<script>
             var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="../js/base.js" defer></script>
-        <script src="../search/main.js" defer></script>
-
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-                <p>From here you can search these documents. Enter your search terms below.</p>
-                <form>
-                    <div class="form-group">
-                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
+<script defer="" src="../js/base.js"></script>
+<div aria-hidden="true" aria-labelledby="keyboardModalLabel" class="modal" id="mkdocs_keyboard_modal" role="dialog" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+<button class="close" data-dismiss="modal" type="button"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
 </div>
-
-    </body>
+<div class="modal-body">
+<table class="table">
+<thead>
+<tr>
+<th style="width: 20%;">Keys</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="help shortcut"><kbd>?</kbd></td>
+<td>Open this help</td>
+</tr>
+<tr>
+<td class="next shortcut"><kbd>n</kbd></td>
+<td>Next page</td>
+</tr>
+<tr>
+<td class="prev shortcut"><kbd>p</kbd></td>
+<td>Previous page</td>
+</tr>
+<tr>
+<td class="search shortcut"><kbd>s</kbd></td>
+<td>Search</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="modal-footer">
+</div>
+</div>
+</div>
+</div>
+</body>
 </html>
