@@ -388,7 +388,7 @@ class RainfallDataGetter(WorkflowManager):
             )
         # resample, reproject, and crop the downloaded rasters
         with Timer(name="Post-processing rainfall rasters", text="{name}: {:.1f} seconds", logger=self.gp.msg):
-            rainfall_raster_config2 = self.gp.create_geotiffs_from_rainfall_rasters(
+            rainfall_raster_config2 = self.gp.transform_rainfall_rasters(
                 rrc=rainfall_raster_config1, 
                 out_folder=self.out_folder,
                 target_crs_wkid=self.target_crs_wkid, 
@@ -576,7 +576,7 @@ class CulvertCapacity(WorkflowManager):
             "out_shape": "out_shape",
             "out_a": "out_a",
             "out_b": "out_b",
-            "crossing_type": "crossing_type",
+            "xing_type": "xing_type",
             "culvert_area_sqm": "culvert_area_sqm",
             "culvert_depth_m": "culvert_depth_m",
             "coefficient_c": "coefficient_c",

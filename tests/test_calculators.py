@@ -38,8 +38,22 @@ class TestCalculators:
         calcd_pf, tc = runoff.peak_flow_calculator(*pf_args)
         assert isclose(calcd_pf, expected_pf, rel_tol=0.01)
 
-    # def test_capacity(self):
-    #     capacity.calc_culvert_capacity()
+    @pytest.mark.parametrize(
+        "capacity_args", 
+        [
+            # culvert_area_sqm, head_over_invert, culvert_depth_m, slope_rr, coefficient_slope, coefficient_y, coefficient_c
+            [4.682, 2.225, 1.92, 0.009, -0.5, 0.87, 0.038],
+            [4.682 * 2, 2.225, 1.92, 0.009, -0.5, 0.87, 0.038], 
+            [4.682, 2.225, 1.92, 0.01, -0.5, 0.87, 0.038], 
+            [0.164, 0.914, 0.457, 0.006, -0.5, 0.54, 0.055], 
+            [0.353, 1.89, 0.671, 0.07, -0.5, 0.69, 0.032], 
+            [5.017, 2.438, 1.372, 0.003, -0.5, 0.87, 0.038]
+        ]
+    )
+    def test_capacity(self, capacity_args):
+        c = capacity.calc_culvert_capacity(*capacity_args)
+        print(capacity_args, c)
+        assert True
 
     # def test_overflow(self):
     #     overflow.calc_overflow_for_frequency()
@@ -261,45 +275,46 @@ class TestCapacityCalc:
         # bad_points = [p for p in cc.config.points if p.include == False]
         # assert len(bad_points) == 3        
 
-    # def test_delineation_and_analysis_in_mpire_parallel(self, all_prepped_sample_inputs, tmp_path):
-    #     """runs the delineation/analysis using multi-processing.
-    #     """
+    @pytest.mark.skip()
+    def test_delineation_and_analysis_in_mpire_parallel(self, all_prepped_sample_inputs, tmp_path):
+        """runs the delineation/analysis using multi-processing.
+        """
 
-    #     # instantiate the class with the kwargs and run the load_points method
-    #     kw = all_prepped_sample_inputs
-    #     cc = workflows.CulvertCapacity(**kw)
-    #     cc.load_points()
+        # instantiate the class with the kwargs and run the load_points method
+        kw = all_prepped_sample_inputs
+        cc = workflows.CulvertCapacity(**kw)
+        cc.load_points()
 
-    #     # for testing, set a temp output path for the shed polygons
-    #     # cc.config.output_sheds_filepath = cc.gp.so("test_delineations")
-    #     # create a temp output workspace for saving the sheds
-    #     workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
-    #     cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_delineations')
+        # for testing, set a temp output path for the shed polygons
+        # cc.config.output_sheds_filepath = cc.gp.so("test_delineations")
+        # create a temp output workspace for saving the sheds
+        workspace_path = cc.gp.create_workspace(tmp_path, 'outputs')
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'test_delineations')
 
-    #     cc.config.points = cc.gp.delineation_and_analysis_in_parallel(
-    #         points=cc.config.points,
-    #         pour_point_field=cc.config.points_id_fieldname,
-    #         flow_direction_raster=cc.config.raster_flowdir_filepath,
-    #         slope_raster=cc.config.raster_slope_filepath,
-    #         curve_number_raster=cc.config.raster_curvenumber_filepath,
-    #         precip_src_config=models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config),
-    #         out_shed_polygons=cc.config.output_sheds_filepath,
-    #         out_shed_polygons_simplify=cc.config.sheds_simplify,
-    #         override_skip=True,
-    #         use_multiprocessing=True
-    #     )
+        cc.config.points = cc.gp.delineation_and_analysis_in_parallel(
+            points=cc.config.points,
+            pour_point_field=cc.config.points_id_fieldname,
+            flow_direction_raster=cc.config.raster_flowdir_filepath,
+            slope_raster=cc.config.raster_slope_filepath,
+            curve_number_raster=cc.config.raster_curvenumber_filepath,
+            precip_src_config=models.RainfallRasterConfigSchema().dump(cc.config.precip_src_config),
+            out_shed_polygons=cc.config.output_sheds_filepath,
+            out_shed_polygons_simplify=cc.config.sheds_simplify,
+            override_skip=True,
+            use_multiprocessing=True
+        )
         
-    #     # pp(cc.config)
-    #     # pp(cc.config.points)
-    #     # pp(cc.config.output_sheds_filepath)
+        # pp(cc.config)
+        # pp(cc.config.points)
+        # pp(cc.config.output_sheds_filepath)
 
-    #     output_config_filepath = Path(tmp_path) / 'drainit_config.json'
-    #     cc.save_config(str(output_config_filepath))
+        output_config_filepath = Path(tmp_path) / 'drainit_config.json'
+        cc.save_config(str(output_config_filepath))
 
-    #     assert output_config_filepath.exists()
+        assert output_config_filepath.exists()
 
-    #     have_sheds = [p for p in cc.config.points if p.shed is not None]
-    #     assert len(have_sheds) == 8
+        have_sheds = [p for p in cc.config.points if p.shed is not None]
+        assert len(have_sheds) == 8
    
     def test_analytics(self, sample_completed_delineation_config, tmp_path):
         
@@ -351,7 +366,7 @@ class TestCapacityCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
@@ -359,22 +374,24 @@ class TestCapacityCalc:
 
         # pp(cc.config)
 
-    # def test_culvertcapacity_mp_e2e(self, tmp_path, all_prepped_sample_inputs):
+    @pytest.mark.skip()
+    def test_culvertcapacity_mp_e2e(self, tmp_path, all_prepped_sample_inputs):
         
-    #     cc = workflows.CulvertCapacity(
-    #         use_multiprocessing=True, 
-    #         **all_prepped_sample_inputs
-    #     )
+        cc = workflows.CulvertCapacity(
+            use_multiprocessing=True, 
+            **all_prepped_sample_inputs
+        )
 
-    #     workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
+        workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_culvertcapacity_e2e')
 
-    #     cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
-    #     cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
-    #     cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
+        cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
+        cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
-    #     cc.run()
+        cc.run()
 
-'''
+
+@pytest.mark.skip()
 class TestPeakFlowCalc:
 
     def test_init_culvertcapacity(self, all_prepped_sample_inputs,tmp_path):
@@ -665,7 +682,7 @@ class TestPeakFlowCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_peakflowcore_e2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
@@ -682,10 +699,8 @@ class TestPeakFlowCalc:
 
         workspace_path = cc.gp.create_workspace(Path(tmp_path), 'test_peakflowcoree2e')
 
-        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_points')
+        cc.config.output_points_filepath = str(Path(workspace_path) / 'output_culverts')
         cc.config.output_sheds_filepath = str(Path(workspace_path) / 'output_sheds')
         cc.save_config_json_filepath = str(Path(workspace_path).parent / 'output_config.json')
 
         cc.run()
-
-'''

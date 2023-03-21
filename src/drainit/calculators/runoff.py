@@ -42,7 +42,7 @@ def time_of_concentration_calculator_simple(
     const_c=-0.385
     ) -> float:
     """
-    Thhis equation is from Cornell's ArcMap Field Calculator-based implementation
+    Thhis equation is from Cornell's v2.1 ArcMap Field Calculator-based model implementation
     
     """
     return const_a * math.pow(max_flow_length, const_b) * math.pow( ((max_elevation - min_elevation) / max_flow_length), const_c)

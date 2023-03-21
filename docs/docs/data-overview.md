@@ -9,6 +9,8 @@ The section describes what, where, and how to acquire the various inputs require
 
 Note that a number of these inputs require some basic competency in GIS to create, as they are not necessarily available off-the-shelf (depending on your area of interest).
 
+![](assets/layer-stack.png)
+
 ### *NAACC culvert/crossing records*
 
 The culvert/crossing records available from NAACC provide the starting point for the analysis.
@@ -41,33 +43,16 @@ Sources:
 
 * Soils
 * Landcover
-* TR-55 Manual Table 2.1
+* [TR-55 Manual Table 2.1](assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf)
 
-Derive a single curve number raster for your area of interest
+See *[Digital Elevation Model-derived Data](data-curve-number-raster.md)* for more information.
 
 ### *Rainfall*
+
+Rainfall data is required in order to estimate peak flow.
 
 See *[Getting NOAA Rainfall Data](data-noaa-rainfall.md)* for more information.
 
 Sources: 
 
 * NOAA rainfall rasters for your area of interest
-
-#### Note:
-
-(Re)Enable support NOAA precipation table in the future.
-
----
-
-## Preparing Data
-
-![](assets/workflow.png)
-
-### Considerations for Preparing Data
-
-You'll need to determine the the trade-off between speed and accuracy based on your use case:
-
-* Ideal: full hydrologic correction of the DEM and re-locating of culverts with LIDAR and imagery
-* Workable: fill sinks in DEM; burn hydro lines into the DEMs; snap culverts to available hydro steam lines; 
-
-The best approach for determining DEM hydrologic-accuracy and NAACC location-correctedness depends on your use case.

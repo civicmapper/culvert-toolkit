@@ -165,8 +165,8 @@ class NaaccCulvert:
     modeling
     """
 
-    Naacc_Culvert_Id: Union[int, str] = req_field() # 'field_short': 'NAACC_ID'
-    Survey_Id: Union[int, str] = req_field() # 'field_short': 'Survey_ID'
+    Naacc_Culvert_Id: int = req_field() # 'field_short': 'NAACC_ID'
+    Survey_Id: int = req_field() # 'field_short': 'Survey_ID'
 
     GIS_Latitude: float = req_field() # 'field_short': 'Lat'
     GIS_Longitude: float = req_field() # 'field_short': 'Long'
@@ -212,7 +212,7 @@ class NaaccCrossing:
     """a model for representing multiple Culverts NaaccPoints
     """
 
-    crossing_id: str
+    crossing_id: int
     culverts: List[NaaccCulvert]
 
 NaaccCrossingSchema = class_schema(NaaccCrossing)
@@ -268,7 +268,7 @@ class DrainItPoint:
     # "pour_point_field". For NAACC-based culvert modeling, this is the
     # NAACC `Naacc_Culvert_Id` field...though some NAACC data doesn't
     # have this, so it has to be optional.
-    uid: Optional[str]
+    uid: Optional[int]
 
     # geometry
     lat: float = None
@@ -278,7 +278,7 @@ class DrainItPoint:
     # a group id field. non-unique ID field that indicates groups of related
     # outlets. Used primarily for NAACC-based culvert modeling, this is the
     # NAACC `Survey_Id` field
-    group_id: Optional[str] = None
+    group_id: Optional[int] = None
 
     # optionally extend with NAACC attributes
     naacc: Optional[NaaccCulvert] = None
@@ -310,18 +310,25 @@ class DrainItPoint:
         """Derive an initial calculator results object using the 
         geographically-derived data from the shed.
 
-        # NOTE: !!!
-        # NOAA Atlas 14 precip values are in 1000ths/inch, converted to 
-        # centimeters **here** using Pint
-        # TODO: put the unit conversion somewhere else
+        NOTE: NOAA Atlas 14 precip values are in 1000ths/inch, and can be 
+        converted with this function to target units (centimeters) using Pint.
+        This only saves the updated values to the Analytics model for use in
+        calculations, and does not update the values in the shed geodata.
 
         """
+        # NOTE: rainfall in centimeters required by the peak-flow calculator
+        TARGET_UNITS = 'cm'
+
         if not self.shed:
             return
         # copy rainfall analytics 
         for r in self.shed.avg_rainfall:
             if r.value:
-                avg_rainfall_cm = units.Quantity(f'{r.value} {r.units}').m_as('cm')
+                if r.units == TARGET_UNITS:
+                    avg_rainfall_cm = r.value
+                else:
+                    # convert from whatever unit is in the config file to cm
+                    avg_rainfall_cm = units.Quantity(f'{r.value} {r.units}').m_as(TARGET_UNITS)
             else:
                 avg_rainfall_cm = 0
             self.analytics.append(Analytics(

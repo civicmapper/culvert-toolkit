@@ -90,7 +90,7 @@ class NaaccEtl:
         :param row: a single NAACC table row, where the table is from extract_naacc_table
         :type row: petl.Record
         :return: the row, w/ transformed or derived values
-        :rtype: tuple    
+        :rtype: tuple
         """
         
         r = OrderedDict({i[0]: i[1] for i in zip(row.flds, row)})
@@ -141,15 +141,15 @@ class NaaccEtl:
         validation_errors = {}
 
         # -----------------------------
-        # check 1: only specific crossing_types
+        # check 1: only specific xing_types
         OK_CROSSING_TYPES = [i.lower() for i in [
             'Culvert', 
             'Multiple Culvert'
         ]]
 
-        if r.get("crossing_type","").lower() not in OK_CROSSING_TYPES:
+        if r.get("xing_type","").lower() not in OK_CROSSING_TYPES:
             r["include"] = False
-            validation_errors.setdefault('in_shape', []).append("Not a culvert or multi-culvert ({0})".format(r["in_shape"]))
+            validation_errors.setdefault('xing_type', []).append("Not a culvert or multi-culvert ({0})".format(r["in_shape"]))
 
         # -----------------------------
         # Check 2: bad geometry
@@ -158,8 +158,7 @@ class NaaccEtl:
             "in_a", 
             "in_b", 
             "hw", 
-            "length",
-            "slope"
+            "length"
         ]
 
         # check if all values in culvert_geometry_fields are floats:
@@ -194,10 +193,16 @@ class NaaccEtl:
         # -----------------------------
         # Check 3: missing slope values
         # -1 as an integer in the slope field indicates a missing slope value.
-        # TODO: determine if we can let these through (include=True) with an 
-        # assumed "0" for slope, but still flag them
-        
-
+        # Per this issue https://github.com/civicmapper/culvert-toolkit/issues/6 
+        # Let slope with a -1 through (include=True), but include a validation 
+        # error message in the validation_errors field, and set slope to 0
+        slope = r.get("slope")
+        if slope == -1 or slope is None:
+            r['slope'] = 0
+            validation_errors\
+                .setdefault('slope', [])\
+                .append("slope missing (-1). Assuming 0 slope for capacity calculation")
+            
         # -------------------------------------------------
         # Compile all validation errors and write to field
 
@@ -236,7 +241,7 @@ class NaaccEtl:
         
         # ----------------------------------------------------------------------
         # safety valve: minimal processing if record is invalid
-        if row['validation_errors'] is not None:
+        if row.get('include') == False:
 
             # -----------------------------------------------------
             # imperial to metric conversions
@@ -672,9 +677,9 @@ class NaaccEtl:
             bad = etl.selectnotnone(validated_table, 'validation_errors')
             bad_ct = etl.nrows(bad)
             if bad_ct > 0:
-                click.echo("> {0} rows did not pass initial validation (NAACC schema)".format(bad_ct))
+                click.echo("> {0} rows did do not conform to the NAACC schema".format(bad_ct))
             else:
-                click.echo("> All rows passed initial validation (NAACC schema)")
+                click.echo("> All rows conform to the NAACC schema")
         # print(etl.vis.see(bad))
 
 
@@ -695,9 +700,9 @@ class NaaccEtl:
             bad2 = etl.selectnotnone(hydrated_table, 'validation_errors')
             bad2_ct = etl.nrows(bad2) - bad_ct
             if bad2_ct > 0:
-                click.echo("> {0} rows did not pass secondary validation (capacity schema)".format(bad2_ct))
+                click.echo("> {0} rows do not have all the data required for capacity calculations".format(bad2_ct))
             else:
-                click.echo("> All rows passed secondary validation (capacity schema)")
+                click.echo("> All rows have all the data required for capacity calculations")
 
         # print(etl.vis.see(bad2))
         
