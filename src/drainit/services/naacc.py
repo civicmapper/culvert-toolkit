@@ -158,8 +158,7 @@ class NaaccEtl:
             "in_a", 
             "in_b", 
             "hw", 
-            "length",
-            "slope"
+            "length"
         ]
 
         # check if all values in culvert_geometry_fields are floats:
@@ -194,10 +193,16 @@ class NaaccEtl:
         # -----------------------------
         # Check 3: missing slope values
         # -1 as an integer in the slope field indicates a missing slope value.
-        # TODO: determine if we can let these through (include=True) with an 
-        # assumed "0" for slope, but still flag them
-        
-
+        # Per this issue https://github.com/civicmapper/culvert-toolkit/issues/6 
+        # Let slope with a -1 through (include=True), but include a validation 
+        # error message in the validation_errors field, and set slope to 0
+        slope = r.get("slope")
+        if slope == -1 or slope is None:
+            r['slope'] = 0
+            validation_errors\
+                .setdefault('slope', [])\
+                .append("slope missing (-1). Assuming 0 slope for capacity calculation")
+            
         # -------------------------------------------------
         # Compile all validation errors and write to field
 
@@ -236,7 +241,7 @@ class NaaccEtl:
         
         # ----------------------------------------------------------------------
         # safety valve: minimal processing if record is invalid
-        if row['validation_errors'] is not None:
+        if row.get('include') == False:
 
             # -----------------------------------------------------
             # imperial to metric conversions
