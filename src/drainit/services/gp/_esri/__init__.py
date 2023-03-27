@@ -12,7 +12,7 @@ geoprocessing tasks with Esri Arcpy
 # standard library
 import os, time
 from pathlib import Path
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Union
 import json
 from statistics import mean
 import pdb
@@ -358,6 +358,7 @@ class GP:
         self,
         feature_class:str, 
         include_geom:bool=False,
+        project_to_crs_wkid:Union[int, None]=None
         # alt_xy_fields:List[str]=None 
         ) -> Tuple[etl.Table, dict, int]:
         """Convert an Esri Feature Class to a PETL table object.
@@ -371,12 +372,8 @@ class GP:
         :return: tuple containing a PETL Table object, FeatureSet, and the WKID of the feature_class CRS
         :rtype: Tuple(petl.Table, FeatureSet, int)
         """
-        # print("Reading {0} into a PETL table object".format(feature_class))
+        self.msg("Reading {0} into a PETL table object".format(feature_class))
         
-        feature_set = FeatureSet(feature_class)
-        # convert the FeatureSet object to a python dictionary
-        fs = json.loads(feature_set.JSON)
-
         # describe the feature class and get some properties
         described_fc = Describe(feature_class)
         field_objs = described_fc.fields # all fields
@@ -385,6 +382,21 @@ class GP:
             oid_field = described_fc.OIDFieldName
         shp_field = described_fc.shapeFieldName # SHAPE (geometry) field
         crs_wkid = described_fc.spatialReference.factoryCode # spatial reference
+
+        if project_to_crs_wkid:
+            self.msg(f"reprojecting feature class from {crs_wkid} to {project_to_crs_wkid} when converting to PETL table.")
+            crs_wkid = project_to_crs_wkid
+            spatial_ref = SpatialReference(project_to_crs_wkid)
+            fc = self._so("petl_geo_rp", where="fgdb")
+            Project(feature_class, fc, spatial_ref)
+        else:
+            fc = feature_class
+
+        # read feature class as FeatureSet and
+        # convert to a python dictionary
+        feature_set = FeatureSet(fc)
+        fs = json.loads(feature_set.JSON)
+
 
         # derive a list of fields to exclude from table conversion
         fields_to_exclude = [x for x in [oid_field, shp_field] if x]        
@@ -414,7 +426,7 @@ class GP:
             return table, feature_set, crs_wkid
         else:
             self.msg("The feature class is empty.", 'warning', echo=True)
-            return table, feature_set, crs_wkid
+            return table, feature_set, described_fc.spatialReference.factoryCode
 
     def create_dicts_from_geodata(self, path_to_geodata):
         """convert provider-formatted geodata to a Python dictionary"""
@@ -878,11 +890,6 @@ class GP:
         moved_field="moved"
         ):
 
-        # read features classes into PETL table objects
-        # (this will remove any old fields named "x" or "y")
-        target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=True)
-        source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
-
         # derive the CRS WKID from the new source geometry table
         sr = DaDescribe(source_feature_class).get('spatialReference')
         if sr:
@@ -892,7 +899,14 @@ class GP:
                 crs_wkid = sr.GCSCode
             else:
                 # crs_wkid will default to 4326
-                pass
+                pass        
+
+        # read features classes into PETL table objects
+        # (this will remove any old fields named "x" or "y")
+        # source is the table with the source geometry
+        source_table, source_fs, source_crs_wkid = self.create_petl_table_from_geodata(source_feature_class, include_geom=True)
+        # target is the table that will get the source geometry
+        target_table, target_fs, target_crs_wkid = self.create_petl_table_from_geodata(target_feature_class, include_geom=True, project_to_crs_wkid=source_crs_wkid)
         
         # quick check: derive a type from target_join_field in target_table
         # try:
