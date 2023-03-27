@@ -17,7 +17,7 @@ Once you've done this, close ArcGIS Pro.
 
 ## 2. Download the Culvert Analysis Toolkit installation file
 
-Download the latest install "wheel" [here](releases/culvert_toolkit-0.2.0-py3-none-any.whl).
+Download the latest install "wheel" [here](releases/culvert_toolkit-0.2.1-py3-none-any.whl).
 
 <!-- Head to the [Releases page (github.com/civicmapper/culvert-toolkit/releases)](https://github.com/civicmapper/culvert-toolkit/releases) and download the `.whl` file from the latest version of the tool. -->
 
