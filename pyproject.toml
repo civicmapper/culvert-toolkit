@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "culvert-toolkit"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
     {name = "CivicMapper", email = "info@civicmapper.com"},
     {name = "Christian Gass", email = "christian.gass@civicmapper.com"}
