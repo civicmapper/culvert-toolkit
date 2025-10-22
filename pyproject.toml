@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "culvert-toolkit"
-version = "0.2.2"
+version = "0.3.0"
 authors = [
     {name = "CivicMapper", email = "info@civicmapper.com"},
     {name = "Christian Gass", email = "christian.gass@civicmapper.com"}
@@ -17,11 +17,11 @@ authors = [
 description = "A geospatial data-powered TR-55 model for modeling culvert capacity"
 readme  =  "README.md"
 keywords = ["ArcGIS Pro 3.0", "GIS", "spatial", "modeling", "analysis", "stormwater", "culverts", "watershed", "basin", "TR-55", "peak flow"] 
-license = {text = "Apache 2.0"}
-requires-python = ">=3.9, <4"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11, <4"
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
     "Private :: Do Not Upload"
 ]
 dependencies = [
