@@ -1,33 +1,31 @@
-# Culvert Analysis Toolkit Dev Setup for ArcGIS Pro
-# PowerShell version of setup-for-arcgispro.bat
+[CmdletBinding()]
+param(
+    [string]$EnvironmentName = "culvert-toolkit-dev",
+    [string]$Conda = "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe",
+    [switch]$SkipClone,
+    [string]$Wheel
+)
 
-$conda = "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\conda.exe"
-$baseEnv = "arcgispro-py3"
-$devEnv = "culvert-toolkit-dev"
-$requirements = "setup/requirements.txt"
-$pipRequirements = "setup/pip-requirements.txt"
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-Write-Host "Installing Culvert Analysis Toolkit for ArcGIS Pro..."
-
-& $conda config --add channels conda-forge
-& $conda config --add channels esri
-# & $conda config --set channel_priority strict
-
-Write-Host "Cloning the base ArcGIS Pro Anaconda Python environment..."
-& $conda create --clone $baseEnv --name $devEnv --verbose
-
-Write-Host "Installing additional dependencies via conda..."
-if (Test-Path $requirements) {
-    Get-Content $requirements | ForEach-Object {
-        & $conda install --name $devEnv --yes --verbose $_
-    }
+function Invoke-Native([scriptblock]$Command) {
+    & $Command
+    if ($LASTEXITCODE -ne 0) { throw "Command failed with exit code $LASTEXITCODE" }
 }
 
-Write-Host "Installing additional dependencies via pypi..."
-if (Test-Path $pipRequirements) {
-    Get-Content $pipRequirements | ForEach-Object {
-        & $conda run -n $devEnv pip install $_
-    }
+if (-not (Test-Path -LiteralPath $Conda)) { throw "ArcGIS Pro conda.exe not found: $Conda" }
+if (-not $SkipClone) {
+    Invoke-Native { & $Conda create --clone arcgispro-py3 --name $EnvironmentName --yes }
 }
 
-Write-Host "Done!"
+# Install the wheel when supplied; otherwise install this checkout. Existing
+# ArcGIS-bundled compiled packages are retained when they already satisfy the
+# project's version-independent requirements.
+$installTarget = if ($Wheel) { (Resolve-Path -LiteralPath $Wheel).Path } else { $projectRoot }
+Invoke-Native { & $Conda run --name $EnvironmentName python -m pip install $installTarget }
+Invoke-Native { & $Conda run --name $EnvironmentName python -m pip check }
+Invoke-Native { & $Conda run --name $EnvironmentName python -c "import drainit, drainit.models, drainit.calculators; print(drainit.__version__)" }
+
+Write-Host "Installed $installTarget into $EnvironmentName. Select this environment in ArcGIS Pro."

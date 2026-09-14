@@ -12,7 +12,7 @@ def culvert_overflow_calculator(culvert_capacity, peak_flow):
     """
     try:
         return culvert_capacity - peak_flow
-    except:
+    except TypeError:
         return None
 
 def max_return_calculator(list_of_overflows:List[float], list_of_frequencies: List[Any]=FREQUENCIES):

@@ -90,6 +90,7 @@ from arcpy import AddMessage, AddWarning, AddError
 from ....config import FREQUENCIES, QP_HEADER, VALIDATION_ERRORS_FIELD_LENGTH
 from ....models import WorkflowConfig, DrainItPoint, DrainItPointSchema, Shed, Rainfall, RainfallRasterConfig
 from ...naacc import NaaccEtl
+from .. import resolve_scratch_folder
 
 
 units = pint.UnitRegistry()
@@ -101,6 +102,7 @@ class GP:
         self.config = config
         self.raster_field = "Value"
         self.all_sheds_raster = ""
+        self.scratch_folder = resolve_scratch_folder(env.scratchFolder)
 
         # create unique scratch directories
         # scratchFolder = mkdtemp(prefix="drainit_{0}_".format(time.strftime("%Y%m%d%H%M%S", time.localtime())))
@@ -168,7 +170,7 @@ class GP:
         elif where == "fgdb":
             location = Path(env.scratchGDB)
         elif where == "folder":
-            location = Path(env.scratchFolder)
+            location = Path(self.scratch_folder)
         else:
             loc = Path(where)
             if loc.exists():
@@ -770,7 +772,7 @@ class GP:
 
         fs = FeatureSet(in_features)
         # in-memory
-        mbg="memory\mbg"
+        mbg = r"memory\mbg"
         
         MinimumBoundingGeometry(
             fs,

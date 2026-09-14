@@ -112,6 +112,12 @@ class RainfallRasterConfig:
     root: str = None
     rasters: List[RainfallRaster] = field(default_factory=list)
 
+    def require_rasters(self):
+        """Reject an empty config before a rainfall-dependent workflow runs."""
+        if not self.rasters:
+            raise ValueError("Rainfall raster configuration contains no rasters")
+        return self
+
     # def read(self, f):
     #     with open(f) as fp:
     #        RainfallRasterConfigSchema().load(json.load(fp))
@@ -321,6 +327,9 @@ class DrainItPoint:
 
         if not self.shed:
             return
+        # Re-derivation replaces the rainfall-derived rows rather than
+        # appending duplicates on retries/resumed workflows.
+        self.analytics = []
         # copy rainfall analytics 
         for r in self.shed.avg_rainfall:
             if r.value:

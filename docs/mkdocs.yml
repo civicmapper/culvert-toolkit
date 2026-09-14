@@ -16,6 +16,7 @@ nav:
     - calcs-peak-flow.md
     - calcs-culvert-capacity.md
   - Develop: dev.md
+  - Windows ArcGIS validation: windows-arcgis-validation.md
 theme:
   name: mkdocs
   navigation_depth: 3

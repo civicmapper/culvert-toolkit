@@ -1,6 +1,9 @@
 # Installing the Toolkit in ArcGIS Pro
 
-The Culvert Analysis Toolkit currently requires ArcGIS Pro version 3.
+The package requires Python 3.11 or newer. ArcGIS Pro compatibility is
+validated for specific Pro/Python combinations using the
+[Windows ArcGIS validation checklist](windows-arcgis-validation.md); do not
+assume every ArcGIS Pro 3.x release is compatible.
 
 ## 1. Create a dedicated Python environment in ArcGIS Pro
 
@@ -17,9 +20,10 @@ Once you've done this, close ArcGIS Pro.
 
 ## 2. Download the Culvert Analysis Toolkit installation file
 
-Download the latest install "wheel" [here](releases/culvert_toolkit-0.2.2-py3-none-any.whl).
-
-<!-- Head to the [Releases page (github.com/civicmapper/culvert-toolkit/releases)](https://github.com/civicmapper/culvert-toolkit/releases) and download the `.whl` file from the latest version of the tool. -->
+Download the wheel from the project's
+[GitHub Releases page](https://github.com/civicmapper/culvert-toolkit/releases).
+Use a release whose notes explicitly list your ArcGIS Pro and Python versions
+as validated.
 
 ## 3. Install 
 

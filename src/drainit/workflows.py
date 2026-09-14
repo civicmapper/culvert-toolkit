@@ -35,6 +35,15 @@ from .services.naacc import NaaccEtl
 from .config import FREQUENCIES
 from .utils import get_type
 
+
+def _multiculvert_group_ids(points):
+    """Return repeated, explicit group identifiers (never the null sentinel)."""
+    return [
+        group_id
+        for group_id, count in Counter(pt.group_id for pt in points).items()
+        if group_id is not None and count > 1
+    ]
+
 # ------------------------------------------------------------------------------
 # Workflow Base Class
 
@@ -68,6 +77,8 @@ class WorkflowManager:
         # were provided in the JSON file.
         # print(kwargs)
         self.config = replace(self.config, **kwargs)
+        if self.config.precip_src_config is not None:
+            self.config.precip_src_config.require_rasters()
         # (individual workflows that subclass WorkflowManager handle whether or 
         # not the needed kwargs are actually present)
 
@@ -119,7 +130,8 @@ class WorkflowManager:
             click.echo("Reading rainfall config from JSON file")
             with open(self.config.precip_src_config_filepath) as fp:
                 rainfall_config_as_dict = json.load(fp)
-                self.config.precip_src_config = RainfallRasterConfigSchema().load(rainfall_config_as_dict)            
+                self.config.precip_src_config = RainfallRasterConfigSchema().load(rainfall_config_as_dict)
+                self.config.precip_src_config.require_rasters()
 
         return self        
     
@@ -394,6 +406,7 @@ class RainfallDataGetter(WorkflowManager):
                 target_crs_wkid=self.target_crs_wkid, 
                 target_raster=self.target_raster
             )
+        rainfall_raster_config2.require_rasters()
         # save the config to JSON
         rrc = RainfallRasterConfigSchema().dump(asdict(rainfall_raster_config2))
         with open(self.out_path, 'w') as fp:
@@ -713,11 +726,7 @@ class CulvertCapacity(WorkflowManager):
         
         # ----------------------------------------------------------------------
         # create a list of group_ids for the multi-culvert crossings
-        multiculvert_crossing_group_ids = [
-            group_id for group_id, count in 
-            Counter([pt.group_id for pt in points_to_analyze]).items()
-            if count > 1
-        ]
+        multiculvert_crossing_group_ids = _multiculvert_group_ids(points_to_analyze)
 
         # iterate through the group_ids, getting matching records from the table
         # and running calculations
@@ -804,6 +813,10 @@ class CulvertCapacity(WorkflowManager):
         return t3
 
     def run(self):
+
+        if self.config.precip_src_config is None:
+            raise ValueError("A non-empty rainfall raster configuration is required")
+        self.config.precip_src_config.require_rasters()
 
         # load points
         # with NAACC data, capacity is calculated on load
