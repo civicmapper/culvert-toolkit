@@ -9,10 +9,10 @@ import petl as etl
 
 from .conftest import TEST_DATA_DIR
 
-from src.drainit import workflows
-from src.drainit import models
-from src.drainit import utils
-from src.drainit.calculators import (
+from drainit import workflows
+from drainit import models
+from drainit import utils
+from drainit.calculators import (
     runoff, 
     capacity, 
     overflow
@@ -26,12 +26,17 @@ class TestCalculators:
     # def test_runoff_tc(self):
     #     runoff.calc_time_of_concentration()
 
-    @pytest.mark.skip()
     @pytest.mark.parametrize(
         "pf_args,expected_pf", [
         # mean_slope_pct, max_flow_length_m,avg_rainfall_cm,basin_area_sqkm,avg_cn,tc_hr=None
         # we're providing tc_hr so we can ignore the first two args
-        ([None,None,58.3362007,27.2290001,68.4257965,0.0149833], 7.045),
+        pytest.param(
+            [None,None,58.3362007,27.2290001,68.4257965,0.0149833],
+            7.045,
+            marks=pytest.mark.xfail(
+                reason="reference result exposes unresolved low-Tc scaling; do not bless current output"
+            ),
+        ),
         ([None,None,57.97,19.69,66.48,1.15], 1242.67)
     ])
     def test_runoff(self, pf_args, expected_pf):
@@ -39,26 +44,26 @@ class TestCalculators:
         assert isclose(calcd_pf, expected_pf, rel_tol=0.01)
 
     @pytest.mark.parametrize(
-        "capacity_args", 
+        "capacity_args,expected",
         [
             # culvert_area_sqm, head_over_invert, culvert_depth_m, slope_rr, coefficient_slope, coefficient_y, coefficient_c
-            [4.682, 2.225, 1.92, 0.009, -0.5, 0.87, 0.038],
-            [4.682 * 2, 2.225, 1.92, 0.009, -0.5, 0.87, 0.038], 
-            [4.682, 2.225, 1.92, 0.01, -0.5, 0.87, 0.038], 
-            [0.164, 0.914, 0.457, 0.006, -0.5, 0.54, 0.055], 
-            [0.353, 1.89, 0.671, 0.07, -0.5, 0.69, 0.032], 
-            [5.017, 2.438, 1.372, 0.003, -0.5, 0.87, 0.038]
+            ([4.682, 2.225, 1.92, 0.009, -0.5, 0.87, 0.038], 9.9533185963),
+            ([4.682 * 2, 2.225, 1.92, 0.009, -0.5, 0.87, 0.038], 19.9066371926),
+            ([4.682, 2.225, 1.92, 0.01, -0.5, 0.87, 0.038], 9.9617973245),
+            ([0.164, 0.914, 0.457, 0.006, -0.5, 0.54, 0.055], 0.3157361552),
+            ([0.353, 1.89, 0.671, 0.07, -0.5, 0.69, 0.032], 1.3123189011),
+            ([5.017, 2.438, 1.372, 0.003, -0.5, 0.87, 0.038], 15.8659363800)
         ]
     )
-    def test_capacity(self, capacity_args):
+    def test_capacity(self, capacity_args, expected):
         c = capacity.calc_culvert_capacity(*capacity_args)
-        print(capacity_args, c)
-        assert True
+        assert c == pytest.approx(expected)
 
     # def test_overflow(self):
     #     overflow.calc_overflow_for_frequency()
 
 
+@pytest.mark.arcpy
 class TestCapacityCalc:
 
     def test_init_culvertcapacity(self, all_prepped_sample_inputs,tmp_path):
@@ -126,8 +131,8 @@ class TestCapacityCalc:
         output_config_filepath = Path(tmp_path) / 'drainit_config.json'
         cc.save_config(str(output_config_filepath))        
 
-        assert Path(shed.filepath_raster).exists
-        assert Path(shed.filepath_vector).exists
+        assert Path(shed.filepath_raster).exists()
+        assert Path(shed.filepath_vector).exists()
 
         assert shed.avg_cn is not None
         assert shed.avg_slope_pct is not None
@@ -171,8 +176,8 @@ class TestCapacityCalc:
         output_config_filepath = Path(tmp_path) / 'drainit_config.json'
         cc.save_config(str(output_config_filepath))        
 
-        assert Path(shed.filepath_raster).exists
-        assert Path(shed.filepath_vector).exists
+        assert Path(shed.filepath_raster).exists()
+        assert Path(shed.filepath_vector).exists()
 
         assert shed.avg_cn is not None
         assert shed.avg_slope_pct is not None
@@ -391,7 +396,7 @@ class TestCapacityCalc:
         cc.run()
 
 
-@pytest.mark.skip()
+@pytest.mark.arcpy
 class TestPeakFlowCalc:
 
     def test_init_culvertcapacity(self, all_prepped_sample_inputs,tmp_path):
@@ -457,8 +462,8 @@ class TestPeakFlowCalc:
         output_config_filepath = Path(tmp_path) / 'drainit_config.json'
         cc.save_config(str(output_config_filepath))        
 
-        assert Path(shed.filepath_raster).exists
-        assert Path(shed.filepath_vector).exists
+        assert Path(shed.filepath_raster).exists()
+        assert Path(shed.filepath_vector).exists()
 
         assert shed.avg_cn is not None
         assert shed.avg_slope_pct is not None
@@ -500,8 +505,8 @@ class TestPeakFlowCalc:
         output_config_filepath = Path(tmp_path) / 'drainit_config.json'
         cc.save_config(str(output_config_filepath))        
 
-        assert Path(shed.filepath_raster).exists
-        assert Path(shed.filepath_vector).exists
+        assert Path(shed.filepath_raster).exists()
+        assert Path(shed.filepath_vector).exists()
 
         assert shed.avg_cn is not None
         assert shed.avg_slope_pct is not None

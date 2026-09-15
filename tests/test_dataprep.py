@@ -7,16 +7,18 @@ import petl as etl
 
 from .conftest import TEST_DATA_DIR
 
-from src.drainit import workflows
-from src.drainit import models
-from src.drainit import utils
-from src.drainit.calculators import (
+from drainit import workflows
+from drainit import models
+from drainit import utils
+from drainit.calculators import (
     runoff, 
     capacity, 
     overflow
 )
 
 pp = utils.pretty_print
+
+pytestmark = pytest.mark.arcpy
 
 
 # class TestWorkflowManagement:
@@ -28,6 +30,7 @@ pp = utils.pretty_print
  
 class TestRainfallETL:
 
+    @pytest.mark.network
     def test_e2e_rainfall_data_getter(self, tmp_path):
         # temp path for the test download
         d = tmp_path / "TestRainfallETL"

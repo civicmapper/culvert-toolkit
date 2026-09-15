@@ -9,19 +9,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "culvert-toolkit"
-version = "0.2.0"
+version = "0.3.0"
 authors = [
     {name = "CivicMapper", email = "info@civicmapper.com"},
     {name = "Christian Gass", email = "christian.gass@civicmapper.com"}
 ]
 description = "A geospatial data-powered TR-55 model for modeling culvert capacity"
 readme  =  "README.md"
-keywords = ["ArcGIS Pro 3.0", "GIS", "spatial", "modeling", "analysis", "stormwater", "culverts", "watershed", "basin", "TR-55", "peak flow"] 
-license = {text = "Apache 2.0"}
-requires-python = ">=3.9, <4"
+keywords = ["ArcGIS Pro", "GIS", "spatial", "modeling", "analysis", "stormwater", "culverts", "watershed", "basin", "TR-55", "peak flow"]
+license = "Apache-2.0"
+requires-python = ">=3.11, <4"
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Private :: Do Not Upload"
 ]
 dependencies = [
@@ -32,12 +33,19 @@ dependencies = [
     "requests",
     "petl",
     "marshmallow",
-    "marshmallow-dataclass[union]",
+    "marshmallow-dataclass",
+    "numpy",
+    "chardet",
 ]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+build = ["build>=1", "wheel"]
 
 [project.urls]
 "Homepage" = "https://github.com/civicmapper/culvert-toolkit"
 "Bug Tracker" = "https://github.com/civicmapper/culvert-toolkit/issues"
+"ArcGIS Pro compatibility" = "https://civicmapper.github.io/culvert-toolkit/windows-arcgis-validation/"
 
 # [tool.setuptools]
 # package-dir = [{.="src"}]
@@ -46,4 +54,7 @@ dependencies = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-drainit = ["esri/toolboxes/*",  "esri/arcpy/*", "esri/help/gp/*",  "esri/help/gp/toolboxes/*", "esri/help/gp/messages/*"]
+drainit = ["esri/toolboxes/CulvertToolbox.pyt", "esri/help/gp/*", "esri/help/gp/toolboxes/*", "esri/help/gp/messages/*"]
+
+[tool.setuptools.exclude-package-data]
+drainit = ["esri/toolboxes/*.pyt.xml"]

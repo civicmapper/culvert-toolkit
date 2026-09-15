@@ -1,0 +1,2 @@
+exclude src/drainit/esri/toolboxes/*.pyt.xml
+prune build

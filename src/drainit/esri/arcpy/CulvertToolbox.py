@@ -2,15 +2,22 @@
 r"""A toolbox for analyzing peak flows and capacities of culverts based
 on the NAACC culvert model and TR-55 runoff model implemented by the
 Cornell Soil &amp; Water Lab."""
-__all__ = ['CulvertCapacityPytTool', 'NaaccEtlPytTool', 'NaaccSnappingPytTool',
-           'NoaaRainfallEtlPytTool']
+from __future__ import annotations
+__all__ = ['CulvertCapacityPytTool', 'NaaccEtlPytTool', 'NaaccSnappingPytTool', 'NoaaRainfallEtlPytTool']
 __alias__ = 'CulvertToolkit'
 from arcpy.geoprocessing._base import gptooldoc, gp, gp_fixargs
 from arcpy.arcobjects.arcobjectconversion import convertArcObjectToPythonObject
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Literal
+    from arcpy import RecordSet, FeatureSet
+    from arcpy._mp import Layer, Table
+    from arcpy.typing.gp import Result, Result1, Result2, Result3
 
 # Tools
 @gptooldoc('CulvertCapacityPytTool_CulvertToolkit', None)
-def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, raster_flowlen_filepath=None, raster_slope_filepath=None, raster_curvenumber_filepath=None, precip_src_config_filepath=None, output_points_filepath=None):
+def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, raster_flowlen_filepath=None, raster_slope_filepath=None, raster_curvenumber_filepath=None, precip_src_config_filepath=None, output_points_filepath=None,) -> Result2[str,str]:
     """CulvertCapacityPytTool_CulvertToolkit(points_filepath, raster_flowdir_filepath, {raster_flowlen_filepath}, raster_slope_filepath, raster_curvenumber_filepath, precip_src_config_filepath, output_points_filepath)
 
         Measure the capacity of culverts by calculating peak flow over a
@@ -54,7 +61,7 @@ def CulvertCapacityPytTool(points_filepath=None, raster_flowdir_filepath=None, r
         raise e
 
 @gptooldoc('NaaccEtlPytTool_CulvertToolkit', None)
-def NaaccEtlPytTool(naacc_src_table=None, output_fc=None):
+def NaaccEtlPytTool(naacc_src_table=None, output_fc=None,) -> Result1[str]:
     """NaaccEtlPytTool_CulvertToolkit(naacc_src_table, output_fc)
 
         Read in, validate, and extend a NAACC-compliant source table,
@@ -78,7 +85,7 @@ def NaaccEtlPytTool(naacc_src_table=None, output_fc=None):
         raise e
 
 @gptooldoc('NaaccSnappingPytTool_CulvertToolkit', None)
-def NaaccSnappingPytTool(naacc_points_table=None, naacc_points_table_join_field=None, geometry_source_table=None, geometry_source_table_join_field=None, output_fc=None):
+def NaaccSnappingPytTool(naacc_points_table=None, naacc_points_table_join_field=None, geometry_source_table=None, geometry_source_table_join_field=None, output_fc=None,) -> Result1[str]:
     """NaaccSnappingPytTool_CulvertToolkit(naacc_points_table, naacc_points_table_join_field, geometry_source_table, geometry_source_table_join_field, output_fc)
 
         The  NAACC Data Snapping  tool can be used to reposition features
@@ -111,7 +118,7 @@ def NaaccSnappingPytTool(naacc_points_table=None, naacc_points_table_join_field=
         raise e
 
 @gptooldoc('NoaaRainfallEtlPytTool_CulvertToolkit', None)
-def NoaaRainfallEtlPytTool(aoi_geo=None, target_raster=None, out_folder=None, out_file_name=None):
+def NoaaRainfallEtlPytTool(aoi_geo=None, target_raster=None, out_folder=None, out_file_name=None,) -> Result1[str]:
     """NoaaRainfallEtlPytTool_CulvertToolkit(aoi_geo, {target_raster}, out_folder, {out_file_name})
 
         Download rainfall rasters for your study area from NOAA. By
@@ -167,4 +174,4 @@ def NoaaRainfallEtlPytTool(aoi_geo=None, target_raster=None, out_folder=None, ou
 
 
 # End of generated toolbox code
-del gptooldoc, gp, gp_fixargs, convertArcObjectToPythonObject
+del gptooldoc, gp, gp_fixargs, convertArcObjectToPythonObject, annotations, TYPE_CHECKING

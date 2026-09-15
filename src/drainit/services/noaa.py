@@ -6,6 +6,7 @@ from pathlib import Path
 from copy import deepcopy
 from io import BytesIO
 import zipfile
+import time
 
 from dataclasses import asdict
 
@@ -22,6 +23,46 @@ from ..config import (
     NOAA_RAINFALL_REGION_LOOKUP,
     FREQUENCIES
 )
+
+DEFAULT_REQUEST_TIMEOUT = (10, 60)
+DEFAULT_REQUEST_ATTEMPTS = 3
+
+
+def _request_with_retries(
+    request,
+    *args,
+    max_attempts=DEFAULT_REQUEST_ATTEMPTS,
+    retry_delay=0.5,
+    **kwargs,
+):
+    """Run an HTTP request with bounded retries for transport/HTTP failures."""
+    if max_attempts < 1:
+        raise ValueError("max_attempts must be at least 1")
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = request(*args, **kwargs)
+            response.raise_for_status()
+            return response
+        except requests.RequestException:
+            if attempt == max_attempts:
+                raise
+            if retry_delay:
+                time.sleep(retry_delay * (2 ** (attempt - 1)))
+
+
+def _safe_zip_members(archive, destination):
+    """Return members that remain beneath destination; reject links/traversal."""
+    destination = Path(destination).resolve()
+    safe = []
+    for member in archive.infolist():
+        target = (destination / member.filename).resolve()
+        if destination != target and destination not in target.parents:
+            raise ValueError(f"unsafe ZIP member path: {member.filename!r}")
+        # Unix symlinks are encoded in the upper mode bits.
+        if (member.external_attr >> 16) & 0o170000 == 0o120000:
+            raise ValueError(f"ZIP symlink is not allowed: {member.filename!r}")
+        safe.append(member)
+    return safe
 
 # -------------------------------------------------------------------
 # PRECIPTATION DATA TABLES
@@ -94,7 +135,10 @@ def retrieve_noaa_rainfall_pf_est(
     data="depth",
     units="english",
     series="pds",
-    _url="https://hdsc.nws.noaa.gov/cgi-bin/hdsc/new/cgi_readH5.py"
+    _url="https://hdsc.nws.noaa.gov/cgi-bin/hdsc/new/cgi_readH5.py",
+    timeout=DEFAULT_REQUEST_TIMEOUT,
+    max_attempts=DEFAULT_REQUEST_ATTEMPTS,
+    retry_delay=0.5,
     ):
     """Get POINT PRECIPITATION FREQUENCY (PF) ESTIMATES from NOAA
 
@@ -110,7 +154,8 @@ def retrieve_noaa_rainfall_pf_est(
         dict: dict_keys(['result', 'quantiles', 'upper', 'lower', 'file', 'lat', 'lon', 'type', 'ser', 'datatype', 'unit', 'region', 'reg', 'volume', 'version', 'authors', 'pyRunTime'])
     """
     
-    r = requests.get(
+    r = _request_with_retries(
+        requests.get,
         _url,
         params=dict(
             type=typ,
@@ -119,15 +164,22 @@ def retrieve_noaa_rainfall_pf_est(
             series=series,
             lat=lat,
             lon=lon
-        )
+        ),
+        timeout=timeout,
+        max_attempts=max_attempts,
+        retry_delay=retry_delay,
     )
-    d = {}
+    if not r.text.strip():
+        raise ValueError("NOAA point-frequency response was empty")
     x = "{{{0}}}".format(", ".join([i.replace(";", "").replace(" = ", ": ") for i in r.text.split("\n") if i != '']))
-    s = re.sub('(([a-z]\w*):)', '"\g<2>":', x)
+    s = re.sub(r'(([a-z]\w*):)', r'"\g<2>":', x)
     s = s.replace("\'", '"')
-    # print(s)
-    d = json.loads(s)
-    print(d)
+    try:
+        d = json.loads(s)
+    except json.JSONDecodeError as exc:
+        raise ValueError("NOAA point-frequency response was not valid data") from exc
+    if not isinstance(d, dict) or "result" not in d:
+        raise ValueError("NOAA point-frequency response omitted the 'result' field")
     return d
 
 def retrieve_noaa_rainfall_rasters(
@@ -139,7 +191,10 @@ def retrieve_noaa_rainfall_rasters(
     ser="pds",
     dur="24h",
     frequencies=FREQUENCIES,
-    raster_format=".asc"
+    raster_format=".asc",
+    timeout=DEFAULT_REQUEST_TIMEOUT,
+    max_attempts=DEFAULT_REQUEST_ATTEMPTS,
+    retry_delay=0.5,
     ) -> RainfallRasterConfig:
     """Download NOAA rainfall rasters from the Hydrometeorological Design Studies
     Center Precipitation Frequency Data Server (PFDS).
@@ -232,6 +287,10 @@ def retrieve_noaa_rainfall_rasters(
 
     """
 
+    frequencies = list(frequencies)
+    if not frequencies:
+        raise ValueError("At least one NOAA rainfall frequency is required")
+
     if study in NOAA_RAINFALL_REGION_LOOKUP.keys():
         study = study
     elif study in NOAA_RAINFALL_REGION_LOOKUP.values():
@@ -241,16 +300,12 @@ def retrieve_noaa_rainfall_rasters(
                 for key, value in NOAA_RAINFALL_REGION_LOOKUP.items()
                 if value == study
             )
-        except:
-            print(
-                "Download failed. Study area must by one of [orb, ne, sa, se, pr, pi, sw, ak, mw, tx, hi]"
-            )
-            raise Exception
+        except StopIteration as exc:
+            raise ValueError("Unknown NOAA study area") from exc
     else:
-        print(
-            "Download failed. Study area must by one of [orb, ne, sa, se, pr, pi, sw, ak, mw, tx, hi]"
+        raise ValueError(
+            "Study area must be one of orb, ne, sa, se, pr, pi, sw, ak, mw, tx, hi"
         )
-        raise Exception
 
     # assemble post_kwargs: arguments used for the download request (sent as form data in the POST request body),
     # defaults to {"study":"orb","ulm":"a","ser":"pds","dur":"24h"}
@@ -258,6 +313,8 @@ def retrieve_noaa_rainfall_rasters(
 
     c = RainfallRasterConfig(root=out_folder)
     out_path = Path(out_folder)
+    out_path.mkdir(parents=True, exist_ok=True)
+    failures = []
 
     # for freq in tqdm(frequencies):
     for freq in frequencies:
@@ -266,29 +323,37 @@ def retrieve_noaa_rainfall_rasters(
         data["freq"] = f"{freq}yr"
 
         # make the request
-        r = requests.post(url, data=data, stream=True)
-        if r.ok:
-            try:
-                # extract the response to the output folder
-                z = zipfile.ZipFile(BytesIO(r.content))
-                z.extractall(c.root)
+        try:
+            r = _request_with_retries(
+                requests.post,
+                url,
+                data=data,
+                stream=True,
+                timeout=timeout,
+                max_attempts=max_attempts,
+                retry_delay=retry_delay,
+            )
+            if not r.content.startswith(b"PK"):
+                raise ValueError("response is not a ZIP archive")
+            with zipfile.ZipFile(BytesIO(r.content)) as z:
+                members = _safe_zip_members(z, out_path)
+                raster_members = [m for m in members if Path(m.filename).suffix.lower() == raster_format.lower()]
+                if not raster_members:
+                    raise ValueError(f"archive contains no {raster_format} raster")
+                z.extractall(out_path, members=members)
+                for member in raster_members:
+                    p = out_path / member.filename
+                    c.rasters.append(RainfallRaster(str(p), freq, p.suffix))
+        except (requests.RequestException, zipfile.BadZipFile, OSError, ValueError) as exc:
+            failures.append(f"{data['freq']}: {exc}")
 
-                # list files in the zip folder
-                files_from_zip = z.NameToInfo.keys()
+    if failures:
+        raise RuntimeError(
+            "NOAA rainfall download was incomplete; no configuration was written: "
+            + "; ".join(failures)
+        )
 
-                # create a lookup table that will help us find these later
-                for f in files_from_zip:
-                    p = out_path / f
-                    ext = p.suffix
-                    # freq = re.findall(r'\d+', f)[0]
-                    if ext == raster_format:
-                        c.rasters.append(
-                            RainfallRaster(str(p), freq, ext)
-                        )
-            except Exception as e:
-                print("Download failed for {0} ({1}).\n{2}".format(data["freq"], data, e))
-        else:
-            print("Download failed for {0} ({1})\n {2}".format(data["freq"], data, r.content))
+    c.require_rasters()
 
     # out_full_path = out_path / "{0}_{1}.json".format(out_file_name, study)
 

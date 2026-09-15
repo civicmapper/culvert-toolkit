@@ -2,8 +2,6 @@
 
 ***This documentation is a work-in-progress***
 
-<!-- ![](assets/header2.png) -->
-
 The Culvert Analysis Toolkit is a collection of GIS tools designed to support analysis of culvert performance within their watershed. It uses a lightweight version of a [TR-55 Model](assets/Urban-Hydrology-for-Small-Watersheds-TR-55.pdf) that leverages inputs derived from geospatial data to calculate peak-flow and culvert capacity.
 
 This software has been developed by [CivicMapper](https://www.civicmapper.com) in collaboration with [GroundPoint Engineering](https://groundpoint-engineering.com/), and encompasses work from a collaboration with the Cornell Soil & Water Lab (on GitHub @ [github.com/SoilWaterLab](https://github.com/SoilWaterLab)) on their TR-55-based peak flow model. See [Credits/Contributors](index.md#creditscontributors) for more information.

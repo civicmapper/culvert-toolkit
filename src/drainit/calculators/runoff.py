@@ -1,13 +1,19 @@
 import math
 from collections import OrderedDict
-from typing import Tuple
-# dependencies
-import numpy
-import math
-import pint
 from dataclasses import dataclass
+from typing import Tuple
+
+import numpy
+import pint
 
 units = pint.UnitRegistry()
+
+
+def _is_finite_positive(value):
+    try:
+        return math.isfinite(float(value)) and value > 0
+    except (TypeError, ValueError):
+        return False
 
 def time_of_concentration_calculator(
     max_flow_length, #units of meters
@@ -148,6 +154,10 @@ def qpeak_via_rain_ratio_method1(
     """RAIN RATIO: Method from the original Cornell Culvert model (v1).
     Works for *n* number of rainfall frequencies.
     """
+    if not _is_finite_positive(tc_hr):
+        raise ValueError("tc_hr must be finite and greater than zero")
+    if not _is_finite_positive(avg_rainfall_cm):
+        raise ValueError("avg_rainfall_cm must be finite and greater than zero")
 
     # calculate q_peak, cubic meters per second
     # q_u is an adjustment because these watersheds are very small. It is a function of tc_hr,
@@ -178,6 +188,8 @@ def qpeak_via_rain_ratio_method2(
     """Rain Ratio: Method 2 from Cornell (v2.1).
     Works for exactly 9 rainfall frequencies: the 1 through 500-year storms.
     """
+    if not _is_finite_positive(tc_hr):
+        raise ValueError("tc_hr must be finite and greater than zero")
 
     #calculate q_peak, cubic meters per second
     # q_u is an adjustment based on Tc.
@@ -207,7 +219,7 @@ def peak_flow_calculator(
     basin_area_sqkm,
     avg_cn,
     tc_hr=None,
-    rain_ratio_method=2
+    rain_ratio_method=1
     ) -> Tuple[float, float]:
     """Calculate peak runoff statistics at a "pour point" (e.g., a stormwater
     inlet, a culvert, or otherwise a basin's outlet of some sort) using
@@ -248,14 +260,26 @@ def peak_flow_calculator(
     # -------------------------------------------
     # TIME OF CONCENTRATION
 
-    if not tc_hr:
+    if tc_hr is None:
         tc_hr = time_of_concentration_calculator(max_flow_length_m, mean_slope_pct)
+
+    # Invalid records return no peak flow, matching the existing calculator
+    # contract, but are rejected before logarithms/division emit warnings.
+    if not _is_finite_positive(tc_hr):
+        return q_peak, tc_hr
+    if not _is_finite_positive(avg_rainfall_cm):
+        return q_peak, tc_hr
 
     # -------------------------------------------
     # TIME OF CONCENTRATION    
     # Skip calculation altogether if curve number or time of concentration are 0.
     # (this indicates invalid data)
-    if avg_cn in [0,'',None]:
+    if not _is_finite_positive(avg_cn):
+        return q_peak, tc_hr
+    try:
+        if not math.isfinite(float(basin_area_sqkm)) or float(basin_area_sqkm) < 0:
+            return q_peak, tc_hr
+    except (TypeError, ValueError):
         return q_peak, tc_hr
 
 
@@ -286,10 +310,16 @@ def peak_flow_calculator(
     # alternative approaches from Cornell
     # calculate q_peak
 
-    if rain_ratio_method == 2:
+    if rain_ratio_method == 1:
         q_peak = qpeak_via_rain_ratio_method1(init_abstraction, avg_rainfall_cm, tc_hr, Q, basin_area_sqkm)
+    elif rain_ratio_method == 2:
+        raise ValueError(
+            "rain_ratio_method=2 produces a nine-frequency vector and cannot "
+            "satisfy peak_flow_calculator's single-storm scalar contract; use "
+            "qpeak_via_rain_ratio_method2 directly"
+        )
     else:
-        q_peak = qpeak_via_rain_ratio_method2(tc_hr, Q, basin_area_sqkm)
+        raise ValueError("rain_ratio_method must be 1 or 2")
 
     return q_peak, tc_hr
 

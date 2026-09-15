@@ -10,6 +10,19 @@ This software encompasses work originally developed by the Cornell Soil & Water 
 
 Check out the documentation at https://civicmapper.github.io/culvert-toolkit.
 
+The package currently requires Python 3.11 or newer. ArcGIS Pro compatibility
+is established per Pro/Python release by running the Windows validation
+checklist; no Pro version is considered release-validated solely from this
+Linux work. The calculators, models, NAACC ETL, and
+NOAA client are importable and testable without ArcPy; geoprocessing workflows
+still require ArcGIS Pro and Spatial Analyst. See
+[`windows-arcgis-validation.md`](docs/docs/windows-arcgis-validation.md) for the
+release checklist.
+
+Published wheel metadata links to that compatibility checklist so each release
+can state its validated ArcGIS Pro/Python combinations rather than implying
+support for all Pro 3.x versions.
+
 ## Credits/Contributors
 
 This repository represents an evolution of a previous effort, the [Peak-Flow Calculator](https://github.com/civicmapper/peak-flow-calculator/), which was a hard fork of the Water Lab's [CulvertEvalution](https://github.com/SoilWaterLab/CulvertEvaluation) repository. 

@@ -53,7 +53,7 @@ def calc_culvert_capacity(
         capacity = (culvert_area_sqm * math.sqrt(culvert_depth_m * ((head_over_invert / culvert_depth_m) - coefficient_y - coefficient_slope * slope_rr) / coefficient_c)) / si_conv_factor
         # print("capacity", capacity)
         return capacity
-    except:
+    except (TypeError, ValueError, ZeroDivisionError, OverflowError):
         return None
 
 

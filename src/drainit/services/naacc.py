@@ -37,6 +37,18 @@ units = pint.UnitRegistry()
 # Python's available math.pi constant, the latter likely being more precise
 PI = 3.14159 #math.pi
 
+def _normalize_export_value(value):
+    """Map NAACC's current literal NULL sentinel to a missing value."""
+    if value is None or (isinstance(value, str) and value.strip().upper() == "NULL"):
+        return None
+    return value
+
+
+def _serialize_validation_errors(value):
+    if value in (None, ""):
+        return None
+    return value if isinstance(value, str) else json.dumps(value)
+
 
 class NaaccEtl:
 
@@ -101,7 +113,7 @@ class NaaccEtl:
                 number_type = CAPACITY_NUMERIC_FIELDS[cap_field]
                 try:
                     r[cap_field] = number_type(r[n_field])
-                except:
+                except (TypeError, ValueError):
                     r[cap_field] = r.get(n_field)
             # otherwise just copy them over
             else:
@@ -192,16 +204,17 @@ class NaaccEtl:
 
         # -----------------------------
         # Check 3: missing slope values
+        # NOTE: moved this logic to _derive_capacity_parameters
         # -1 as an integer in the slope field indicates a missing slope value.
         # Per this issue https://github.com/civicmapper/culvert-toolkit/issues/6 
         # Let slope with a -1 through (include=True), but include a validation 
         # error message in the validation_errors field, and set slope to 0
-        slope = r.get("slope")
-        if slope == -1 or slope is None:
-            r['slope'] = 0
-            validation_errors\
-                .setdefault('slope', [])\
-                .append("slope missing (-1). Assuming 0 slope for capacity calculation")
+        # slope = r.get("slope")
+        # if slope == -1 or slope is None:
+        #     r['slope'] = 0
+        #     validation_errors\
+        #         .setdefault('slope', [])\
+        #         .append("slope missing (-1). Assuming 0 slope for capacity calculation")
             
         # -------------------------------------------------
         # Compile all validation errors and write to field
@@ -254,7 +267,7 @@ class NaaccEtl:
                     # if not, the source data was invalid anyway
                     else:
                         row[f] = None
-                except:
+                except (TypeError, ValueError):
                     # exceptions may be raised with NoneTypes
                     pass
 
@@ -306,7 +319,11 @@ class NaaccEtl:
 
             # -----------------------------------------------------
             # culvert slope as rise/run
-            slope_rr = row["slope"] / 100 
+            
+            if row["slope"] == -1:
+                comments.append("slope missing (-1), defaulting to 0.")
+            else:
+                slope_rr = row["slope"] / 100 
 
             # -----------------------------------------------------
             # calculate culvert area and depth based on culvert shape
@@ -625,9 +642,9 @@ class NaaccEtl:
 
         click.echo("Performing NAACC data ingest")
 
-        naacc_csv_file = self.naacc_csv_file if naacc_csv_file is None else None
-        naacc_petl_table = self.naacc_petl_table if naacc_petl_table is None else None
-        output_path = self.output_path if output_path is None else None
+        naacc_csv_file = self.naacc_csv_file if naacc_csv_file is None else naacc_csv_file
+        naacc_petl_table = self.naacc_petl_table if naacc_petl_table is None else naacc_petl_table
+        output_path = self.output_path if output_path is None else output_path
 
         if not any([
             naacc_csv_file,
@@ -670,7 +687,8 @@ class NaaccEtl:
         validated_table_fieldmap['validation_errors'] = lambda rec: validate_petl_record_w_schema(rec, self.naacc_culvert_schema)
         # run the transform
         validated_table = etl\
-            .replaceall(raw_table, "", None)\
+            .convertall(raw_table, _normalize_export_value)\
+            .replaceall("", None)\
             .fieldmap(validated_table_fieldmap)
         
         if has_rows:
@@ -711,14 +729,22 @@ class NaaccEtl:
         # optionally save the table to a CSV file
         if output_path:
 
-            # before saving to CSV, convert the content of the validation errors field to a JSON string.
-            hydrated_table_for_csv = etl.convert(hydrated_table, 'validation_errors', lambda v: json.dumps(v))
+            # Serialize validation details without changing the table's other
+            # values or guessing how a future duplicate-column export maps.
+            hydrated_table_for_csv = etl.convert(
+                hydrated_table,
+                'validation_errors',
+                _serialize_validation_errors,
+            )
 
             # save the complete table
             etl.tocsv(hydrated_table_for_csv, output_path)
             # save the filtered versions of the table (mimicking the v2.1 outputs)
             op = Path(output_path)
-            field_data, not_extracted = etl.biselect(hydrated_table_for_csv, lambda r: r.include == True)
+            field_data, not_extracted = etl.biselect(
+                hydrated_table_for_csv,
+                lambda r: r.include is True,
+            )
             # etl.tocsv(field_data, op.parent / "{}_field_data.csv".format(op.stem))
             # etl.tocsv(not_extracted, op.parent / "{}_not_extracted.csv".format(op.stem))
             etl.tocsv(field_data, op.parent / "{}_naacc_valid.csv".format(op.stem))
@@ -793,12 +819,12 @@ class NaaccEtl:
                 # calculate capacity here
                 capacity.calculate()
                 kwargs['capacity'] = capacity                
-            except:
+            except (ValidationError, TypeError, ValueError, ZeroDivisionError, OverflowError):
                 # print("schema error | CAPACITY | Survey/Culvert {0}/{1}: {2}".format(r["Survey_Id"], r["Naacc_Culvert_Id"], e))
                 kwargs['include'] = False
                 try:
                     kwargs['capacity'] = self.capacity_schema.load(data=c, partial=True)
-                except:
+                except (ValidationError, TypeError, ValueError):
                     pass
             p = DrainItPoint(**kwargs)
             points.append(p)
